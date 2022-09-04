@@ -1,0 +1,14 @@
+html,
+body,
+#app,
+.app-body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+}
+:root {
+  --header-height: 48px;
+  --footer-height: 64px;
+}
