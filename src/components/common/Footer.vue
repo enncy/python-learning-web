@@ -1,11 +1,14 @@
 <template>
-  <div class="footer">footer</div>
+  <div class="text-secondary">
+    <div>
+      {{ store.config.copyright }}
+    </div>
+    <div>
+      {{ store.config.description }}
+    </div>
+  </div>
 </template>
-<script setup lang="ts"></script>
-<style scoped lang="less">
-.footer {
-  height: var(--footer-height);
-  text-align: center;
-  padding: 12px;
-}
-</style>
+<script setup lang="ts">
+import { store } from "../../store";
+</script>
+<style scoped lang="less"></style>

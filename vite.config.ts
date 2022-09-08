@@ -5,16 +5,21 @@ import path from "path";
 // https://vitejs.dev/config/
 export default defineConfig({
   build: {
-    outDir: "../app/public",
+    emptyOutDir: true,
+    outDir: "../python-learning-server/src/main/resources/static",
     rollupOptions: {
       output: {
         manualChunks(id) {
           if (id.includes("node_modules")) {
-            return id
-              .toString()
-              .split("node_modules/")[1]
-              .split("/")[0]
-              .toString();
+            return id.toString().split("node_modules/")[1].split("/")[0];
+          } else {
+            const _id = path
+              .resolve(id)
+              .replace(path.resolve(__dirname), "")
+              .split("\\")
+              .filter((s) => s)
+              .join("_");
+            return _id.substring(0, _id.lastIndexOf("?"));
           }
         },
       },

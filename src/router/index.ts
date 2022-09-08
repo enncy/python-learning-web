@@ -18,20 +18,28 @@ const routes: RouteRecordRaw[] = [
     component: () => import("../page/learning/index.vue"),
   },
   {
+    path: "/complier",
+    component: () => import("../page/complier/index.vue"),
+  },
+  {
     path: "/login",
-    component: () => import("../page/common/login.vue"),
+    component: () => import("../page/passport/login.vue"),
   },
   {
     path: "/register",
-    component: () => import("../page/common/register.vue"),
+    component: () => import("../page/passport/register.vue"),
   },
   {
     path: "/reset",
-    component: () => import("../page/common/reset.vue"),
+    component: () => import("../page/passport/reset.vue"),
   },
   {
     path: "/forget-password",
-    component: () => import("../page/common/forget-password.vue"),
+    component: () => import("../page/passport/forget-password.vue"),
+  },
+  {
+    path: "/:pathMatch(.*)*",
+    component: () => import("../page/common/error.vue"),
   },
 ];
 

@@ -1,15 +1,9 @@
 <template>
   <CommonLayout>
-    <div class="learning">
-      <div>container</div>
-    </div>
+    <div>complier</div>
   </CommonLayout>
 </template>
 <script setup lang="ts">
 import CommonLayout from "../../layout/CommonLayout.vue";
 </script>
-<style scoped lang="less">
-.learning {
-  height: 100%;
-}
-</style>
+<style scoped lang="less"></style>
