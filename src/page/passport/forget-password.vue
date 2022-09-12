@@ -2,7 +2,7 @@
   <PassportLayout>
     <h1 class="text-start">
       邮箱找回密码
-      <span class="fs-6 text-secondary"> - {{ store.config.name }}</span>
+      <span class="fs-6 text-secondary"> - {{ config.name }}</span>
     </h1>
     <a-divider></a-divider>
     <form ref="forgetForm" class="input-list">
@@ -55,7 +55,7 @@ import { nextTick, onMounted, reactive, Ref, ref } from "vue";
 import { useRouter } from "vue-router";
 import { UserApi } from "../../api";
 import PassportLayout from "../../layout/common/PassportLayout.vue";
-import { store } from "../../store";
+import { config } from "../../store";
 import { sendVerifyCode } from "../../utils/passport/verify";
 
 const router = useRouter();

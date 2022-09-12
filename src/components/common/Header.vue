@@ -1,6 +1,6 @@
 <template>
   <div class="shadow-sm header">
-    <template v-for="(item, index) of store.config.headers" :key="index">
+    <template v-for="(item, index) of config.headers" :key="index">
       <component :is="item.component"></component>
       <div
         v-if="item.path"
@@ -17,7 +17,7 @@
 </template>
 <script setup lang="ts">
 import { useRoute, useRouter } from "vue-router";
-import { store } from "../../store";
+import { config } from "../../store";
 const route = useRoute();
 const router = useRouter();
 </script>

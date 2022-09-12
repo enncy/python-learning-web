@@ -10,6 +10,5 @@ import CommonLayout from "../../layout/CommonLayout.vue";
 </script>
 <style scoped lang="less">
 .learning {
-  height: 100%;
 }
 </style>

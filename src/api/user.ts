@@ -19,12 +19,16 @@ export const UserApi = {
   },
 
   login(wrapper: {
+    type?: string;
     username?: string;
     password?: string;
     email?: string;
     verify_code?: string;
   }) {
     return request.get<T>("/login", { params: wrapper });
+  },
+  logout() {
+    return request.get<T>("/logout");
   },
   register(wrapper: {
     username: string;

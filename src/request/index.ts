@@ -1,5 +1,6 @@
 import { message } from "ant-design-vue";
 import axios from "axios";
+import { requestErrorHandler } from "../utils/request.error.handler";
 
 export const request = axios.create({
   baseURL: "http://localhost:8080/api/v1/",
@@ -21,12 +22,13 @@ request.interceptors.request.use(
 request.interceptors.response.use(
   function (response) {
     const {
-      data: { data, msg },
+      data: { status, msg },
     } = response;
-    if (data) {
+
+    if (status === 200) {
       return Promise.resolve(response);
     } else {
-      message.error(msg);
+      requestErrorHandler(response.data);
       return Promise.reject(msg);
     }
   },

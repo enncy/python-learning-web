@@ -1,7 +1,7 @@
 <template>
   <PassportLayout>
     <h1 class="text-start">
-      注册 <span class="fs-6 text-secondary"> - {{ store.config.name }}</span>
+      注册 <span class="fs-6 text-secondary"> - {{ config.name }}</span>
     </h1>
     <form class="input-list" ref="registerForm">
       <a-input
@@ -91,7 +91,7 @@ import { nextTick, onMounted, reactive, Ref, ref } from "vue";
 import { useRouter } from "vue-router";
 import { UserApi } from "../../api";
 import PassportLayout from "../../layout/common/PassportLayout.vue";
-import { store } from "../../store";
+import { store, config } from "../../store";
 import { sendVerifyCode, resetObject } from "../../utils/passport/verify";
 const router = useRouter();
 
@@ -112,7 +112,7 @@ onMounted(() => {
       if (registerForm.value.checkValidity()) {
         UserApi.register(form).then(({ data: { data, msg } }) => {
           message.success(msg);
-          store.data.user = data;
+          store.user = data;
           setTimeout(() => router.push("/"), 1000);
         });
       }

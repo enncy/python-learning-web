@@ -1,7 +1,7 @@
 <template>
   <PassportLayout class="text-center">
     <h1 class="text-start">
-      登录 <span class="fs-6 text-secondary"> - {{ store.config.name }}</span>
+      登录 <span class="fs-6 text-secondary"> - {{ config.name }}</span>
     </h1>
     <a-divider></a-divider>
 
@@ -125,7 +125,7 @@
 import { nextTick, onMounted, reactive, Ref, ref } from "vue";
 import { useRouter } from "vue-router";
 import PassportLayout from "../../layout/common/PassportLayout.vue";
-import { store } from "../../store";
+import { store, config } from "../../store";
 import { UserApi } from "../../api";
 import { message } from "ant-design-vue";
 import { sendVerifyCode } from "../../utils/passport/verify";
@@ -144,6 +144,10 @@ const form = reactive({
 const passwordLoginForm = ref() as Ref<HTMLFormElement>;
 const emailLoginForm = ref() as Ref<HTMLFormElement>;
 
+const emits = defineEmits<{
+  (e: "login", value: any): void;
+}>();
+
 onMounted(() => {
   nextTick(() => {
     passwordLoginForm.value.onsubmit = handleLogin;
@@ -159,7 +163,8 @@ function handleLogin(e: any) {
   if (formElement.value.checkValidity()) {
     UserApi.login(form).then(({ data: { data, msg } }) => {
       message.success(msg);
-      store.data.user = data;
+      store.user = data;
+      emits("login", data);
       setTimeout(() => router.push("/"), 1000);
     });
   }

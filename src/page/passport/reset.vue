@@ -2,7 +2,7 @@
   <PassportLayout>
     <h1 class="text-start">
       重置密码
-      <span class="fs-6 text-secondary"> - {{ store.config.name }}</span>
+      <span class="fs-6 text-secondary"> - {{ config.name }}</span>
     </h1>
     <a-divider></a-divider>
     <form ref="resetForm" class="input-list">
@@ -48,7 +48,7 @@ import { nextTick, onMounted, reactive, Ref, ref } from "vue";
 import { useRouter } from "vue-router";
 import { UserApi } from "../../api";
 import PassportLayout from "../../layout/common/PassportLayout.vue";
-import { store } from "../../store";
+import { store, config } from "../../store";
 const router = useRouter();
 const form = reactive({
   password: "",
@@ -64,7 +64,7 @@ onMounted(() => {
       if (resetForm.value.checkValidity()) {
         UserApi.resetPassword(form).then(({ data: { data, msg } }) => {
           message.success(msg);
-          store.data.user = data;
+          store.user = data;
           setTimeout(() => router.push("/"), 1000);
         });
       }
