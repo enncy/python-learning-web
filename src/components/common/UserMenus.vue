@@ -1,35 +1,40 @@
 <template>
-  <a-dropdown class="ms-4 me-5">
-    <a class="ant-dropdown-link" @click.prevent>
-      <Icon type="icon-user" />
-      {{ store.user?.username || store.user?.nickname || "未登录" }}
-    </a>
-    <template #overlay>
-      <a-menu>
-        <template v-for="(item, index) of menus" :key="index">
-          <a-menu-item>
-            <component :is="item.component"></component>
-            <div v-if="item.path" class="item" @click="router.push(item.path)">
-              <Icon class="ms-2 me-2" :type="item.icon" />
-              <span> {{ item.name }} </span>
-            </div>
-          </a-menu-item>
-        </template>
-      </a-menu>
+  <a-menu :selectable="false">
+    <template v-for="item of menus" :key="item.path">
+      <a-menu-item>
+        <component v-if="item.component" :is="item.component"></component>
+        <div v-if="item.path" class="item" @click="router.push(item.path!)">
+          <Icon v-if="item.icon" class="ms-2 me-2" :type="item.icon" />
+          <span> {{ item.name }} </span>
+        </div>
+        <div
+          v-if="item.redirect"
+          class="item"
+          @click="doc.location.href = item.redirect"
+        >
+          <Icon v-if="item.icon" class="ms-2 me-2" :type="item.icon" />
+          <span> {{ item.name }} </span>
+        </div>
+      </a-menu-item>
+      <component
+        v-if="item.divider"
+        :is="adaption ? Divider : MenuDivider"
+      ></component>
     </template>
-  </a-dropdown>
+  </a-menu>
 </template>
 <script setup lang="ts">
-import { computed } from "vue";
+import { Divider, MenuDivider } from "ant-design-vue";
 import { useRouter } from "vue-router";
-import { store, config } from "../../store";
 import Icon from "./Icon.vue";
 
-const router = useRouter();
+const doc = document;
 
-const menus = computed(
-  () => config.userMenus[store.user ? store.user.role : "visitor"]
-);
+const router = useRouter();
+defineProps<{
+  menus: any;
+  adaption: boolean;
+}>();
 </script>
 <style scoped lang="less">
 .item {

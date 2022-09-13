@@ -1,14 +1,17 @@
-import { MenuDivider } from "ant-design-vue";
 import { defineAsyncComponent, reactive, shallowRef } from "vue";
 import monaco from "monaco-editor";
-import { Code, Compile } from "./interface";
+import { Code, Compile, User } from "./interface";
 
 export const config = reactive({
-  version: 17,
+  version: 18,
   name: "Python学习网",
   copyright: "Copyright © 2022 Python学习网",
   description:
     "Python学习网 —— 拥有在线学习系统，在线代码测评系统，以及论坛系统，可以自学Python，对各种例子进行自测，与各大网友分享技术，共同建造和谐的开源社区",
+  // 自适应宽度
+  adaption: {
+    breaking_point: 1000,
+  },
   headers: [
     {
       component: shallowRef(
@@ -18,18 +21,33 @@ export const config = reactive({
     {
       path: "/learning",
       name: "教程",
+      icon: "icon-book",
+      //  自适应
+      class: "d-none d-lg-block",
+      //  自适应
+      adaption: true,
     },
     {
       path: "/oj",
       name: "题库",
+      icon: "icon-CodeSandbox",
+      class: "d-none d-lg-block",
+      adaption: true,
     },
     {
-      path: "/bbs",
+      path: "/bbs/board",
       name: "论坛",
+      icon: "icon-earth",
+      class: "d-none d-lg-block",
+      adaption: true,
     },
     {
       path: "/complier",
       name: "在线编译器",
+      icon: "icon-code",
+      class: "d-none d-lg-block",
+      adaption: true,
+      divider: true,
     },
     {
       component: shallowRef(
@@ -37,45 +55,59 @@ export const config = reactive({
           () => import("../components/common/SearchInput.vue")
         )
       ),
+      class: "d-none d-lg-block",
     },
     {
       component: shallowRef(
-        defineAsyncComponent(() => import("../components/common/UserMenus.vue"))
+        defineAsyncComponent(
+          () => import("../components/common/UserHeaderItem.vue")
+        )
       ),
+      class:
+        "d-lg-block justify-content-end justify-content-lg-center d-flex user-menus-wrapper",
     },
     {
       path: "/user/message",
       name: "消息",
+      class: "d-none d-lg-block",
+      icon: "icon-comment",
+      adaption: true,
     },
     {
       path: "/user/notify",
       name: "通知",
+      icon: "icon-sound",
+      class: "d-none d-lg-block",
+      adaption: true,
     },
   ],
   userMenus: {
     user: [
       {
-        path: "/user",
-        name: "个人中心",
+        redirect: "/@",
+        name: "个人首页",
+        icon: "icon-home",
+      },
+      {
+        path: "/user/information",
+        name: "个人资料",
         icon: "icon-user",
       },
       {
-        path: "/bbs/analyze",
+        path: "/user/bbs",
         name: "我的论坛",
         icon: "icon-comment",
       },
       {
-        path: "/learning/analyze",
+        path: "/user/learning",
         name: "我的学习",
         icon: "icon-book",
       },
       {
-        path: "/oj/analyze",
+        path: "/user/oj",
         name: "我的题库",
         icon: "icon-edit",
-      },
-      {
-        component: shallowRef(MenuDivider),
+        divider: true,
       },
       {
         path: "/logout",
@@ -95,7 +127,13 @@ export const config = reactive({
         icon: "icon-adduser",
       },
     ],
-    admin: [],
+    admin: [
+      {
+        path: "/admin",
+        name: "后台管理",
+        icon: "icon-piechart",
+      },
+    ],
   } as Record<string, any>,
 
   compiler: {
@@ -190,15 +228,7 @@ export const config = reactive({
 
 // 用户可参与修改的数据, 并且储存在浏览器中。
 export const store = reactive({
-  user: undefined as
-    | {
-        username: string;
-        password: string;
-        email: string;
-        role: "visitor" | "user" | "admin";
-        nickname: string;
-      }
-    | undefined,
+  user: undefined as User | undefined,
   compiler: {
     currentTag: config.compiler.defaultCode.filename,
     codes: [config.compiler.defaultCode] as Code[],

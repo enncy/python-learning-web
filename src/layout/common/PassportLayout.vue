@@ -24,8 +24,10 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted, nextTick } from "vue";
 import { useRouter } from "vue-router";
 import Footer from "../../components/common/Footer.vue";
+import { config } from "../../store";
 
 const router = useRouter();
 
@@ -49,6 +51,6 @@ const props = defineProps<{
 }
 
 .passport-layout-container {
-  min-width: 360px;
+  min-width: 400px;
 }
 </style>

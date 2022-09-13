@@ -20,3 +20,9 @@ pre.code {
   max-height: 100vh;
   overflow: auto;
 }
+ 
+@media screen and (max-width: 992px) {
+  .user-menus-wrapper {
+    width: 100% !important;
+  }
+}

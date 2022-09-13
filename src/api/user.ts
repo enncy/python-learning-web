@@ -4,6 +4,12 @@ import { ApiResponse } from "./interface";
 type T = ApiResponse;
 
 export const UserApi = {
+  info(wrapper: { username?: string; email?: string; slug?: string }) {
+    return request.get<T>("/user/info", { params: wrapper });
+  },
+  loginRecord(wrapper: { id: string }) {
+    return request.get<T>("/user/login/record", { params: wrapper });
+  },
   listUser(
     page: number,
     size: number,

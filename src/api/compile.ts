@@ -5,25 +5,25 @@ type T = ApiResponse;
 
 export const CompilerApi = {
   compile(wrapper: { content: string; filename: string; input: string }) {
-    return request.post<T>("/compile-code", wrapper, {
+    return request.post<T>("/compiler/compile-code", wrapper, {
       headers: { "Content-Type": "multipart/form-data" },
     });
   },
   lint(wrapper: { content: string; filename: string; input: string }) {
-    return request.post<T>("/lint-code", wrapper, {
+    return request.post<T>("/compiler/lint-code", wrapper, {
       headers: { "Content-Type": "multipart/form-data" },
     });
   },
   save(wrapper: { content: string; filename: string }) {
-    return request.post<T>("/save-code", wrapper);
+    return request.post<T>("/compiler/save-code", wrapper);
   },
   listCompiles(wrapper: { code_id: string }) {
-    return request.get<T>("/list-compiles", { params: wrapper });
+    return request.get<T>("/compiler/list-compiles", { params: wrapper });
   },
   listCodes() {
-    return request.get<T>("/list-codes");
+    return request.get<T>("/compiler/list-codes");
   },
   remove(wrapper: { id: string }) {
-    return request.get<T>("/remove-code", { params: wrapper });
+    return request.get<T>("/compiler/remove-code", { params: wrapper });
   },
 };
