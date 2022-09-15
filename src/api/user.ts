@@ -10,15 +10,13 @@ export const UserApi = {
   loginRecord(wrapper: { id: string }) {
     return request.get<T>("/user/login/record", { params: wrapper });
   },
-  listUser(
-    page: number,
-    size: number,
-    wrapper: {
-      username?: string;
-      nickname?: string;
-    }
-  ) {
-    return request.get<T>("/list/user", { params: { page, size, ...wrapper } });
+  listUser(wrapper: {
+    page: number;
+    size: number;
+    username?: string;
+    nickname?: string;
+  }) {
+    return request.get<T>("/list/user", { params: wrapper });
   },
   findUser(wrapper: { id?: number; email?: string }) {
     return request.get<T>("/find/user", { params: wrapper });

@@ -66,13 +66,19 @@ watch(adaption, () => {
 // 获取自适应菜单
 function getMenus() {
   const newMenus = [];
-  if (store.user?.role === "admin") {
-    newMenus.push(...config.userMenus["admin"]);
-  }
+
   if (adaption.value) {
     newMenus.push(...config.headers.filter((h) => h.adaption === true));
   }
-  newMenus.push(...config.userMenus[store.user ? store.user.role : "visitor"]);
+
+  if (store.user?.role === "visitor") {
+    newMenus.push(...config.userMenus["visitor"]);
+  } else {
+    if (store.user?.role === "admin") {
+      newMenus.push(...config.userMenus["admin"]);
+    }
+    newMenus.push(...config.userMenus["user"]);
+  }
 
   return newMenus;
 }

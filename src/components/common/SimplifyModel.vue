@@ -11,10 +11,13 @@
       @cancel="emits('update:visible', false)"
       @ok="emits('update:visible', false)"
     >
-      <h2>
-        {{ props.title }}
-      </h2>
-      <a-divider class="mt-1 mb-3"></a-divider>
+      <template v-if="props.title">
+        <h2>
+          {{ props.title }}
+        </h2>
+        <a-divider class="mt-1 mb-3"></a-divider>
+      </template>
+
       <slot></slot>
     </a-modal>
   </div>
@@ -23,7 +26,7 @@
 const props = defineProps<{
   title?: string;
   width?: number;
-  visible: boolean;
+  visible?: boolean;
   top?: number;
 }>();
 

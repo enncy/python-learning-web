@@ -1,15 +1,16 @@
 <template>
-  <router-view v-slot="{ Component }">
-    <Transition name="fade" mode="out-in">
-      <component :is="Component" />
-    </Transition>
-  </router-view>
+  <a-config-provider :locale="zhCN">
+    <router-view v-slot="{ Component }">
+      <Transition name="fade" mode="out-in">
+        <component :is="Component" />
+      </Transition>
+    </router-view>
+  </a-config-provider>
 </template>
 
 <script setup lang="ts">
-import { message } from "ant-design-vue";
+import zhCN from "ant-design-vue/es/locale/zh_CN";
 import { onBeforeMount, onMounted, Transition } from "vue";
-import { UserApi } from "./api";
 import { store, config } from "./store";
 
 const fieldname = `store-${config.version}`;

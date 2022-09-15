@@ -2,7 +2,7 @@ import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import { store } from "../store";
 import { createSimplifyLoginWindow } from "../utils";
 
-const routes: RouteRecordRaw[] = [
+export const routes: RouteRecordRaw[] = [
   {
     path: "/",
     redirect: "/learning",
@@ -10,6 +10,7 @@ const routes: RouteRecordRaw[] = [
 
   {
     path: "/admin",
+    name: "admin",
     component: () => import("../page/admin/index.vue"),
     meta: {
       name: "管理系统",
@@ -17,7 +18,8 @@ const routes: RouteRecordRaw[] = [
     children: [
       {
         path: "analyze",
-        component: () => import("../page/admin/index.vue"),
+        name: "admin-analyze",
+        component: () => import("../page/admin/analyze.vue"),
         meta: {
           icon: "icon-piechart",
           title: "数据分析",
@@ -25,22 +27,26 @@ const routes: RouteRecordRaw[] = [
       },
       {
         path: "user",
-        component: () => import("../page/admin/index.vue"),
+        name: "admin-user",
+        component: () => import("../page/admin/user/index.vue"),
         meta: {
           icon: "icon-user",
           title: "用户管理",
+          open: true,
         },
         children: [
           {
             path: "list",
-            component: () => import("../page/admin/index.vue"),
+            component: () => import("../page/admin/user/list.vue"),
+            name: "admin-user-list",
             meta: {
               title: "用户列表",
             },
           },
           {
             path: "new",
-            component: () => import("../page/admin/index.vue"),
+            component: () => import("../page/admin/user/new.vue"),
+            name: "admin-user-new",
             meta: {
               title: "新建用户",
             },
@@ -49,84 +55,87 @@ const routes: RouteRecordRaw[] = [
       },
       {
         path: "bbs",
-        component: () => import("../page/admin/index.vue"),
+        name: "admin-bbs",
+        component: () => import("../page/admin/bbs/index.vue"),
         meta: {
           icon: "icon-earth",
           title: "论坛管理",
+          open: true,
         },
         children: [
           {
             path: "board/list",
-            component: () => import("../page/admin/index.vue"),
+            name: "admin-bbs-board-list",
+            component: () => import("../page/admin/bbs/board.vue"),
             meta: {
               title: "版块管理",
             },
           },
           {
             path: "category/list",
-            component: () => import("../page/admin/index.vue"),
+            name: "admin-bbs-category-list",
+            component: () => import("../page/admin/bbs/category.vue"),
             meta: {
               title: "分区管理",
             },
           },
           {
             path: "post/list",
-            component: () => import("../page/admin/index.vue"),
+            name: "admin-bbs-post-list",
+            component: () => import("../page/admin/bbs/post.vue"),
             meta: {
               title: "文章管理",
             },
           },
           {
-            path: "post/new",
-            component: () => import("../page/admin/index.vue"),
+            path: "admin/list",
+            name: "admin-bbs-admin-list",
+            component: () => import("../page/admin/bbs/admin.vue"),
             meta: {
-              title: "新建文章",
+              title: "版主管理",
+            },
+          },
+          {
+            path: "comment/list",
+            name: "admin-bbs-comment-list",
+            component: () => import("../page/admin/bbs/comment.vue"),
+            meta: {
+              title: "评论管理",
+            },
+          },
+          {
+            path: "tag/list",
+            name: "admin-bbs-tag-list",
+            component: () => import("../page/admin/bbs/tag.vue"),
+            meta: {
+              title: "主题管理",
             },
           },
         ],
       },
-      {
-        path: "cj",
-        component: () => import("../page/admin/index.vue"),
-        meta: {
-          icon: "icon-CodeSandbox",
-          title: "题库管理",
-        },
-        children: [
-          {
-            path: "list",
-            component: () => import("../page/admin/index.vue"),
-            meta: {
-              title: "题库列表",
-            },
-          },
-          {
-            path: "new",
-            component: () => import("../page/admin/index.vue"),
-            meta: {
-              title: "新建题目",
-            },
-          },
-        ],
-      },
+
       {
         path: "learning",
-        component: () => import("../page/admin/index.vue"),
+        name: "admin-learning",
+        component: () => import("../page/admin/learning/index.vue"),
         meta: {
           icon: "icon-book",
           title: "教程管理",
+          open: true,
         },
         children: [
           {
-            path: "/admin/learning/list",
-            component: () => import("../page/admin/index.vue"),
+            path: "/learning/list",
+            name: "admin-learning-list",
+            component: () => import("../page/admin/learning/list.vue"),
             meta: {
               title: "教程管理",
             },
           },
           {
-            path: "/admin/learning/new",
-            component: () => import("../page/admin/index.vue"),
+            path: "/learning/new",
+            name: "admin-learning-new",
+            component: () => import("../page/admin/learning/new.vue"),
             meta: {
               title: "新建教程",
             },
@@ -134,16 +143,45 @@ const routes: RouteRecordRaw[] = [
         ],
       },
       {
-        path: "compiler/setting",
-        component: () => import("../page/admin/index.vue"),
+        path: "compiler",
+        name: "admin-compiler",
+        component: () => import("../page/admin/compiler/index.vue"),
         meta: {
           icon: "icon-codelibrary",
           title: "编译器管理",
+          open: true,
         },
+        children: [
+          {
+            path: "setting",
+            name: "admin-compiler-setting",
+            component: () => import("../page/admin/compiler/setting.vue"),
+            meta: {
+              title: "编译设置",
+            },
+          },
+          {
+            path: "codes",
+            name: "admin-compiler-codes",
+            component: () => import("../page/admin/compiler/codes.vue"),
+            meta: {
+              title: "代码列表",
+            },
+          },
+          {
+            path: "records",
+            name: "admin-compiler-records",
+            component: () => import("../page/admin/compiler/records.vue"),
+            meta: {
+              title: "编译记录",
+            },
+          },
+        ],
       },
       {
         path: "system/setting",
-        component: () => import("../page/admin/index.vue"),
+        name: "admin-system-setting",
+        component: () => import("../page/admin/system.vue"),
         meta: {
           icon: "icon-desktop",
           title: "系统设置",
@@ -183,13 +221,6 @@ const routes: RouteRecordRaw[] = [
     ],
   },
 
-  {
-    path: "/oj",
-    component: () => import("../page/oj/index.vue"),
-    meta: {
-      name: "题库",
-    },
-  },
   {
     path: "/learning",
     component: () => import("../page/learning/index.vue"),
@@ -256,15 +287,15 @@ const routes: RouteRecordRaw[] = [
         path: "learning",
         component: () => import("../page/user/learning.vue"),
       },
-      {
-        path: "oj",
-        component: () => import("../page/user/oj.vue"),
-      },
     ],
   },
   {
     path: "/@:usernameOrSlug(.*)",
     component: () => import("../page/home/index.vue"),
+  },
+  {
+    path: "/test",
+    component: () => import("../page/test.vue"),
   },
   {
     path: "/:pathMatch(.*)*",

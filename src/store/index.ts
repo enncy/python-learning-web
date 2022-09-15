@@ -27,13 +27,7 @@ export const config = reactive({
       //  自适应
       adaption: true,
     },
-    {
-      path: "/oj",
-      name: "题库",
-      icon: "icon-CodeSandbox",
-      class: "d-none d-lg-block",
-      adaption: true,
-    },
+
     {
       path: "/bbs/board",
       name: "论坛",
@@ -103,12 +97,7 @@ export const config = reactive({
         name: "我的学习",
         icon: "icon-book",
       },
-      {
-        path: "/user/oj",
-        name: "我的题库",
-        icon: "icon-edit",
-        divider: true,
-      },
+
       {
         path: "/logout",
         name: "退出",

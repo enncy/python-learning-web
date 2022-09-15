@@ -1,3 +1,21 @@
+/**
+ * 前后端字段关系映射
+ */
+export interface Schema {
+  name: string;
+  label: string;
+  type: string;
+  hide?: boolean;
+  externalSchema?: string;
+  searchable?: boolean;
+  options?: string[];
+  min?: number;
+  max?: number;
+  step?: number;
+  required?: boolean;
+  disabled?: boolean;
+}
+
 export interface Compile {
   id: string;
   codeId: string;
