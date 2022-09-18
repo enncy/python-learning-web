@@ -6,7 +6,9 @@
           <div class="d-flex justify-content-center align-items-center">
             <div class="col-lg-6 col-12 d-flex flex-wrap gy-3">
               <div class="col-lg-3 col-12 text-center">
-                <span class="me-2"> <a-avatar :size="124"></a-avatar> </span>
+                <span class="me-2">
+                  <Avatar shape="square" :size="124" :user="user"></Avatar>
+                </span>
               </div>
               <div class="col-lg-6 col-12 text-center text-lg-start">
                 <div>
@@ -18,9 +20,6 @@
                   <span class="fs-5">
                     {{ user.profile || "此用户暂无任何简介~" }}
                   </span>
-                </div>
-                <div>
-                  <span>111</span>
                 </div>
               </div>
               <div class="col-lg-3 col-12 text-center">
@@ -60,7 +59,7 @@
       class="d-flex flex-wrap justify-content-center align-items-center p-3"
     >
       <div class="col-lg-5 col-12" v-if="selectedKeys[0] === '1'">
-        <a-empty></a-empty>
+        <PostList :posts="user"> </PostList>
       </div>
       <div class="col-lg-5 col-12" v-if="selectedKeys[0] === '2'">
         <a-divider>基本信息</a-divider>
@@ -81,13 +80,7 @@
         <div class="user-info"><label>UID</label> : {{ user.id }}</div>
         <div class="user-info">
           <label>身份</label> :
-          {{
-            user.role === "admin"
-              ? "管理员"
-              : user.role === "user"
-              ? "用户"
-              : "游客"
-          }}
+          {{ getRole(user.role).desc }}
         </div>
         <a-divider>活跃概况</a-divider>
         <div class="user-info">
@@ -119,10 +112,10 @@
         </template>
       </div>
       <div class="col-lg-5 col-12" v-if="selectedKeys[0] === '3'">
-        <a-empty></a-empty>
+        <a-empty description="暂无数据"></a-empty>
       </div>
       <div class="col-lg-5 col-12" v-if="selectedKeys[0] === '4'">
-        <a-empty></a-empty>
+        <a-empty description="暂无数据"></a-empty>
       </div>
     </div>
   </CommonLayout>
@@ -135,6 +128,8 @@ import CommonLayout from "../../layout/CommonLayout.vue";
 import { store } from "../../store";
 import Icon from "../../components/common/Icon.vue";
 import { User } from "../../store/interface";
+import Avatar from "../../components/common/Avatar.vue";
+import { getRole } from "../../utils";
 
 const route = useRoute();
 const user = ref<User>();
@@ -162,7 +157,7 @@ onMounted(() => {
         UserApi.loginRecord({
           id: data.id,
         }).then(({ data: { data } }) => {
-          loginRecords.value = data.records;
+          loginRecords.value = data;
         });
       });
     }

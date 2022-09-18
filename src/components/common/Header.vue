@@ -23,7 +23,6 @@
 import { useRoute, useRouter } from "vue-router";
 import { config } from "../../store";
 const route = useRoute();
-console.log(route);
 
 const router = useRouter();
 </script>

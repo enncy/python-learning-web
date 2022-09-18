@@ -2,7 +2,7 @@
   <div class="ps-5 pe-5">
     <a-input-search
       v-model:value="value"
-      placeholder="搜索站内的文章或者内容"
+      placeholder="搜索站内的帖子或者内容"
       enter-button
       class="search-input"
       @search="onSearch"

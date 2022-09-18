@@ -10,8 +10,13 @@
 
 <script setup lang="ts">
 import zhCN from "ant-design-vue/es/locale/zh_CN";
+import dayjs from "dayjs";
+import "dayjs/locale/zh-cn";
+
 import { onBeforeMount, onMounted, Transition } from "vue";
 import { store, config } from "./store";
+
+dayjs.locale("zh-cn");
 
 const fieldname = `store-${config.version}`;
 
@@ -29,16 +34,6 @@ onMounted(() => {
 });
 </script>
 <style scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.1s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
 .spin,
 .spin-wrapper {
   width: 100%;

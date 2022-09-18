@@ -1,5 +1,5 @@
 <template>
-  <div v-if="adminTableOptions">
+  <div v-if="table">
     <div>
       <a-input-group class="d-flex" compact>
         <a-input
@@ -19,13 +19,13 @@
     </div>
 
     <SimplifyModel :width="1000" v-model:visible="visible">
-      <AdminTable
-        v-if="props.schema.externalSchema"
-        @data-source-update="onUpdate"
+      <AdminTableVue
         @selected-entity="onSelect"
         :select-mode="true"
-        :admin-table-options="adminTableOptions"
-      ></AdminTable>
+        :table="table"
+        @create="onCreate"
+        @modify="onModify"
+      ></AdminTableVue>
     </SimplifyModel>
   </div>
 </template>
@@ -33,11 +33,11 @@
 import { computed, onBeforeMount, ref } from "vue";
 import { Schema } from "../../../store/interface";
 import {
+  AdminTable,
   AdminTableOptions,
-  createDataSource,
   createDefaultColumnFactory,
 } from "../../../utils/admin";
-import AdminTable from "../AdminTable.vue";
+import AdminTableVue from "../AdminTable.vue";
 import SimplifyModel from "../SimplifyModel.vue";
 
 const object = Object;
@@ -51,42 +51,41 @@ const emits = defineEmits<{
   (e: "update:value", value: any): void;
 }>();
 
-const adminTableOptions = ref<AdminTableOptions<any>>();
 const visible = ref(false);
 const entity = ref();
+const table = ref<AdminTable<any>>();
 
 /** 显示的值 */
 const fieldDisplayValue = computed(() =>
-  entity.value
-    ? `${entity.value?.id} - ${
-        entity.value?.[
-          object.keys(entity.value).find((k) => k.includes("name")) || "id"
-        ]
-      }`
+  entity.value && table.value
+    ? table.value.schemas
+        .filter((s) => s.showInSearch)
+        .map((s) => `${s.label}=${entity.value[s.name]}`)
+        .join(", ")
     : ""
 );
 
 onBeforeMount(async () => {
   if (props.schema.externalSchema) {
-    const { records } = await createDataSource(
-      props.schema.externalSchema,
-      1,
-      10
-    );
-    adminTableOptions.value = {
+    table.value = new AdminTable({
+      schemas: [],
       columns: [],
-      dataSource: records,
-      hideColumns: ["version"],
+      dataSource: [],
+      columnsFilter: (col, schemas) =>
+        !!schemas.find((s) => s.name === col.dataIndex)?.showInSearch,
+      hideColumns: ["version", "deleted"],
       tableName: props.schema.externalSchema,
       columnFactory: {
         ...createDefaultColumnFactory(),
       },
       page: 1,
       size: 10,
-    };
+    });
+
+    await table.value.init();
 
     // 初始化显示数据
-    const _entity = records.find((d) => d.id === props.value);
+    const _entity = table.value.dataSource.find((d) => d.id === props.value);
     if (_entity) {
       entity.value = _entity;
     }
@@ -99,11 +98,11 @@ function onSelect(_entity: any) {
   entity.value = _entity;
 }
 
-function onUpdate(dataSource: any[]) {
-  const _entity = dataSource.find((d) => d.id === props.value);
-  if (_entity) {
-    entity.value = _entity;
-  }
+async function onCreate() {
+  await table.value?.update();
+}
+async function onModify() {
+  await table.value?.update();
 }
 </script>
 <style scoped lang="less"></style>

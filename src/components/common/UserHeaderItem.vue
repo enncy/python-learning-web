@@ -2,8 +2,10 @@
   <template v-if="adaption">
     <div class="ms-lg-4 me-lg-5 user-menus" @click="visible = true">
       <a class="ant-dropdown-link" @click.prevent>
-        <Icon type="icon-user" />
-        {{ store.user?.username || store.user?.nickname || "未登录" }}
+        <Avatar class="me-2" :size="32" :user="user"></Avatar>
+        <span>
+          {{ store.user?.username || store.user?.nickname || "未登录" }}
+        </span>
       </a>
     </div>
     <a-drawer
@@ -16,8 +18,10 @@
       placement="right"
     >
       <div class="p-4 pb-0">
-        <Icon type="icon-user" />
-        {{ store.user?.username || store.user?.nickname || "未登录" }}
+        <Avatar class="me-2" :size="32" :user="user"></Avatar>
+        <span>{{
+          store.user?.username || store.user?.nickname || "未登录"
+        }}</span>
         <a-divider></a-divider>
       </div>
       <UserMenus :menus="menus" :adaption="true"></UserMenus>
@@ -28,8 +32,10 @@
     <a-dropdown class="ms-lg-4 me-lg-5 me-3">
       <div class="ms-lg-4 me-lg-5 user-menus">
         <a class="ant-dropdown-link" @click.prevent>
-          <Icon type="icon-user" />
-          {{ store.user?.username || store.user?.nickname || "未登录" }}
+          <Avatar class="me-2" :size="32" :user="user"></Avatar>
+          <span>
+            {{ store.user?.username || store.user?.nickname || "未登录" }}</span
+          >
         </a>
       </div>
 
@@ -44,6 +50,9 @@ import { ref, watch } from "vue";
 import { store, config } from "../../store";
 import Icon from "./Icon.vue";
 import UserMenus from "./UserMenus.vue";
+import Avatar from "./Avatar.vue";
+
+const user = store.user;
 
 interface MyMenus {
   divider?: boolean;
@@ -71,16 +80,22 @@ function getMenus() {
     newMenus.push(...config.headers.filter((h) => h.adaption === true));
   }
 
-  if (store.user?.role === "visitor") {
-    newMenus.push(...config.userMenus["visitor"]);
-  } else {
-    if (store.user?.role === "admin") {
-      newMenus.push(...config.userMenus["admin"]);
-    }
-    newMenus.push(...config.userMenus["user"]);
-  }
+  const userRole = config.roles.find((r) => r.name === store.user?.role);
 
-  return newMenus;
+  if (userRole) {
+    const { visitor, ...menus } = config.userMenus;
+
+    // 根据级别获得相应的菜单
+    config.roles.forEach((role) => {
+      if (userRole.level >= role.level && menus[role.name]) {
+        newMenus.push(...menus[role.name]);
+      }
+    });
+
+    return newMenus;
+  } else {
+    return config.userMenus["visitor"];
+  }
 }
 
 const menus = ref<MyMenus[]>(getMenus());

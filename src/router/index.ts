@@ -1,6 +1,13 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
-import { store } from "../store";
-import { createSimplifyLoginWindow } from "../utils";
+import { message } from "ant-design-vue";
+import {
+  createRouter,
+  createWebHistory,
+  RouteLocationNormalized,
+  RouteRecordRaw,
+} from "vue-router";
+import { config, store } from "../store";
+import { Role } from "../store/interface";
+import { createSimplifyLoginWindow, getRole } from "../utils";
 
 export const routes: RouteRecordRaw[] = [
   {
@@ -11,9 +18,11 @@ export const routes: RouteRecordRaw[] = [
   {
     path: "/admin",
     name: "admin",
+    redirect: "/admin/analyze",
     component: () => import("../page/admin/index.vue"),
     meta: {
-      name: "管理系统",
+      title: "管理系统",
+      role: "root",
     },
     children: [
       {
@@ -41,14 +50,6 @@ export const routes: RouteRecordRaw[] = [
             name: "admin-user-list",
             meta: {
               title: "用户列表",
-            },
-          },
-          {
-            path: "new",
-            component: () => import("../page/admin/user/new.vue"),
-            name: "admin-user-new",
-            meta: {
-              title: "新建用户",
             },
           },
         ],
@@ -84,7 +85,7 @@ export const routes: RouteRecordRaw[] = [
             name: "admin-bbs-post-list",
             component: () => import("../page/admin/bbs/post.vue"),
             meta: {
-              title: "文章管理",
+              title: "帖子管理",
             },
           },
           {
@@ -125,19 +126,11 @@ export const routes: RouteRecordRaw[] = [
         },
         children: [
           {
-            path: "/learning/list",
+            path: "list",
             name: "admin-learning-list",
             component: () => import("../page/admin/learning/list.vue"),
             meta: {
-              title: "教程管理",
-            },
-          },
-          {
-            path: "/learning/new",
-            name: "admin-learning-new",
-            component: () => import("../page/admin/learning/new.vue"),
-            meta: {
-              title: "新建教程",
+              title: "教程列表",
             },
           },
         ],
@@ -152,14 +145,6 @@ export const routes: RouteRecordRaw[] = [
           open: true,
         },
         children: [
-          {
-            path: "setting",
-            name: "admin-compiler-setting",
-            component: () => import("../page/admin/compiler/setting.vue"),
-            meta: {
-              title: "编译设置",
-            },
-          },
           {
             path: "codes",
             name: "admin-compiler-codes",
@@ -179,13 +164,24 @@ export const routes: RouteRecordRaw[] = [
         ],
       },
       {
-        path: "system/setting",
-        name: "admin-system-setting",
-        component: () => import("../page/admin/system.vue"),
+        path: "system",
+        name: "admin-system",
+        component: () => import("../page/admin/system/index.vue"),
         meta: {
           icon: "icon-desktop",
-          title: "系统设置",
+          title: "系统管理",
+          open: true,
         },
+        children: [
+          {
+            path: "config",
+            name: "admin-system-config",
+            component: () => import("../page/admin/system/config.vue"),
+            meta: {
+              title: "配置列表",
+            },
+          },
+        ],
       },
     ],
   },
@@ -212,10 +208,24 @@ export const routes: RouteRecordRaw[] = [
         },
       },
       {
-        path: "post",
+        path: "post/:postId",
         component: () => import("../page/bbs/post.vue"),
         meta: {
-          name: "文章",
+          name: "帖子",
+        },
+      },
+      {
+        path: "new/:categoryId",
+        component: () => import("../page/bbs/publish.vue"),
+        meta: {
+          name: "发布帖子",
+        },
+      },
+      {
+        path: "modify/:postId",
+        component: () => import("../page/bbs/publish.vue"),
+        meta: {
+          name: "修改帖子",
         },
       },
     ],
@@ -271,10 +281,7 @@ export const routes: RouteRecordRaw[] = [
         path: "information",
         component: () => import("../page/user/information.vue"),
       },
-      {
-        path: "notify",
-        component: () => import("../page/user/notify.vue"),
-      },
+
       {
         path: "message",
         component: () => import("../page/user/message.vue"),
@@ -309,15 +316,17 @@ export const router = createRouter({
 });
 
 router.beforeEach((to, from) => {
+  const role = getMatchedRole(to);
   // 权限判断
-  if (to.meta?.role && to.meta.role !== "visitor") {
+  if (role) {
     if (store.user) {
-      // 如果是管理员可通过
-      if (store.user.role === "admin") {
+      const pass = getRole(store.user.role).level >= getRole(role).level;
+      if (!pass) {
+        message.error("权限不足！");
+        router.replace("/404");
+      } else {
         return true;
       }
-
-      return to.meta.role === store.user.role;
     } else {
       // 需要登录
       createSimplifyLoginWindow();
@@ -326,3 +335,8 @@ router.beforeEach((to, from) => {
   }
   return true;
 });
+
+/** 获取权限  */
+function getMatchedRole(to: RouteLocationNormalized): Role {
+  return to.matched.find((r) => r.meta.role)?.meta.role as Role;
+}

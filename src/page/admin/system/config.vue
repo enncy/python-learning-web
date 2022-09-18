@@ -8,9 +8,11 @@
   </Card>
 </template>
 <script setup lang="ts">
-import { AdminTable, createDefaultColumnFactory } from "../../../utils/admin";
+import { ref, onBeforeMount } from "vue";
+
 import AdminTableVue from "../../../components/common/AdminTable.vue";
-import { onBeforeMount, ref } from "vue";
+
+import { AdminTable, createDefaultColumnFactory } from "../../../utils/admin";
 import Card from "../../../components/common/Card.vue";
 
 const table = ref(
@@ -18,12 +20,9 @@ const table = ref(
     schemas: [],
     columns: [],
     dataSource: [],
-    tableName: "compile_record",
+    tableName: "config",
     hideColumns: ["version", "deleted", "id"],
     columnFactory: {
-      content: {
-        ellipsis: true,
-      },
       ...createDefaultColumnFactory(),
     },
     page: 1,

@@ -1,29 +1,47 @@
 <template>
-  <AdminTable :admin-table-options="adminTableOptions"></AdminTable>
+  <Card>
+    <AdminTableVue
+      v-model:table="table"
+      @create="onCreate"
+      @modify="onModify"
+    ></AdminTableVue>
+  </Card>
 </template>
 <script setup lang="ts">
-import { useRoute } from "vue-router";
+import { AdminTable, createDefaultColumnFactory } from "../../../utils/admin";
+import AdminTableVue from "../../../components/common/AdminTable.vue";
 
-import { BBSBoard } from "../../../store/interface";
-import {
-  AdminTableOptions,
-  createDefaultColumnFactory,
-} from "../../../utils/admin";
-import AdminTable from "../../../components/common/AdminTable.vue";
-import { AdminApi } from "../../../api";
-import { h, ref } from "vue";
+import { onBeforeMount, ref } from "vue";
+import Card from "../../../components/common/Card.vue";
 
-const adminTableOptions: AdminTableOptions<BBSBoard> = {
-  columns: [],
-  dataSource: [],
-  tableName: "bbs_category",
-  hideColumns: ["boardId", "version", "deleted", "id"],
-  extraColumns: [],
-  columnFactory: {
-    ...createDefaultColumnFactory(),
-  },
-  page: 1,
-  size: 10,
-};
+const table = ref(
+  new AdminTable({
+    schemas: [],
+    columns: [],
+    dataSource: [],
+    tableName: "bbs_category",
+    hideColumns: ["boardId", "version", "deleted", "id"],
+    extraColumns: [],
+    columnFactory: {
+      description: {
+        ellipsis: true,
+      },
+      ...createDefaultColumnFactory(),
+    },
+    page: 1,
+    size: 10,
+  })
+);
+
+onBeforeMount(async () => {
+  await table.value.init();
+});
+
+async function onCreate() {
+  await table.value.update();
+}
+async function onModify() {
+  await table.value.update();
+}
 </script>
 <style scoped lang="less"></style>

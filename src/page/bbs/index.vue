@@ -9,6 +9,5 @@
 </template>
 <script setup lang="ts">
 import CommonLayout from "../../layout/CommonLayout.vue";
-import Icon from "../../components/common/Icon.vue";
 </script>
 <style scoped lang="less"></style>

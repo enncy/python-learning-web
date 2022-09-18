@@ -24,7 +24,7 @@ export async function createDataSource(
   page: number,
   size: number
 ) {
-  return new Promise<{ records: any[] }>((resolve, reject) => {
+  return new Promise<any[]>((resolve, reject) => {
     AdminApi.data({ tableName, page, size }).then(({ data: { data } }) => {
       resolve(data);
     });
@@ -36,7 +36,7 @@ export interface AdminTableOptions<T> {
   dataSource: T[];
   page: number;
   size: number;
-
+  schemas: Schema[];
   // 额外的列
   extraColumns?: TableColumnProps[];
   columnFactory: Record<string, TableColumnProps>;
@@ -44,6 +44,8 @@ export interface AdminTableOptions<T> {
   columns: TableColumnProps[];
   // 隐藏列
   hideColumns?: string[];
+  columnsFilter?: (col: TableColumnProps, schemas: Schema[]) => boolean;
+  loading?: boolean;
 }
 
 export class AdminTable<T> implements AdminTableOptions<T> {
@@ -56,23 +58,35 @@ export class AdminTable<T> implements AdminTableOptions<T> {
   dataSource: T[] = [];
   page: number;
   size: number;
-  constructor(options: AdminTableOptions<T>) {
-    console.log("options", options);
+  columnsFilter?: (col: TableColumnProps, schemas: Schema[]) => boolean;
+  // 是否正在加载
+  loading: boolean = false;
 
-    const { tableName, columnFactory, hideColumns, extraColumns, page, size } =
-      options;
+  constructor(options: AdminTableOptions<T>) {
+    const {
+      tableName,
+      columnFactory,
+      hideColumns,
+      extraColumns,
+      page,
+      size,
+      columnsFilter,
+    } = options;
     this.tableName = tableName;
     this.extraColumns = extraColumns || [];
     this.columnFactory = columnFactory;
     this.hideColumns = hideColumns || [];
     this.page = page;
     this.size = size;
+    this.columnsFilter = columnsFilter;
   }
 
   /**
    * 初始化
    */
-  async initColumns() {
+  async init() {
+    this.loading = true;
+
     this.schemas = await this.getSchema();
 
     this.columns = this.schemas
@@ -89,7 +103,16 @@ export class AdminTable<T> implements AdminTableOptions<T> {
         }
       })
       .filter((c) => !!c) as any[];
+    this.columns = this.columns.filter((c) =>
+      this.columnsFilter ? this.columnsFilter(c, this.schemas) : true
+    );
     this.columns.push(...this.extraColumns);
+
+    if (this.dataSource.length === 0) {
+      await this.update();
+    }
+
+    this.loading = false;
   }
 
   private async getSchema() {
@@ -97,22 +120,18 @@ export class AdminTable<T> implements AdminTableOptions<T> {
   }
 
   async update() {
-    const { records } = await createDataSource(
+    this.loading = true;
+    this.dataSource = await createDataSource(
       this.tableName,
       this.page,
       this.size
     );
-    this.dataSource = records;
+
+    this.loading = false;
   }
 }
 
 export function createDefaultColumnFactory(): any {
-  const timeColumn = {
-    customRender: (opts: any) => new Date(opts.value).toLocaleString("zh-CN"),
-    defaultSortOrder: "descend",
-    sorter: (a: any, b: any) => a.createTime - b.createTime,
-    responsive: ["lg"],
-  };
   return {
     id: {
       // 响应式
@@ -124,7 +143,17 @@ export function createDefaultColumnFactory(): any {
     version: {
       responsive: ["lg"],
     },
-    createTime: timeColumn,
-    updateTime: timeColumn,
+    createTime: {
+      customRender: (opts: any) => new Date(opts.value).toLocaleString("zh-CN"),
+      defaultSortOrder: "descend",
+      sorter: (a: any, b: any) => a.createTime - b.createTime,
+      responsive: ["lg"],
+    },
+    updateTime: {
+      customRender: (opts: any) => new Date(opts.value).toLocaleString("zh-CN"),
+      defaultSortOrder: "descend",
+      sorter: (a: any, b: any) => a.updateTime - b.updateTime,
+      responsive: ["lg"],
+    },
   };
 }

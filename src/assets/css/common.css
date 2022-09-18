@@ -1,3 +1,5 @@
+@import "bootstrap-utilities.css";
+@import "bootstrap-grid.css";
 html,
 body,
 #app,
@@ -12,6 +14,19 @@ body,
   --header-height: 48px;
   --footer-height: 64px;
 }
+@media screen and (max-width: 1000px) {
+  :root .user-menus-wrapper {
+    width: 100%;
+  }
+}
+@media (min-width: 992px) {
+  :root .page {
+    width: 1000px;
+  }
+  :root .page-lg {
+    width: 1400px;
+  }
+}
 pre.code {
   background-color: ghostwhite;
   border: 1px solid #e2e2e2;
@@ -20,9 +35,20 @@ pre.code {
   max-height: 100vh;
   overflow: auto;
 }
- 
-@media screen and (max-width: 992px) {
-  .user-menus-wrapper {
-    width: 100% !important;
-  }
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.1s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+.page,
+.page-lg {
+  width: 100%;
+  margin: 0 auto;
+  margin-top: 24px;
+}
+.text-secondary.sm {
+  font-size: 12px;
 }

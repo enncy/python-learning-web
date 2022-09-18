@@ -1,38 +1,50 @@
 <template>
-  <div>
-    <AdminTable
-      entity-name="用户"
-      @data-source-update="update"
-      :admin-table-options="adminTableOptions"
-    ></AdminTable>
-  </div>
+  <Card>
+    <AdminTableVue
+      v-model:table="table"
+      @create="onCreate"
+      @modify="onModify"
+    ></AdminTableVue>
+  </Card>
 </template>
 <script setup lang="ts">
-import {
-  AdminTableOptions,
-  createDefaultColumnFactory,
-} from "../../../utils/admin";
-import AdminTable from "../../../components/common/AdminTable.vue";
-import { User } from "../../../store/interface";
+import { AdminTable, createDefaultColumnFactory } from "../../../utils/admin";
+import AdminTableVue from "../../../components/common/AdminTable.vue";
 
-const adminTableOptions: AdminTableOptions<User> = {
-  columns: [],
-  dataSource: [],
-  tableName: "user",
-  hideColumns: ["version", "deleted", "id"],
-  columnFactory: {
-    role: {
-      customRender: ({ value }) =>
-        value === "admin" ? "管理员" : value === "user" ? "用户" : "游客",
+import { onBeforeMount, ref } from "vue";
+import Card from "../../../components/common/Card.vue";
+import { getRole } from "../../../utils";
+
+const table = ref(
+  new AdminTable({
+    schemas: [],
+    columns: [],
+    dataSource: [],
+    tableName: "user",
+    hideColumns: ["version", "deleted", "id"],
+    columnFactory: {
+      profile: {
+        ellipsis: true,
+      },
+      role: {
+        customRender: ({ value }) => getRole(value).desc,
+      },
+      ...createDefaultColumnFactory(),
     },
-    ...createDefaultColumnFactory(),
-  },
-  page: 1,
-  size: 10,
-};
+    page: 1,
+    size: 10,
+  })
+);
 
-function update(users: User[]) {
-  console.log("update", users);
+onBeforeMount(async () => {
+  await table.value.init();
+});
+
+async function onCreate() {
+  await table.value.update();
+}
+async function onModify() {
+  await table.value.update();
 }
 </script>
 <style scoped lang="less"></style>

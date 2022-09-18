@@ -14,9 +14,24 @@
       </Menus>
     </a-layout-sider>
     <a-layout>
-      <a-layout-header style="background: #fff; padding: 0" />
+      <a-layout-header style="background: #fff; padding: 0">
+        <div class="float-end pe-5 ps-5">
+          <UserHeaderItem></UserHeaderItem>
+        </div>
+      </a-layout-header>
       <a-layout-content class="m-0 ms-lg-4 me-lg-4">
         <div class="admin-container mt-3 p-2 p-lg-3">
+          <div class="mb-3">
+            <a-breadcrumb separator=">">
+              <template
+                v-for="item of router.currentRoute.value.matched"
+                :key="item.name"
+              >
+                <a-breadcrumb-item> {{ item.meta.title }} </a-breadcrumb-item>
+              </template>
+            </a-breadcrumb>
+          </div>
+
           <router-view v-slot="{ Component }">
             <Transition name="fade" mode="out-in">
               <component :is="Component" />
@@ -33,8 +48,12 @@
 <script setup lang="ts">
 import { MenuItemProps } from "ant-design-vue";
 import { ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import Menus from "../../components/common/Menus.vue";
 import { routes } from "../../router";
+import UserHeaderItem from "../../components/common/UserHeaderItem.vue";
+
+const router = useRouter();
 
 const collapsed = ref<boolean>(false);
 </script>
@@ -61,7 +80,6 @@ const collapsed = ref<boolean>(false);
 }
 
 .admin-container {
-  background: #fff;
   min-height: 360px;
 }
 </style>

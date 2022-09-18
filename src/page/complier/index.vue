@@ -1,6 +1,6 @@
 <template>
   <CommonLayout>
-    <div class="container mt-3">
+    <div class="page">
       <!-- 标签页 -->
       <div>
         <template v-for="code in codes" :key="code.filename">
@@ -137,9 +137,18 @@ import CompilesList from "../../components/common/compiler/CompilesList.vue";
 import NewFile from "../../components/common/compiler/NewFile.vue";
 
 // 代码列表
-const codes = ref(store.compiler.codes);
+const codes = ref(
+  store.compiler.codes.length
+    ? store.compiler.codes
+    : [config.compiler.defaultCode]
+);
+
 // 编译列表
-const compiles = ref(store.compiler.compiles);
+const compiles = ref(
+  store.compiler.compiles.length
+    ? store.compiler.compiles
+    : [config.compiler.defaultCompile]
+);
 
 // 当前代码索引
 const currentCodeIndex = computed(() => {
@@ -256,11 +265,14 @@ onMounted(() => {
   nextTick(() => {
     if (store.user) {
       CompilerApi.listCodes().then(({ data: { data } }) => {
-        codes.value = data;
+        codes.value = data.length ? data : [config.compiler.defaultCode];
+
         CompilerApi.listCompiles({
           code_id: codes.value[currentCodeIndex.value].id.toString(),
         }).then(({ data: { data } }) => {
-          compiles.value = data;
+          compiles.value = data.length
+            ? data
+            : [config.compiler.defaultCompile];
         });
       });
     }

@@ -1,17 +1,40 @@
 import { defineAsyncComponent, reactive, shallowRef } from "vue";
 import monaco from "monaco-editor";
-import { Code, Compile, User } from "./interface";
+import { Code, Compile, Role, User } from "./interface";
 
 export const config = reactive({
-  version: 18,
+  version: 22,
   name: "Python学习网",
   copyright: "Copyright © 2022 Python学习网",
   description:
     "Python学习网 —— 拥有在线学习系统，在线代码测评系统，以及论坛系统，可以自学Python，对各种例子进行自测，与各大网友分享技术，共同建造和谐的开源社区",
+  baseURL: "http://localhost:8080/api/v1",
   // 自适应宽度
   adaption: {
     breaking_point: 1000,
   },
+  roles: [
+    {
+      name: "root",
+      desc: "管理员",
+      level: 100,
+    },
+    {
+      name: "admin",
+      desc: "版主",
+      level: 2,
+    },
+    {
+      name: "user",
+      desc: "用户",
+      level: 1,
+    },
+    {
+      name: "visitor",
+      desc: "游客",
+      level: 0,
+    },
+  ] as { name: Role; desc: string; level: number }[],
   headers: [
     {
       component: shallowRef(
@@ -51,6 +74,7 @@ export const config = reactive({
       ),
       class: "d-none d-lg-block",
     },
+
     {
       component: shallowRef(
         defineAsyncComponent(
@@ -58,20 +82,14 @@ export const config = reactive({
         )
       ),
       class:
-        "d-lg-block justify-content-end justify-content-lg-center d-flex user-menus-wrapper",
+        "d-flex justify-content-end justify-content-lg-center user-menus-wrapper",
     },
+
     {
       path: "/user/message",
       name: "消息",
       class: "d-none d-lg-block",
       icon: "icon-comment",
-      adaption: true,
-    },
-    {
-      path: "/user/notify",
-      name: "通知",
-      icon: "icon-sound",
-      class: "d-none d-lg-block",
       adaption: true,
     },
   ],
@@ -116,7 +134,8 @@ export const config = reactive({
         icon: "icon-adduser",
       },
     ],
-    admin: [
+    admin: [],
+    root: [
       {
         path: "/admin",
         name: "后台管理",
@@ -205,6 +224,7 @@ export const config = reactive({
         "# 编辑你的 python 代码，并点击右上角运行按钮即可运行。\nprint('hello world')",
     },
     defaultCompile: {
+      id: Date.now().toString(),
       codeId: Date.now().toString(),
       errorMessage: "",
       codeContent: "",

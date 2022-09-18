@@ -1,3 +1,5 @@
+export type Role = "root" | "admin" | "user" | "visitor";
+
 /**
  * 前后端字段关系映射
  */
@@ -14,6 +16,7 @@ export interface Schema {
   step?: number;
   required?: boolean;
   disabled?: boolean;
+  showInSearch?: boolean;
 }
 
 export interface Compile {
@@ -39,7 +42,9 @@ export interface User {
   email: string;
   profile?: string;
   slug?: string;
-  role: "visitor" | "user" | "admin";
+  messageCount: number;
+  credit: number;
+  role: Role;
   nickname?: string;
   createTime: number;
   updateTime: number;
@@ -56,6 +61,9 @@ export interface BBSCategory {
 
 export interface BBSPost {
   id: string;
+  userId: string;
+  username: string;
+  nickname: string;
   borderId: string;
   categoryId: string;
   title: string;
@@ -65,6 +73,7 @@ export interface BBSPost {
   published: boolean;
   pinned: boolean;
   banned: boolean;
+  globalPinned: boolean;
   createTime: number;
   updateTime: number;
 }
@@ -92,23 +101,33 @@ export interface BBSComment {
   userId: string;
   content: string;
   likeNum: number;
+  level: number;
   userNickName: string;
   createTime: number;
   updateTime: number;
 }
 
+export interface BBSCommentModel {
+  post: BBSPost;
+  parent: BBSCommentModel;
+  comment: BBSComment;
+  user: User;
+}
+
 export interface BBSPostModel {
   board: BBSBoard;
   category: BBSCategory;
+  user: User;
   post: BBSPost;
   tags: BBSTag[];
+  commentPage: Page<BBSCommentModel>;
 }
 
 export interface BBSCategoryModel {
   board: BBSBoard;
   category: BBSCategory;
   admins: User[];
-  posts: Page<BBSPost>;
+  postPage: Page<BBSPostModel>;
 }
 
 export interface BBSBoardModel {

@@ -4,8 +4,6 @@ import App from "./App.vue";
 import { router } from "./router";
 import "ant-design-vue/dist/antd.css";
 import "./assets/css/common.css";
-import "./assets/css/bootstrap-utilities.css";
-import "./assets/css/bootstrap-grid.css";
 import { createFromIconfontCN } from "@ant-design/icons-vue";
 
 const app = createApp(App);

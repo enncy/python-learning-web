@@ -1,16 +1,21 @@
 <template>
-  <template v-if="loading">
-    <div>
+  <Transition name="fade" mode="out-in">
+    <a-skeleton active v-if="table.loading"></a-skeleton>
+
+    <div v-else>
       <div class="mb-3 d-flex">
         <div
           class="d-flex"
-          v-if="table.schemas.filter((s) => s.searchable).length"
+          v-if="
+            hideSearch !== true &&
+            table.schemas.filter((s) => s.searchable).length
+          "
         >
           <template v-for="schema of table.schemas.filter((s) => s.searchable)">
             <a-input-search
               class="schema-search"
               style="width: 200px"
-              :placeholder="`输入${schema.label}搜索`"
+              :placeholder="`${schema.label}`"
               enter-button
               @search="(v:any)=>onSearch(v,schema)"
             />
@@ -29,10 +34,20 @@
       </div>
 
       <a-table
-        :scroll="{ x: 1200 }"
+        :scroll="{ x: true }"
         :pagination="{
           pageSize: 10,
         }"
+        :custom-row="
+          () => ({
+            class: 'text-nowrap',
+          })
+        "
+        :custom-header-row="
+          () => ({
+            class: 'text-nowrap',
+          })
+        "
         :locale="{
           emptyText: '暂无数据',
         }"
@@ -48,16 +63,17 @@
       >
         <template #bodyCell="{ text, column, record, index }">
           <template v-if="column.dataIndex === 'actions'">
-            <div>
+            <a-space>
               <a-button
-                type="link"
+                type="primary"
                 size="small"
+                ghost
                 @click="(currentEntity = record), (state.model.details = true)"
               >
                 详情
               </a-button>
               <a-button
-                type="link"
+                type="primary"
                 size="small"
                 @click="(currentEntity = record), (state.model.modify = true)"
               >
@@ -69,9 +85,9 @@
                 cancel-text="取消"
                 @confirm="removeEntity(index)"
               >
-                <a-button type="link" danger size="small"> 删除 </a-button>
+                <a-button type="primary" danger size="small"> 删除 </a-button>
               </a-popconfirm>
-            </div>
+            </a-space>
           </template>
           <template v-else-if="text === undefined"> --- </template>
         </template>
@@ -90,7 +106,7 @@
       </template>
 
       <AdminEntityModel
-        :width="600"
+        :width="1000"
         :schemas="table.schemas"
         :title="'添加' + entityName"
         v-model:visible="state.model.create"
@@ -103,7 +119,7 @@
       </AdminEntityModel>
 
       <AdminEntityModel
-        :width="600"
+        :width="1000"
         :title="'修改' + entityName"
         :schemas="table.schemas"
         v-model:visible="state.model.modify"
@@ -112,10 +128,11 @@
         <a-button class="me-3" @click="state.model.modify = false">
           取消
         </a-button>
-        <a-button type="primary" @click="updateEntity">修改</a-button>
+        <a-button type="primary" @click="modifyEntity">修改</a-button>
       </AdminEntityModel>
 
       <SimplifyModel
+        :width="1000"
         v-model:visible="state.model.details"
         :title="entityName + '详情'"
       >
@@ -126,37 +143,33 @@
                 {{ schema.label }}
               </td>
               <td>
-                {{
-                  table.columns
+                <component
+                  :is="resolveCustomRender(table.columns
                     .find((c) => c.dataIndex === schema.name)
                     ?.customRender?.({
                       value: (currentEntity as any)[schema.name],
                     } as any) ||
                   (currentEntity as any)[schema.name] ||
-                  "无"
-                }}
+                  '无')"
+                ></component>
               </td>
             </tr>
           </template>
         </table>
       </SimplifyModel>
     </div>
-  </template>
-
-  <template v-else>
-    <a-skeleton active></a-skeleton>
-  </template>
+  </Transition>
 </template>
 <script setup lang="ts">
 import { message, TableColumnProps, TableProps } from "ant-design-vue";
 import {
-  onMounted,
   reactive,
   ref,
   toRefs,
-  watch,
   computed,
   onBeforeMount,
+  isVNode,
+  h,
 } from "vue";
 import { AdminTable, AdminTableOptions } from "../../utils/admin";
 import Icon from "./Icon.vue";
@@ -167,15 +180,19 @@ import { Schema } from "../../store/interface";
 import AdminEntityModel from "./AdminEntityModel.vue";
 
 const emits = defineEmits<{
-  (e: "dataSourceUpdate", dataSource: any[]): void;
+  (e: "update:table", table: AdminTable<any>): void;
+  (e: "create", entity: any): void;
+  (e: "modify", entity: any): void;
+  (e: "remove", entity: any): void;
   (e: "selectedEntity", entity: any): void;
 }>();
 const props = withDefaults(
   defineProps<{
+    hideSearch?: boolean;
     /** 选择模式 */
     selectMode?: boolean;
     entityName?: string;
-    adminTableOptions: AdminTableOptions<any>;
+    table: AdminTableOptions<any>;
   }>(),
   {
     entityName: "数据",
@@ -183,12 +200,8 @@ const props = withDefaults(
   }
 );
 
-// 数据是否加载中
-const loading = ref(true);
-// 实体名
-const { entityName } = toRefs(props);
-// 表格对象
-const table = reactive(new AdminTable(props.adminTableOptions));
+const { selectMode, entityName, table } = toRefs(props);
+
 // 搜索到的临时数据
 const searchedDataSource = ref<any[]>([]);
 // 添加实体的表单数据
@@ -204,11 +217,12 @@ const extraColumns: TableColumnProps[] = [
     dataIndex: "actions",
     title: "操作",
     fixed: "right",
+    width: 200,
   },
 ];
 
 const cols = computed(() =>
-  table.columns
+  table.value.columns
     .concat(props.selectMode === true ? [] : extraColumns)
     .map((c) => ({ key: c.dataIndex, ...c }))
 );
@@ -233,24 +247,9 @@ const rowSelection: TableProps["rowSelection"] = {
   },
 };
 
-watch(
-  () => table.dataSource,
-  (data) => {
-    emits("dataSourceUpdate", data);
-  }
-);
 onBeforeMount(async () => {
-  await table.initColumns();
-
-  if (table.dataSource.length === 0) {
-    await table.update();
-
-    // 触发一次数据更新
-    emits("dataSourceUpdate", table.dataSource);
-  }
-
   // 生成表单数据
-  table.schemas.reduce((prev, curr) => {
+  table.value.schemas.reduce((prev, curr) => {
     prev[curr.name as any] = undefined;
     return prev;
   }, formData as any);
@@ -258,41 +257,41 @@ onBeforeMount(async () => {
 
 function onSearch(value: string, schema: Schema) {
   const wrapper: any = {
-    tableName: table.tableName,
+    tableName: table.value.tableName,
+    externalSchema: schema.externalSchema,
+    externalValue: value,
     page: 1,
     size: 10,
   };
   wrapper[schema.name] = value;
   AdminApi.search(wrapper).then(({ data: { data } }) => {
-    searchedDataSource.value = data.records;
+    searchedDataSource.value = data;
   });
 }
 
 function removeEntity(index: number) {
   AdminApi.remove({
-    tableName: table.tableName,
-    ...(table.dataSource[index] as any),
+    tableName: table.value.tableName,
+    ...(table.value.dataSource[index] as any),
   }).then(({ data: { data, msg } }) => {
     if (data) {
       message.success(msg);
-      table.dataSource.splice(index, 1);
+      table.value.dataSource.splice(index, 1);
     } else {
       message.error(msg);
     }
   });
 }
 
-function updateEntity() {
+function modifyEntity() {
   AdminApi.update({
-    tableName: table.tableName,
+    tableName: table.value.tableName,
     ...(currentEntity.value as any),
-  }).then(({ data: { data, msg } }) => {
+  }).then(async ({ data: { data, msg } }) => {
     if (data) {
+      emits("modify", currentEntity.value);
       message.success(msg);
-      const index = table.dataSource.findIndex(
-        (d) => d.id === currentEntity.value.id
-      );
-      table.dataSource[index] = currentEntity.value;
+      state.model.modify = false;
     } else {
       message.error(msg);
     }
@@ -301,16 +300,25 @@ function updateEntity() {
 
 function createEntity() {
   AdminApi.create({
-    tableName: table.tableName,
+    tableName: table.value.tableName,
     ...formData,
-  }).then(({ data: { data, msg } }) => {
+  }).then(async ({ data: { data, msg } }) => {
     if (data) {
+      emits("create", formData);
       message.success(msg);
       state.model.create = false;
     } else {
       message.error(msg);
     }
   });
+}
+
+function resolveCustomRender(node: any) {
+  if (isVNode(node)) {
+    return node;
+  } else {
+    return h("span", node);
+  }
 }
 </script>
 <style scoped lang="less">

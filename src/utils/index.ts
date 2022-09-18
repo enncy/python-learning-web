@@ -1,4 +1,5 @@
-import { store } from "../store";
+import { config, store } from "../store";
+import { Role } from "../store/interface";
 
 /**
  * 创建弹出式登录框
@@ -55,4 +56,16 @@ export function centeredPopup(
     (resizable ? "yes" : "no");
 
   return window.open(url, winName, settings);
+}
+
+export function max(str: string, len: number) {
+  return str.length > len ? `${str.slice(0, len)}...` : str;
+}
+
+/** 获取权限等级 */
+export function getRole(role: Role) {
+  return (
+    config.roles.find((r) => r.name === role) ||
+    config.roles.find((r) => r.name === "visitor")!
+  );
 }
