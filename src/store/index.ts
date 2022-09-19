@@ -43,7 +43,7 @@ export const config = reactive({
     },
     {
       path: "/learning",
-      name: "教程",
+      name: "学习",
       icon: "icon-book",
       //  自适应
       class: "d-none d-lg-block",
@@ -109,11 +109,6 @@ export const config = reactive({
         path: "/user/bbs",
         name: "我的论坛",
         icon: "icon-comment",
-      },
-      {
-        path: "/user/learning",
-        name: "我的学习",
-        icon: "icon-book",
       },
 
       {

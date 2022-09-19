@@ -1,3 +1,4 @@
+import { UserModel } from "./../store/interface";
 import { request } from "../request";
 import { BBSCommentModel, BBSPostModel, Page, User } from "../store/interface";
 import { ApiResponse } from "./interface";
@@ -12,8 +13,16 @@ export const UserApi = {
       parseEntity(user)
     );
   },
-  info(wrapper: { username?: string; email?: string; slug?: string }) {
-    return request.get<ApiResponse<User>>("/user/info", { params: wrapper });
+  model(wrapper: {
+    username?: string;
+    email?: string;
+    slug?: string;
+    page: number;
+    size: number;
+  }) {
+    return request.get<ApiResponse<UserModel>>("/user/model", {
+      params: wrapper,
+    });
   },
   loginRecord(wrapper: { id: string }) {
     return request.get<ApiResponse<any[]>>("/user/login/record", {

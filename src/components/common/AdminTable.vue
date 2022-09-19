@@ -35,9 +35,8 @@
 
       <a-table
         :scroll="{ x: true }"
-        :pagination="{
-          pageSize: 10,
-        }"
+        :pagination="pagination"
+        @change="onChange"
         :custom-row="
           () => ({
             class: 'text-nowrap',
@@ -94,7 +93,7 @@
       </a-table>
 
       <template v-if="selectMode">
-        <div class="d-flex justify-content-end">
+        <div class="d-flex justify-content-end mt-3">
           <a-button
             type="primary"
             :disabled="selectedEntity === undefined"
@@ -148,6 +147,7 @@
                     .find((c) => c.dataIndex === schema.name)
                     ?.customRender?.({
                       value: (currentEntity as any)[schema.name],
+                      record: currentEntity
                     } as any) ||
                   (currentEntity as any)[schema.name] ||
                   '无')"
@@ -170,6 +170,7 @@ import {
   onBeforeMount,
   isVNode,
   h,
+  watch,
 } from "vue";
 import { AdminTable, AdminTableOptions } from "../../utils/admin";
 import Icon from "./Icon.vue";
@@ -185,6 +186,7 @@ const emits = defineEmits<{
   (e: "modify", entity: any): void;
   (e: "remove", entity: any): void;
   (e: "selectedEntity", entity: any): void;
+  (e: "paginationChange", pagination: any): void;
 }>();
 const props = withDefaults(
   defineProps<{
@@ -234,6 +236,31 @@ const state = reactive({
     modify: false,
   },
 });
+
+const pagination = reactive({
+  current: table.value.page,
+  pageSize: table.value.size,
+  total: 10,
+  position: ["bottomCenter"],
+  pageSizeOptions: ["10", "20", "50", "100"],
+  showSizeChanger: true,
+  showTotal: (total: number, range: any[]) =>
+    `显示 ${range[0]}-${range[1]} , 总共 ${total} 个数据`,
+});
+
+watch(
+  () => table.value.total,
+  () => {
+    pagination.total = table.value.total || pagination.total;
+  }
+);
+
+watch(
+  () => [pagination.current, pagination.pageSize],
+  () => {
+    emits("paginationChange", pagination);
+  }
+);
 
 const rowSelection: TableProps["rowSelection"] = {
   hideSelectAll: true,
@@ -319,6 +346,10 @@ function resolveCustomRender(node: any) {
   } else {
     return h("span", node);
   }
+}
+
+function onChange(pag: any) {
+  Object.assign(pagination, pag);
 }
 </script>
 <style scoped lang="less">

@@ -1,3 +1,5 @@
+export { LearningApi } from "./learning";
+
 export { UploadApi } from "./upload";
 export { UserApi } from "./user";
 export { CompilerApi } from "./compile";

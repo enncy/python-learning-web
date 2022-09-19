@@ -1,5 +1,5 @@
 import { request } from "../request";
-import { Schema } from "../store/interface";
+import { Page, Schema } from "../store/interface";
 import { ApiResponse } from "./interface";
 import { parseEntity } from "./utils";
 
@@ -10,7 +10,7 @@ export const AdminApi = {
     });
   },
   data(wrapper: { tableName: string; page: number; size: number }) {
-    return request.get<ApiResponse<any[]>>("/admin/get-data", {
+    return request.get<ApiResponse<Page<any>>>("/admin/get-data", {
       params: wrapper,
     });
   },

@@ -9,21 +9,38 @@
   </Card>
 </template>
 <script setup lang="ts">
-import { ref, onBeforeMount } from "vue";
-
+import { AdminTable, createDefaultColumnFactory } from "../../../utils/admin";
 import AdminTableVue from "../../../components/common/AdminTable.vue";
 
-import { AdminTable, createDefaultColumnFactory } from "../../../utils/admin";
+import { h, onBeforeMount, ref } from "vue";
 import Card from "../../../components/common/Card.vue";
+import { max } from "../../../utils";
 
 const table = ref(
   new AdminTable({
     schemas: [],
     columns: [],
     dataSource: [],
-    tableName: "config",
+    tableName: "learning_article",
     hideColumns: ["version", "deleted", "id"],
     columnFactory: {
+      content: {
+        customRender: ({ value, record }) =>
+          h("span", [
+            max(value, 20),
+            h(
+              "a",
+              {
+                href: "/learning/article/" + (record as any).id,
+                target: "_blank",
+              },
+              "详情"
+            ),
+          ]),
+      },
+      title: {
+        customRender: ({ value }) => max(value, 20),
+      },
       ...createDefaultColumnFactory(),
     },
     page: 1,

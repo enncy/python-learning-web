@@ -7,22 +7,32 @@
         使用说明 <Icon type="icon-question-circle" />
       </a-button>
       <a-divider type="vertical" />
-      <a-switch
-        v-model:checked="editor.doubleLayout"
-        checked-children="双栏"
-        un-checked-children="源码"
-      ></a-switch>
+      编辑模式：
+      <a-radio-group v-model:value="editor.type" size="small">
+        <a-radio-button :value="1">双栏</a-radio-button>
+        <a-radio-button :value="2">源码</a-radio-button>
+        <a-radio-button :value="3">预览</a-radio-button>
+      </a-radio-group>
+
       <slot name="actions"></slot>
     </div>
 
     <div class="markdown">
-      <div ref="textarea" class="h-100 w-100">
+      <div
+        v-show="editor.type === 1 || editor.type === 2"
+        ref="textarea"
+        class="h-100 w-100"
+      >
         <a-textarea
           class="markdown-editor"
           v-model:value="editor.content"
         ></a-textarea>
       </div>
-      <div v-show="editor.doubleLayout" ref="preview" class="h-100 w-100">
+      <div
+        v-show="editor.type === 1 || editor.type === 3"
+        ref="preview"
+        class="h-100 w-100"
+      >
         <MarkdownText
           class="markdown-body border rounded p-2"
           :content="editor.content"
@@ -45,7 +55,7 @@ const emits = defineEmits<{
 }>();
 
 const editor = reactive({
-  doubleLayout: true,
+  type: 1,
   content: props.content,
 });
 
@@ -58,8 +68,10 @@ onMounted(() => {
     function outputsize() {
       if (preview.value && textarea.value) {
         const body = preview.value.querySelector(".markdown-body");
-        // @ts-ignore
-        body.style.height = `${textarea.value.clientHeight}px`;
+        if (textarea.value.clientHeight > 0) {
+          // @ts-ignore
+          body.style.height = `${textarea.value.clientHeight}px`;
+        }
       }
     }
     outputsize();

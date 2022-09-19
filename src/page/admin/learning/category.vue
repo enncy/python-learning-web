@@ -9,11 +9,10 @@
   </Card>
 </template>
 <script setup lang="ts">
-import { ref, onBeforeMount } from "vue";
-
+import { AdminTable, createDefaultColumnFactory } from "../../../utils/admin";
 import AdminTableVue from "../../../components/common/AdminTable.vue";
 
-import { AdminTable, createDefaultColumnFactory } from "../../../utils/admin";
+import { onBeforeMount, ref } from "vue";
 import Card from "../../../components/common/Card.vue";
 
 const table = ref(
@@ -21,7 +20,7 @@ const table = ref(
     schemas: [],
     columns: [],
     dataSource: [],
-    tableName: "config",
+    tableName: "learning_category",
     hideColumns: ["version", "deleted", "id"],
     columnFactory: {
       ...createDefaultColumnFactory(),

@@ -10,7 +10,9 @@
         <a-divider type="vertical" />
         最后修改
         {{ dayjs(model.post.updateTime).format("YYYY-MM-DD hh:mm") }}
-        <span class="float-end">{{ commentModel?.comment.level || 1 }}楼</span>
+        <span class="float-end" v-if="commentModel?.comment.level">
+          {{ commentModel?.comment.level }}楼
+        </span>
       </div>
     </td>
   </tr>
@@ -115,12 +117,16 @@
           </span>
 
           <template v-if="commentModel.user.id === store.user?.id">
-            <span
-              class="footer-action"
-              @click="removeComment(commentModel?.comment.id!)"
+            <a-popconfirm
+              ok-text="确定"
+              cancel-text="取消"
+              title="确定删除此评论吗？"
+              @ok="removeComment(commentModel?.comment.id!)"
             >
-              <Icon type="icon-delete" /> 删除
-            </span>
+              <span class="footer-action">
+                <Icon type="icon-delete" /> 删除
+              </span>
+            </a-popconfirm>
           </template>
         </a-space>
 
@@ -230,7 +236,7 @@ tr td {
 .content-row td:first-child {
   background-color: #f0f0f0;
 }
-
+.meta-row td:first-child,
 .content-row td:first-child {
   width: 150px;
 }

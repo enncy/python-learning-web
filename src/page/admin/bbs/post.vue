@@ -68,12 +68,13 @@
         v-model:table="table"
         @create="onCreate"
         @modify="onModify"
+        @pagination-change="onPaginationChange"
       ></AdminTableVue>
     </Card>
   </div>
 </template>
 <script setup lang="ts">
-import { onBeforeMount, reactive, ref } from "vue";
+import { h, onBeforeMount, reactive, ref } from "vue";
 import AdminTableVue from "../../../components/common/AdminTable.vue";
 import { AdminTable, createDefaultColumnFactory } from "../../../utils/admin";
 import Card from "../../../components/common/Card.vue";
@@ -111,7 +112,15 @@ const table = ref(
     ],
     columnFactory: {
       content: {
-        customRender: ({ value }) => max(value, 20),
+        customRender: ({ value, record }) =>
+          h("span", [
+            max(value, 20),
+            h(
+              "a",
+              { href: "/bbs/post/" + (record as any).id, target: "_blank" },
+              "详情"
+            ),
+          ]),
       },
       title: {
         customRender: ({ value }) => max(value, 20),
@@ -128,18 +137,24 @@ const table = ref(
   })
 );
 
-onBeforeMount(async () => {
-  await table.value.init();
+onBeforeMount(() => {
+  table.value.init();
   originDataSource.value = table.value.dataSource;
 });
 
-async function onCreate() {
-  await table.value.update();
+function onCreate() {
+  table.value.update();
   originDataSource.value = table.value.dataSource;
 }
-async function onModify() {
-  await table.value.update();
+function onModify() {
+  table.value.update();
   originDataSource.value = table.value.dataSource;
+}
+
+function onPaginationChange(pagination: any) {
+  table.value.page = pagination.current;
+  table.value.size = pagination.pageSize;
+  table.value.update();
 }
 
 function advanceSearch() {

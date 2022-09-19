@@ -10,7 +10,13 @@
   background-color: rgba(222, 222, 222, 0.115);
 }
 .markdown-text img {
-  max-width: 100%;
+  width: 100%;
+}
+.markdown-text h3,
+.markdown-text h4,
+.markdown-text h5,
+.markdown-text h6 {
+  font-weight: bold;
 }
 .markdown-text h1 code,
 .markdown-text h2 code,

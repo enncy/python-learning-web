@@ -19,7 +19,7 @@
         <a-breadcrumb-item
           @click="router.push('/bbs/post/' + postModel!.post.id)"
         >
-          <MaxSpan :value="postModel.post.title" :length="20"></MaxSpan>
+          <MaxSpan :value="postModel.post.title" :length="50"></MaxSpan>
         </a-breadcrumb-item>
       </a-breadcrumb>
     </div>
@@ -27,16 +27,18 @@
     <Card>
       <table class="w-100">
         <tr>
-          <td class="p-1 text-center fw-bold">
+          <td class="p-1 text-center fw-bold" style="width: 150px">
             评论 : {{ postModel.post.commentCount }} / 查看:
             {{ postModel.post.viewCount }}
           </td>
           <td class="p-1 ps-3">
-            <h2 class="mb-0 fw-bold">
+            <h2 class="mb-0">
               <template v-for="tag of postModel.tags">
                 <span class="post-tag">[{{ tag.name }}]</span>
               </template>
-              {{ postModel.post.title }}
+              <span class="fw-bold ms-1">
+                {{ postModel.post.title }}
+              </span>
             </h2>
           </td>
         </tr>
@@ -184,5 +186,9 @@ tr > td:first-child {
 }
 .post-tag:hover {
   color: rgba(56, 142, 212, 0.699);
+}
+
+table {
+  table-layout: fixed;
 }
 </style>

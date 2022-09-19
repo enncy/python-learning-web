@@ -71,7 +71,7 @@
 
       <a-divider></a-divider>
 
-      <PostList :posts="globalPosts.concat(posts)"></PostList>
+      <PostTable :posts="globalPosts.concat(posts)"></PostTable>
 
       <Pagination class="mt-5 text-end" v-model:pagination="pagination" />
     </Card>
@@ -87,7 +87,7 @@ import Icon from "../../components/common/Icon.vue";
 import dayjs from "dayjs";
 import { BBSPostModel } from "../../store/interface";
 import BoardAdminList from "../../components/bbs/BoardAdminList.vue";
-import PostList from "../../components/bbs/PostList.vue";
+import PostTable from "../../components/bbs/PostTable.vue";
 import Pagination from "../../components/common/Pagination.vue";
 
 const route = useRoute();

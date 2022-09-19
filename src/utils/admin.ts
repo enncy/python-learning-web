@@ -2,7 +2,7 @@ import { TableColumnProps } from "ant-design-vue";
 import merge from "lodash/merge";
 import { h } from "vue";
 import { AdminApi } from "../api";
-import { Schema } from "../store/interface";
+import { Page, Schema } from "../store/interface";
 
 /**
  * 根据后端的数据库表名，利用反射自动获取对象中的各个字段信息，并返回成 ant design table 所需的 colum 数据列
@@ -24,7 +24,7 @@ export async function createDataSource(
   page: number,
   size: number
 ) {
-  return new Promise<any[]>((resolve, reject) => {
+  return new Promise<Page<any>>((resolve, reject) => {
     AdminApi.data({ tableName, page, size }).then(({ data: { data } }) => {
       resolve(data);
     });
@@ -37,6 +37,7 @@ export interface AdminTableOptions<T> {
   page: number;
   size: number;
   schemas: Schema[];
+  total?: number;
   // 额外的列
   extraColumns?: TableColumnProps[];
   columnFactory: Record<string, TableColumnProps>;
@@ -55,9 +56,11 @@ export class AdminTable<T> implements AdminTableOptions<T> {
   columns: TableColumnProps[] = [];
   extraColumns: TableColumnProps[] = [];
   schemas: Schema[] = [];
+
   dataSource: T[] = [];
-  page: number;
-  size: number;
+  total: number = 10;
+  page: number = 1;
+  size: number = 10;
   columnsFilter?: (col: TableColumnProps, schemas: Schema[]) => boolean;
   // 是否正在加载
   loading: boolean = false;
@@ -70,14 +73,17 @@ export class AdminTable<T> implements AdminTableOptions<T> {
       extraColumns,
       page,
       size,
+      total,
       columnsFilter,
     } = options;
+
     this.tableName = tableName;
     this.extraColumns = extraColumns || [];
     this.columnFactory = columnFactory;
     this.hideColumns = hideColumns || [];
-    this.page = page;
-    this.size = size;
+    this.page = page || this.page;
+    this.size = size || this.size;
+    this.total = total || this.total;
     this.columnsFilter = columnsFilter;
   }
 
@@ -121,11 +127,13 @@ export class AdminTable<T> implements AdminTableOptions<T> {
 
   async update() {
     this.loading = true;
-    this.dataSource = await createDataSource(
+    const { records, total } = await createDataSource(
       this.tableName,
       this.page,
       this.size
     );
+    this.dataSource = records;
+    this.total = total;
 
     this.loading = false;
   }

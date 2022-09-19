@@ -19,6 +19,22 @@ export interface Schema {
   showInSearch?: boolean;
 }
 
+export interface LearningArticle {
+  id: string;
+  categoryId: string;
+  title: string;
+  content: string;
+  createTime: number;
+  updateTime: number;
+}
+
+export interface LearningCategory {
+  id: string;
+  name: string;
+  createTime: number;
+  updateTime: number;
+}
+
 export interface Compile {
   id: string;
   codeId: string;
@@ -48,6 +64,11 @@ export interface User {
   nickname?: string;
   createTime: number;
   updateTime: number;
+}
+
+export interface UserModel {
+  user: User;
+  postPage: Page<BBSPostModel>;
 }
 
 export interface BBSCategory {

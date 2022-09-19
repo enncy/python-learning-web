@@ -121,16 +121,25 @@ export const routes: RouteRecordRaw[] = [
         component: () => import("../page/admin/learning/index.vue"),
         meta: {
           icon: "icon-book",
-          title: "教程管理",
+          title: "学习管理",
           open: true,
         },
+
         children: [
           {
-            path: "list",
-            name: "admin-learning-list",
-            component: () => import("../page/admin/learning/list.vue"),
+            path: "category",
+            name: "admin-learning-category",
+            component: () => import("../page/admin/learning/category.vue"),
             meta: {
-              title: "教程列表",
+              title: "目录管理",
+            },
+          },
+          {
+            path: "article",
+            name: "admin-learning-article",
+            component: () => import("../page/admin/learning/article.vue"),
+            meta: {
+              title: "文章管理",
             },
           },
         ],
@@ -233,10 +242,20 @@ export const routes: RouteRecordRaw[] = [
 
   {
     path: "/learning",
+    redirect: "/learning/article",
     component: () => import("../page/learning/index.vue"),
     meta: {
-      name: "教程",
+      name: "学习",
     },
+    children: [
+      {
+        path: "article/:articleId(.*)",
+        component: () => import("../page/learning/article.vue"),
+        meta: {
+          name: "文章",
+        },
+      },
+    ],
   },
   {
     path: "/complier",

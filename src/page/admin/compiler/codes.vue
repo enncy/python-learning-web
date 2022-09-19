@@ -4,6 +4,7 @@
       v-model:table="table"
       @create="onCreate"
       @modify="onModify"
+      @pagination-change="onPaginationChange"
     ></AdminTableVue>
   </Card>
 </template>
@@ -29,15 +30,21 @@ const table = ref(
   })
 );
 
-onBeforeMount(async () => {
-  await table.value.init();
+onBeforeMount(() => {
+  table.value.init();
 });
 
-async function onCreate() {
-  await table.value.update();
+function onCreate() {
+  table.value.update();
 }
-async function onModify() {
-  await table.value.update();
+function onModify() {
+  table.value.update();
+}
+
+function onPaginationChange(pagination: any) {
+  table.value.page = pagination.current;
+  table.value.size = pagination.pageSize;
+  table.value.update();
 }
 </script>
 <style scoped lang="less"></style>

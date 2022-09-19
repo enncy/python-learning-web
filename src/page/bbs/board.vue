@@ -9,28 +9,40 @@
       </a-breadcrumb>
     </div>
 
-    <div class="row">
+    <div class="row gy-5">
       <div class="col-12">
         <div class="row">
-          <div class="col-12 col-lg-8 mb-3">
+          <div class="col-12 col-lg-8">
             <a-carousel class="bbs-carousel" autoplay>
-              <div class="h-100"><h3>1</h3></div>
-              <div class="h-100"><h3>2</h3></div>
-              <div class="h-100"><h3>3</h3></div>
-              <div class="h-100"><h3>4</h3></div>
+              <a-image
+                class="cover"
+                src="https://th.bing.com/th/id/OIP.uxliFnoB2YSP4pgxn5x4lwHaDn?w=316&h=170&c=7&r=0&o=5&pid=1.7"
+              />
+              <a-image
+                class="cover"
+                src="https://th.bing.com/th/id/OIP.kcmQrCp7We0AIktaA9sXzQHaEH?w=316&h=180&c=7&r=0&o=5&pid=1.7"
+              />
+              <a-image
+                class="cover"
+                src="https://th.bing.com/th/id/OIP.Q7WBbWA2IG4a-gZ-U8igDwHaC9?w=314&h=140&c=7&r=0&o=5&pid=1.7"
+              />
+              <a-image
+                class="cover"
+                src="https://th.bing.com/th/id/OIP.3y4k0uziw1hEGGGP8kyQsAHaEo?w=282&h=180&c=7&r=0&o=5&pid=1.7"
+              />
             </a-carousel>
           </div>
           <div class="col-12 col-lg-4">
             <Card>
               <a-tabs v-model:activeKey="activeKey">
                 <a-tab-pane key="1" tab="最新帖子">
-                  Content of Tab Pane 1
+                  <PostList :posts="latestPosts"></PostList>
                 </a-tab-pane>
                 <a-tab-pane key="2" tab="本月精华">
-                  Content of Tab Pane 2
+                  <PostList :posts="recommends"></PostList>
                 </a-tab-pane>
                 <a-tab-pane key="3" tab="今日热门">
-                  Content of Tab Pane 2
+                  <a-empty></a-empty>
                 </a-tab-pane>
               </a-tabs>
             </Card>
@@ -58,7 +70,7 @@
                       <div class="col-3 col-lg-1">
                         <a-avatar shape="square" :size="42"></a-avatar>
                       </div>
-                      <div class="col-9 col-lg-6">
+                      <div class="col-9 col-lg-3">
                         <div
                           class="category-title"
                           @click="
@@ -69,6 +81,9 @@
                         >
                           <div class="fw-bold">
                             {{ categoryModel.category.name }}
+                            <span class="text-secondary sm"
+                              >({{ categoryModel.postPage.total }})</span
+                            >
                           </div>
                           <div class="text-secondary sm">
                             <MaxSpan
@@ -80,12 +95,40 @@
 
                         <div class="text-secondary sm">
                           版主：
-                          <BoardAdminList :admins="categoryModel.admins" />
+                          <template v-if="categoryModel.admins.length">
+                            <BoardAdminList :admins="categoryModel.admins" />
+                          </template>
+                          <template v-else>暂无</template>
                         </div>
                       </div>
-                      <div class="col-lg-5 d-none d-lg-block">
-                        <div>1</div>
-                        <div>2</div>
+                      <div
+                        class="col-lg-8 d-none d-lg-block category-post"
+                        @click="
+                          router.push(
+                            '/bbs/post/' +
+                              categoryModel.postPage.records[0].post.id
+                          )
+                        "
+                      >
+                        <div>
+                          <MaxSpan
+                            :value="
+                              categoryModel.postPage.records[0].post.title
+                            "
+                            :length="50"
+                          ></MaxSpan>
+                        </div>
+                        <div class="text-secondary sm">
+                          {{
+                            getElapsedTime(
+                              categoryModel.postPage.records[0].post.createTime
+                            )
+                          }}前 -
+                          {{
+                            categoryModel.postPage.records[0].user.nickname ||
+                            categoryModel.postPage.records[0].user.username
+                          }}
+                        </div>
                       </div>
                     </div>
                   </template>
@@ -95,23 +138,11 @@
           </div>
           <div class="col-lg-4 d-none d-lg-block">
             <Card title="最新公告">
-              <template v-for="model of globalPosts?.concat(globalPosts)">
-                <div
-                  class="notify"
-                  @click="router.push('/bbs/post/' + model.post.id)"
-                >
-                  <MaxSpan :value="model.post.title" :length="20"></MaxSpan>
-                  <span class="float-end">
-                    {{ model.post.commentCount }} /
-                    <span class="text-secondary sm">
-                      {{ model.post.viewCount }}</span
-                    >
-                  </span>
-                </div>
-              </template>
+              <PostList :posts="globalPosts"></PostList>
             </Card>
-            <Card> 最新资讯 </Card>
-            <Card> 萌新求助 </Card>
+            <Card title="最新资讯">
+              <PostList :posts="news"></PostList>
+            </Card>
           </div>
         </div>
       </div>
@@ -127,11 +158,20 @@ import { BBSBoardModel, BBSPostModel } from "../../store/interface";
 import Icon from "../../components/common/Icon.vue";
 import MaxSpan from "../../components/common/MaxSpan.vue";
 import BoardAdminList from "../../components/bbs/BoardAdminList.vue";
+import { getElapsedTime } from "../../utils";
+import PostList from "../../components/bbs/PostList.vue";
 
 const router = useRouter();
 const activeKey = ref("1");
 const boards = ref<BBSBoardModel[]>([]);
-const globalPosts = ref<BBSPostModel[]>();
+// 最新公告
+const globalPosts = ref<BBSPostModel[]>([]);
+// 最新新闻
+const news = ref<BBSPostModel[]>([]);
+// 最新帖子
+const latestPosts = ref<BBSPostModel[]>([]);
+// 精华帖
+const recommends = ref<BBSPostModel[]>([]);
 
 onMounted(() => {
   BBSApi.listBoard().then(({ data: { data } }) => {
@@ -144,6 +184,22 @@ onMounted(() => {
       globalPosts.value = data;
     }
   });
+
+  BBSApi.advanceSearch({
+    categoryName: "新闻咨询",
+  }).then(({ data: { data } }) => {
+    news.value = data;
+  });
+
+  BBSApi.advanceSearch({
+    recommend: true,
+  }).then(({ data: { data } }) => {
+    recommends.value = data;
+  });
+
+  BBSApi.listPostModel({ page: 1, size: 5 }).then(({ data: { data } }) => {
+    latestPosts.value = data;
+  });
 });
 </script>
 <style scoped lang="less">
@@ -154,9 +210,8 @@ onMounted(() => {
 }
 
 .ant-carousel :deep(.slick-slide) {
+  border-radius: 4px;
   text-align: center;
-  height: 100%;
-  line-height: 20vh;
   overflow: hidden;
 }
 
@@ -184,22 +239,20 @@ onMounted(() => {
   border-top: 1px dashed #dbdbdb;
 }
 
-.text-secondary.sm {
-  font-size: 12px;
-  font-weight: 100;
-}
-
 .category-title {
   cursor: pointer;
 }
-
-.notify {
+.category-post {
   cursor: pointer;
-  padding-bottom: 4px;
-  border-bottom: 1px dashed #dadada;
 }
 
-.notify + .notify {
-  margin-top: 8px;
+:deep(.ant-image) {
+  width: 100% !important;
+}
+:deep(img) {
+  object-fit: cover !important;
+  width: 100% !important;
+  height: 260px !important;
+  border-radius: 4px !important;
 }
 </style>

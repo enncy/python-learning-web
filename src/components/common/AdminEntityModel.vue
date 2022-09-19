@@ -30,6 +30,7 @@ import Select from "./admin/Select.vue";
 import Switch from "./admin/Switch.vue";
 import Textarea from "./admin/Textarea.vue";
 import ExternalSelect from "./admin/ExternalSelect.vue";
+import Markdown from "./admin/Markdown.vue";
 import SimplifyModel from "./SimplifyModel.vue";
 
 defineProps<{
@@ -61,6 +62,10 @@ const componentMapping = [
   {
     type: "external-select",
     component: ExternalSelect,
+  },
+  {
+    type: "markdown",
+    component: Markdown,
   },
 ];
 </script>

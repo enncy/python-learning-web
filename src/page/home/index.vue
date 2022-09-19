@@ -1,25 +1,34 @@
 <template>
   <CommonLayout :no-shadow="true">
-    <div class="pt-5 shadow-sm" v-if="user">
+    <div class="pt-5 shadow-sm" v-if="userModel">
       <div class="d-flex flex-wrap w-100">
         <div class="col">
           <div class="d-flex justify-content-center align-items-center">
             <div class="col-lg-6 col-12 d-flex flex-wrap gy-3">
               <div class="col-lg-3 col-12 text-center">
                 <span class="me-2">
-                  <Avatar shape="square" :size="124" :user="user"></Avatar>
+                  <Avatar
+                    shape="square"
+                    :size="124"
+                    :user="userModel.user"
+                  ></Avatar>
                 </span>
               </div>
               <div class="col-lg-6 col-12 text-center text-lg-start">
                 <div>
                   <span class="fs-1">
-                    {{ user.nickname || user.username }}
+                    {{ userModel.user.nickname || userModel.user.username }}
                   </span>
                 </div>
                 <div>
                   <span class="fs-5">
-                    {{ user.profile || "此用户暂无任何简介~" }}
+                    {{ userModel.user.profile || "此用户暂无任何简介~" }}
                   </span>
+                </div>
+                <div class="mt-2 text-secondary">
+                  <span> 帖子: {{ userModel.postPage.total }} </span>
+                  <a-divider type="vertical" />
+                  <span> 积分: {{ userModel.user.credit }} </span>
                 </div>
               </div>
               <div class="col-lg-3 col-12 text-center">
@@ -29,12 +38,12 @@
                     关注</a-button
                   >
                 </div>
-                <div class="p-1">
+                <!-- <div class="p-1">
                   <a-button class="w-75" type="primary" ghost>
                     <Icon type="icon-message" />
                     私信
                   </a-button>
-                </div>
+                </div> -->
               </div>
             </div>
           </div>
@@ -42,7 +51,7 @@
             <div class="col-lg-6 col-12 mt-3 row">
               <div class="row">
                 <a-menu mode="horizontal" v-model:selectedKeys="selectedKeys">
-                  <a-menu-item key="1"> 最新动态 </a-menu-item>
+                  <a-menu-item key="1"> 最新帖子 </a-menu-item>
                   <a-menu-item key="2"> 个人资料 </a-menu-item>
                   <a-menu-item key="3"> 他的关注 </a-menu-item>
                   <a-menu-item key="4"> 他的收藏 </a-menu-item>
@@ -55,37 +64,46 @@
     </div>
 
     <div
-      v-if="user"
+      v-if="userModel"
       class="d-flex flex-wrap justify-content-center align-items-center p-3"
     >
       <div class="col-lg-5 col-12" v-if="selectedKeys[0] === '1'">
-        <PostList :posts="user"> </PostList>
+        <PostTable :posts="userModel.postPage.records"> </PostTable>
+        <div class="mt-3 text-end">
+          <Pagination v-model:pagination="pagination"></Pagination>
+        </div>
       </div>
       <div class="col-lg-5 col-12" v-if="selectedKeys[0] === '2'">
         <a-divider>基本信息</a-divider>
-        <div class="user-info"><label>用户名</label> : {{ user.username }}</div>
         <div class="user-info">
-          <label>昵称</label> : {{ user.nickname || "暂无昵称" }}
+          <label>用户名</label> : {{ userModel.user.username }}
         </div>
         <div class="user-info">
-          <label>简介</label> : {{ user.profile || "暂无简介" }}
+          <label>昵称</label> : {{ userModel.user.nickname || "暂无昵称" }}
+        </div>
+        <div class="user-info">
+          <label>简介</label> : {{ userModel.user.profile || "暂无简介" }}
         </div>
         <div class="user-info">
           <label>主页地址</label> : {{ doc.location.origin }}/@{{
-            user.slug || user.username
+            userModel.user.slug || userModel.user.username
           }}
         </div>
 
-        <div class="user-info"><label>邮箱</label> : {{ user.email }}</div>
-        <div class="user-info"><label>UID</label> : {{ user.id }}</div>
+        <div class="user-info">
+          <label>邮箱</label> : {{ userModel.user.email }}
+        </div>
+        <div class="user-info">
+          <label>UID</label> : {{ userModel.user.id }}
+        </div>
         <div class="user-info">
           <label>身份</label> :
-          {{ getRole(user.role).desc }}
+          {{ getRole(userModel.user.role).desc }}
         </div>
         <a-divider>活跃概况</a-divider>
         <div class="user-info">
           <label>注册时间</label> :
-          {{ new Date(user.createTime).toLocaleString("zh-CN") }}
+          {{ new Date(userModel.user.createTime).toLocaleString("zh-CN") }}
         </div>
         <template v-if="loginRecords.length">
           <div class="user-info">
@@ -121,24 +139,42 @@
   </CommonLayout>
 </template>
 <script setup lang="ts">
-import { onMounted, Ref, ref } from "vue";
+import { onMounted, reactive, Ref, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { UserApi } from "../../api";
 import CommonLayout from "../../layout/CommonLayout.vue";
 import { store } from "../../store";
 import Icon from "../../components/common/Icon.vue";
-import { User } from "../../store/interface";
+import { BBSPostModel, User, UserModel } from "../../store/interface";
 import Avatar from "../../components/common/Avatar.vue";
 import { getRole } from "../../utils";
+import PostTable from "../../components/bbs/PostTable.vue";
+import Pagination from "../../components/common/Pagination.vue";
 
 const route = useRoute();
-const user = ref<User>();
+const userModel = ref<UserModel>();
 const loginRecords = ref();
 const doc = document;
 
 const selectedKeys = ref(["1"]);
 
+const router = useRouter();
+
+const pagination = reactive({
+  page: 1,
+  size: 10,
+  total: 10,
+});
+
+watch(pagination, () => {
+  renderData();
+});
+
 onMounted(() => {
+  renderData();
+});
+
+function renderData() {
   if (route.params.usernameOrSlug === "" && store.user) {
     window.document.location.href =
       "/@" + (store.user.slug || store.user.username);
@@ -147,22 +183,25 @@ onMounted(() => {
       window.document.location.href = "/404";
     } else {
       // 获取信息
-      UserApi.info({
+      UserApi.model({
         username: route.params.usernameOrSlug,
         slug: route.params.usernameOrSlug,
+        page: pagination.page,
+        size: pagination.size,
       }).then(({ data: { data } }) => {
-        user.value = data;
+        userModel.value = data;
+        pagination.total = data.postPage.total;
 
         // 获取登录信息
         UserApi.loginRecord({
-          id: data.id,
+          id: data.user.id,
         }).then(({ data: { data } }) => {
           loginRecords.value = data;
         });
       });
     }
   }
-});
+}
 </script>
 <style scoped lang="less">
 .user-info {

@@ -16,12 +16,8 @@
               </a-badge>
             </a-menu-item>
 
-            <a-divider />
             <a-menu-item key="3" @click="router.push('/user/bbs')">
               我的论坛
-            </a-menu-item>
-            <a-menu-item key="4" @click="router.push('/user/learning')">
-              我的学习
             </a-menu-item>
           </a-menu>
         </div>

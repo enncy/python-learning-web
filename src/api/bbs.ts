@@ -22,7 +22,7 @@ export const BBSApi = {
     });
   },
   listPostModel(wrapper: { page: number; size: number }) {
-    return request.get<ApiResponse<BBSPostModel>>("/bbs/post/list", {
+    return request.get<ApiResponse<BBSPostModel[]>>("/bbs/post/list", {
       params: wrapper,
     });
   },
@@ -51,6 +51,11 @@ export const BBSApi = {
   },
   removeComment(wrapper: { id: string }) {
     return request.get<ApiResponse<boolean>>("/bbs/comment/remove", {
+      params: wrapper,
+    });
+  },
+  removePost(wrapper: { id: string }) {
+    return request.get<ApiResponse<boolean>>("/bbs/post/remove", {
       params: wrapper,
     });
   },
