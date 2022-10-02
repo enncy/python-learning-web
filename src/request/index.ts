@@ -3,7 +3,7 @@ import axios from "axios";
 import { requestErrorHandler } from "../utils/request.error.handler";
 
 export const request = axios.create({
-  baseURL: "http://localhost:8080/api/v1/",
+  baseURL: import.meta.env.VITE_BASE_URL,
   timeout: 60 * 1000,
   timeoutErrorMessage: "服务器响应超时",
   // 携带 cookie

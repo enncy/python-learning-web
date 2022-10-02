@@ -64,7 +64,7 @@ onMounted(() => {
       if (resetForm.value.checkValidity()) {
         UserApi.resetPassword(form).then(({ data: { data, msg } }) => {
           message.success(msg);
-          store.user = data;
+
           setTimeout(() => router.push("/"), 1000);
         });
       }

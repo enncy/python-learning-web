@@ -14,7 +14,9 @@ import dayjs from "dayjs";
 import "dayjs/locale/zh-cn";
 
 import { onBeforeMount, onMounted, Transition } from "vue";
+import { CommonApi } from "./api/common";
 import { store, config } from "./store";
+import set from "lodash/set";
 
 dayjs.locale("zh-cn");
 
@@ -25,8 +27,26 @@ onBeforeMount(() => {
   Object.assign(store, localStore);
 });
 
-onMounted(() => {
+onMounted(async () => {
   console.log({ store, config });
+
+  CommonApi.listConfig().then(({ data: { data } }) => {
+    if (data) {
+      for (const item of data) {
+        const value =
+          item.type === "number"
+            ? parseFloat(item.value)
+            : item.type === "object"
+            ? JSON.parse(item.value)
+            : item.type === "date"
+            ? new Date(item.value)
+            : item.value;
+        console.log(item.key, value);
+
+        set(config, item.key, value);
+      }
+    }
+  });
 
   window.addEventListener("beforeunload", () => {
     localStorage.setItem(fieldname, JSON.stringify(store));

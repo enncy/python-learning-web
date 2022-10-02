@@ -48,7 +48,6 @@ import { TableColumnProps } from "ant-design-vue";
 import { h, nextTick, onMounted, reactive, ref, watch } from "vue";
 import { Compile } from "../../../store/interface";
 import Icon from "../Icon.vue";
-import * as monaco from "monaco-editor";
 
 const props = defineProps<{
   compiles: Compile[];
@@ -107,6 +106,7 @@ const columns: TableColumnProps[] = [
 async function onSelect(opts: any, e: any) {
   status.index = props.compiles.findIndex((c) => c.id === opts.id);
 
+  // @ts-ignore
   status.code = await monaco.editor.colorize(opts.codeContent, "python", {
     tabSize: 4,
   });
@@ -118,6 +118,7 @@ async function onSelect(opts: any, e: any) {
 onMounted(() => {
   nextTick(async () => {
     if (props.compiles[0].id) {
+      // @ts-ignore
       status.code = await monaco.editor.colorize(
         props.compiles[0].codeContent,
         "python",

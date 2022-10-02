@@ -1,14 +1,14 @@
 import { defineAsyncComponent, reactive, shallowRef } from "vue";
-import monaco from "monaco-editor";
+import { CommonApi } from "../api/common";
 import { Code, Compile, Role, User } from "./interface";
 
 export const config = reactive({
-  version: 22,
+  version: 23,
   name: "Python学习网",
   copyright: "Copyright © 2022 Python学习网",
   description:
     "Python学习网 —— 拥有在线学习系统，在线代码测评系统，以及论坛系统，可以自学Python，对各种例子进行自测，与各大网友分享技术，共同建造和谐的开源社区",
-  baseURL: "http://localhost:8080/api/v1",
+  baseURL: import.meta.env.VITE_BASE_URL,
   // 自适应宽度
   adaption: {
     breaking_point: 1000,
@@ -110,6 +110,21 @@ export const config = reactive({
         name: "我的论坛",
         icon: "icon-comment",
       },
+      {
+        path: "/user/favorite",
+        name: "我的收藏",
+        icon: "icon-star",
+      },
+      {
+        path: "/user/follow",
+        name: "我的关注",
+        icon: "icon-heart",
+      },
+      {
+        path: "/user/subscribe",
+        name: "我的订阅",
+        icon: "icon-alert",
+      },
 
       {
         path: "/logout",
@@ -149,65 +164,65 @@ export const config = reactive({
         {
           name: "数字求和",
           content: `# 用户输入数字
-          num1 = input('输入第一个数字：')
-          num2 = input('输入第二个数字：')
-           
-          # 求和
-          sum = float(num1) + float(num2)
-           
-          # 显示计算结果
-          print('数字 {0} 和 {1} 相加结果为： {2}'.format(num1, num2, sum))`,
+num1 = input('输入第一个数字：')
+num2 = input('输入第二个数字：')
+ 
+# 求和
+sum = float(num1) + float(num2)
+ 
+# 显示计算结果
+print('数字 {0} 和 {1} 相加结果为： {2}'.format(num1, num2, sum))`,
         },
         {
           name: "随机数生成",
           content: `# 生成 0 ~ 9 之间的随机数
+
+# 导入 random(随机数) 模块
+import random
  
-          # 导入 random(随机数) 模块
-          import random
-           
-          print(random.randint(0,9))`,
+print(random.randint(0,9))`,
         },
         {
           name: "九九乘法表",
           content: `# 九九乘法表
-          for i in range(1, 10):
-              for j in range(1, i+1):
-                  print('{}x{}={}\t'.format(j, i, i*j), end='')
-              print()`,
+for i in range(1, 10):
+    for j in range(1, i+1):
+        print('{}x{}={}\t'.format(j, i, i*j), end='')
+    print()`,
         },
         {
           name: "生成日历",
           content: `# 引入日历模块
-          import calendar
-           
-          # 输入指定年月
-          yy = int(input("输入年份: "))
-          mm = int(input("输入月份: "))
-           
-          # 显示日历
-          print(calendar.month(yy,mm))`,
+import calendar
+ 
+# 输入指定年月
+yy = int(input("输入年份: "))
+mm = int(input("输入月份: "))
+ 
+# 显示日历
+print(calendar.month(yy,mm))`,
         },
         {
           name: "冒泡排序",
           content: `def bubbleSort(arr):
-          n = len(arr)
+n = len(arr)
+
+# 遍历所有数组元素
+for i in range(n):
+
+    # Last i elements are already in place
+    for j in range(0, n-i-1):
+
+        if arr[j] > arr[j+1] :
+            arr[j], arr[j+1] = arr[j+1], arr[j]
        
-          # 遍历所有数组元素
-          for i in range(n):
-       
-              # Last i elements are already in place
-              for j in range(0, n-i-1):
-       
-                  if arr[j] > arr[j+1] :
-                      arr[j], arr[j+1] = arr[j+1], arr[j]
-       
-      arr = [64, 34, 25, 12, 22, 11, 90]
-       
-      bubbleSort(arr)
-       
-      print ("排序后的数组:")
-      for i in range(len(arr)):
-          print ("%d" %arr[i]),`,
+arr = [64, 34, 25, 12, 22, 11, 90]
+ 
+bubbleSort(arr)
+ 
+print ("排序后的数组:")
+for i in range(len(arr)):
+    print ("%d" %arr[i]),`,
         },
       ],
     },
@@ -253,10 +268,14 @@ export const store = reactive({
       automaticLayout: true,
       autoIndent: "advanced",
       tabSize: 4,
-    } as monaco.editor.IStandaloneEditorConstructionOptions,
+    },
     themes: ["vs-light", "vs-dark", "hc-light", "hc-black"],
-    languages: ["python", "javascript", "css", "html"],
+    languages: ["python"],
     fontSizeRange: [12, 14, 16, 18, 20],
     tabSizeRange: [2, 4],
+  },
+  admin: {
+    openedKeys: [],
+    selectedKeys: [],
   },
 });

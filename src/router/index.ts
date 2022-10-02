@@ -41,7 +41,6 @@ export const routes: RouteRecordRaw[] = [
         meta: {
           icon: "icon-user",
           title: "用户管理",
-          open: true,
         },
         children: [
           {
@@ -50,6 +49,30 @@ export const routes: RouteRecordRaw[] = [
             name: "admin-user-list",
             meta: {
               title: "用户列表",
+            },
+          },
+          {
+            path: "follow",
+            component: () => import("../page/admin/user/follow.vue"),
+            name: "admin-follow-list",
+            meta: {
+              title: "关注列表",
+            },
+          },
+          {
+            path: "favorite",
+            component: () => import("../page/admin/user/favorite.vue"),
+            name: "admin-favorite-list",
+            meta: {
+              title: "收藏列表",
+            },
+          },
+          {
+            path: "subscribe",
+            component: () => import("../page/admin/user/subscribe.vue"),
+            name: "admin-subscribe-list",
+            meta: {
+              title: "订阅列表",
             },
           },
         ],
@@ -61,7 +84,6 @@ export const routes: RouteRecordRaw[] = [
         meta: {
           icon: "icon-earth",
           title: "论坛管理",
-          open: true,
         },
         children: [
           {
@@ -122,7 +144,6 @@ export const routes: RouteRecordRaw[] = [
         meta: {
           icon: "icon-book",
           title: "学习管理",
-          open: true,
         },
 
         children: [
@@ -151,7 +172,6 @@ export const routes: RouteRecordRaw[] = [
         meta: {
           icon: "icon-codelibrary",
           title: "编译器管理",
-          open: true,
         },
         children: [
           {
@@ -179,7 +199,6 @@ export const routes: RouteRecordRaw[] = [
         meta: {
           icon: "icon-desktop",
           title: "系统管理",
-          open: true,
         },
         children: [
           {
@@ -242,7 +261,7 @@ export const routes: RouteRecordRaw[] = [
 
   {
     path: "/learning",
-    redirect: "/learning/article",
+    redirect: "/learning/article/",
     component: () => import("../page/learning/index.vue"),
     meta: {
       name: "学习",
@@ -262,6 +281,7 @@ export const routes: RouteRecordRaw[] = [
     component: () => import("../page/complier/index.vue"),
     meta: {
       name: "在线编译器",
+      role: "root",
     },
   },
   {
@@ -309,9 +329,18 @@ export const routes: RouteRecordRaw[] = [
         path: "bbs",
         component: () => import("../page/user/bbs.vue"),
       },
+
       {
-        path: "learning",
-        component: () => import("../page/user/learning.vue"),
+        path: "favorite",
+        component: () => import("../page/user/favorite.vue"),
+      },
+      {
+        path: "follow",
+        component: () => import("../page/user/follow.vue"),
+      },
+      {
+        path: "subscribe",
+        component: () => import("../page/user/subscribe.vue"),
       },
     ],
   },

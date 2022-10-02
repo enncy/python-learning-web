@@ -108,34 +108,13 @@
 </template>
 <script setup lang="ts">
 import { nextTick, onMounted, Ref, ref, toRaw, watch } from "vue";
-import * as monaco from "monaco-editor";
+
 import { store } from "../../../store";
-import editorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
-import cssWorker from "monaco-editor/esm/vs/language/css/css.worker?worker";
-import htmlWorker from "monaco-editor/esm/vs/language/html/html.worker?worker";
-import tsWorker from "monaco-editor/esm/vs/language/typescript/ts.worker?worker";
 import SimplifyModel from "../SimplifyModel.vue";
 import Icon from "../Icon.vue";
 
-self.MonacoEnvironment = {
-  getWorker(_, label) {
-    if (label === "css" || label === "scss" || label === "less") {
-      return new cssWorker();
-    }
-    if (label === "html" || label === "handlebars" || label === "razor") {
-      return new htmlWorker();
-    }
-    if (label === "typescript" || label === "javascript") {
-      return new tsWorker();
-    }
-    return new editorWorker();
-  },
-};
-
 const textarea = ref();
-const editor = ref(
-  undefined
-) as unknown as Ref<monaco.editor.IStandaloneCodeEditor>;
+const editor = ref(undefined) as unknown as Ref<any>;
 
 const props = defineProps<{
   modelValue: string;
@@ -150,16 +129,29 @@ const informationVisible = ref(false);
 
 onMounted(() => {
   nextTick(() => {
-    editor.value = monaco.editor.create(textarea.value, store.editor.options);
-
-    // 更新代码主题
-    nextTick(() => {
-      toRaw(editor.value).updateOptions({ theme: store.editor.options.theme });
-      toRaw(editor.value).setValue(props.modelValue);
+    // @ts-ignore require is provided by loader.min.js.
+    require.config({
+      paths: {
+        vs: "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.0/min/vs",
+      },
     });
-    // 更改代码
-    editor.value.onDidChangeModelContent((val) => {
-      emits("update:modelValue", toRaw(editor.value).getValue());
+    // @ts-ignore
+    require(["vs/editor/editor.main"], () => {
+      // @ts-ignore
+      editor.value = monaco.editor.create(textarea.value, store.editor.options);
+
+      // 更新代码主题
+      nextTick(() => {
+        toRaw(editor.value).updateOptions({
+          theme: store.editor.options.theme,
+        });
+        toRaw(editor.value).setValue(props.modelValue);
+      });
+      // 更改代码
+      // @ts-ignore
+      editor.value.onDidChangeModelContent((val) => {
+        emits("update:modelValue", toRaw(editor.value).getValue());
+      });
     });
 
     // 监听语言变化，直接充值编辑器
@@ -167,6 +159,7 @@ onMounted(() => {
       () => store.editor.options.language,
       () => {
         toRaw(editor.value).dispose();
+        // @ts-ignore
         editor.value = monaco.editor.create(
           textarea.value,
           store.editor.options

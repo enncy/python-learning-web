@@ -1,7 +1,7 @@
 <template>
   <tr v-if="model" class="meta-row">
     <td class="text-nowrap fw-bold sm text-center">
-      {{ model.user.nickname || model.user.nickname }}
+      {{ model.user.nickname || model.user.username }}
     </td>
     <td>
       <div class="text-secondary sm ms-3">

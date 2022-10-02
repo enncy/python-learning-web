@@ -145,9 +145,11 @@ function renderTOC() {
     }
   }
 
-  document
-    .querySelector(decodeURIComponent(document.location.hash))
-    ?.scrollIntoView();
+  if (document.location.hash) {
+    document
+      .querySelector(decodeURIComponent(document.location.hash))
+      ?.scrollIntoView();
+  }
 }
 </script>
 <style scoped lang="less">

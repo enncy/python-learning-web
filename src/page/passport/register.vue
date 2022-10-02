@@ -112,7 +112,6 @@ onMounted(() => {
       if (registerForm.value.checkValidity()) {
         UserApi.register(form).then(({ data: { data, msg } }) => {
           message.success(msg);
-          store.user = data;
           setTimeout(() => router.push("/"), 1000);
         });
       }

@@ -14,6 +14,7 @@ import AdminTableVue from "../../../components/common/AdminTable.vue";
 
 import { AdminTable, createDefaultColumnFactory } from "../../../utils/admin";
 import Card from "../../../components/common/Card.vue";
+import { max } from "../../../utils";
 
 const table = ref(
   new AdminTable({
@@ -24,13 +25,13 @@ const table = ref(
     hideColumns: ["version", "deleted", "id"],
     columnFactory: {
       postTitle: {
-        ellipsis: true,
+        customRender: ({ value }) => max(value, 20),
       },
       content: {
-        ellipsis: true,
+        customRender: ({ value }) => max(value, 20),
       },
       parentContent: {
-        ellipsis: true,
+        customRender: ({ value }) => max(value, 20),
       },
       ...createDefaultColumnFactory(),
     },

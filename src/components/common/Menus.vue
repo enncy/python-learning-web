@@ -1,9 +1,6 @@
 <template>
   <!-- 多级嵌套路由 -->
-  <a-menu
-    v-model:selectedKeys="layoutStatus.selectedKeys"
-    :open-keys="layoutStatus.openKeys"
-  >
+  <a-menu>
     <!-- 遍历菜单路由 -->
     <template v-for="route of routes">
       <RouteMenus :route="route" />
@@ -25,13 +22,6 @@ const props = withDefaults(
 );
 
 const router = useRouter();
-
-const layoutStatus = reactive({
-  selectedKeys: [router.currentRoute.value.name],
-  openKeys: props.routes
-    .filter((r) => r.meta?.open === true)
-    .map((r) => r.name),
-});
 </script>
 
 <style scope lang="less"></style>

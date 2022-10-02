@@ -14,18 +14,21 @@ import AdminTableVue from "../../../components/common/AdminTable.vue";
 
 import { onBeforeMount, ref } from "vue";
 import Card from "../../../components/common/Card.vue";
-import { max } from "../../../utils";
+import { getRole } from "../../../utils";
 
 const table = ref(
   new AdminTable({
     schemas: [],
     columns: [],
     dataSource: [],
-    tableName: "code",
+    tableName: "user_follow",
     hideColumns: ["version", "deleted", "id"],
     columnFactory: {
-      content: {
-        customRender: ({ value }) => max(value, 20),
+      profile: {
+        ellipsis: true,
+      },
+      role: {
+        customRender: ({ value }) => getRole(value).desc,
       },
       ...createDefaultColumnFactory(),
     },

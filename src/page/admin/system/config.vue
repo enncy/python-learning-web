@@ -21,7 +21,7 @@ const table = ref(
     schemas: [],
     columns: [],
     dataSource: [],
-    tableName: "config",
+    tableName: "system_config",
     hideColumns: ["version", "deleted", "id"],
     columnFactory: {
       ...createDefaultColumnFactory(),

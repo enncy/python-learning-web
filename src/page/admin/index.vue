@@ -7,6 +7,8 @@
     >
       <div class="logo" :class="{ collapsed }">Python学习网管理系统</div>
       <Menus
+        v-model:selectedKeys="store.admin.selectedKeys"
+        v-model:open-keys="store.admin.openedKeys"
         theme="dark"
         mode="inline"
         :routes="routes.find((r) => r.path === '/admin')?.children || []"
@@ -52,6 +54,7 @@ import { useRoute, useRouter } from "vue-router";
 import Menus from "../../components/common/Menus.vue";
 import { routes } from "../../router";
 import UserHeaderItem from "../../components/common/UserHeaderItem.vue";
+import { store } from "../../store";
 
 const router = useRouter();
 

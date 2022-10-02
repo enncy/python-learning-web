@@ -1,7 +1,7 @@
 <template>
   <SimplifyModel>
     <template v-for="schema of schemas">
-      <template v-if="schema.hide === false">
+      <template v-if="schema.hideInTable === false">
         <div>{{ schema.label }} :</div>
         <div class="w-100 mb-3">
           <component
@@ -10,6 +10,7 @@
               componentMapping.find((c) => c.type === schema.type)?.component ||
               null
             "
+            :entity="entity"
             :schema="schema"
             v-model:value="(entity as any)[schema.name]"
           ></component>
@@ -30,7 +31,8 @@ import Select from "./admin/Select.vue";
 import Switch from "./admin/Switch.vue";
 import Textarea from "./admin/Textarea.vue";
 import ExternalSelect from "./admin/ExternalSelect.vue";
-import Markdown from "./admin/Markdown.vue";
+import AdminMarkdown from "./admin/AdminMarkdown.vue";
+import SystemConfigInput from "./admin/SystemConfigInput.vue";
 import SimplifyModel from "./SimplifyModel.vue";
 
 defineProps<{
@@ -65,7 +67,11 @@ const componentMapping = [
   },
   {
     type: "markdown",
-    component: Markdown,
+    component: AdminMarkdown,
+  },
+  {
+    type: "system-config-input",
+    component: SystemConfigInput,
   },
 ];
 </script>

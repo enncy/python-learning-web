@@ -14,6 +14,7 @@ import AdminTableVue from "../../../components/common/AdminTable.vue";
 
 import { onBeforeMount, ref } from "vue";
 import Card from "../../../components/common/Card.vue";
+import { max } from "../../../utils";
 
 const table = ref(
   new AdminTable({
@@ -25,7 +26,7 @@ const table = ref(
     extraColumns: [],
     columnFactory: {
       description: {
-        ellipsis: true,
+        customRender: ({ value }) => max(value, 20),
       },
       ...createDefaultColumnFactory(),
     },

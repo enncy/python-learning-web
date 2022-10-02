@@ -7,7 +7,7 @@ export interface Schema {
   name: string;
   label: string;
   type: string;
-  hide?: boolean;
+  hideInTable?: boolean;
   externalSchema?: string;
   searchable?: boolean;
   options?: string[];

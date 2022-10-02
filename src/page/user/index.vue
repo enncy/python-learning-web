@@ -3,12 +3,15 @@
     <div class="page" v-if="user">
       <div class="row">
         <div class="col-lg-2 col-12 h-100">
-          <a-menu class="h-100" mode="vertical">
-            <a-menu-item key="1" @click="router.push('/user/information')">
+          <a-menu class="h-100" mode="vertical" v-model:active-key="activeKey">
+            <a-menu-item
+              key="information"
+              @click="router.push('/user/information')"
+            >
               个人资料
             </a-menu-item>
             <a-menu-item
-              key="2"
+              key="message"
               @click="router.push('/user/message'), readMessage()"
             >
               <a-badge :count="user.messageCount">
@@ -16,8 +19,20 @@
               </a-badge>
             </a-menu-item>
 
-            <a-menu-item key="3" @click="router.push('/user/bbs')">
+            <a-menu-item key="bbs" @click="router.push('/user/bbs')">
               我的论坛
+            </a-menu-item>
+            <a-menu-item key="follow" @click="router.push('/user/follow')">
+              我的关注
+            </a-menu-item>
+            <a-menu-item key="favorite" @click="router.push('/user/favorite')">
+              我的收藏
+            </a-menu-item>
+            <a-menu-item
+              key="subscribe"
+              @click="router.push('/user/subscribe')"
+            >
+              我的订阅
             </a-menu-item>
           </a-menu>
         </div>
@@ -33,13 +48,17 @@
   </CommonLayout>
 </template>
 <script setup lang="ts">
-import { onBeforeMount, ref, Transition } from "vue";
+import { ref, Transition } from "vue";
 import { useRouter } from "vue-router";
 import { UserApi } from "../../api";
 import CommonLayout from "../../layout/CommonLayout.vue";
 import { store } from "../../store";
 
 const router = useRouter();
+const currentPath = router.currentRoute.value.path;
+const activeKey = ref(
+  currentPath.slice(currentPath.lastIndexOf("/") + 1, currentPath.length)
+);
 
 const user = ref(store.user);
 

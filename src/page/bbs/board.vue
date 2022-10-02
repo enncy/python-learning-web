@@ -102,6 +102,7 @@
                         </div>
                       </div>
                       <div
+                        v-if="categoryModel.postPage.records[0]"
                         class="col-lg-8 d-none d-lg-block category-post"
                         @click="
                           router.push(
@@ -129,6 +130,13 @@
                             categoryModel.postPage.records[0].user.username
                           }}
                         </div>
+                      </div>
+                      <div
+                        v-else
+                        class="col-lg-8 d-none d-lg-block category-post"
+                      >
+                        <div>暂无帖子</div>
+                        <div></div>
                       </div>
                     </div>
                   </template>

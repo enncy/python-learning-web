@@ -13,6 +13,7 @@ import { AdminTable, createDefaultColumnFactory } from "../../../utils/admin";
 import AdminTableVue from "../../../components/common/AdminTable.vue";
 import { onBeforeMount, ref } from "vue";
 import Card from "../../../components/common/Card.vue";
+import { max } from "../../../utils";
 
 const table = ref(
   new AdminTable({
@@ -20,10 +21,10 @@ const table = ref(
     columns: [],
     dataSource: [],
     tableName: "compile_record",
-    hideColumns: ["version", "deleted", "id"],
+    hideColumns: ["version", "deleted", "id", "codeId"],
     columnFactory: {
-      content: {
-        ellipsis: true,
+      codeContent: {
+        customRender: ({ value }) => max(value, 20),
       },
       ...createDefaultColumnFactory(),
     },
