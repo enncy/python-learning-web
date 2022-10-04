@@ -2,7 +2,7 @@
   <a-avatar
     class="user-avatar"
     v-if="user"
-    @click="router.push('/@' + (user?.slug || user?.username))"
+    @click="go('/@' + (user?.slug || user?.username))"
     :src="`${config.baseURL}/avatar?id=${user.id}`"
   ></a-avatar>
 </template>
@@ -16,6 +16,10 @@ const router = useRouter();
 defineProps<{
   user?: User;
 }>();
+
+function go(href: string) {
+  window.open(href, "_blank");
+}
 </script>
 <style scoped lang="less">
 .user-avatar {

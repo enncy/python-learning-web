@@ -44,7 +44,9 @@
             <div class="col">
               <div class="row justify-content-end">
                 <div class="col-auto">
-                  <a-button type="primary" ghost size="small">+ 订阅</a-button>
+                  <a-button type="primary" ghost size="small" @click="subscribe"
+                    >+ 订阅</a-button
+                  >
                 </div>
                 <div class="col-auto">
                   <a-button
@@ -61,7 +63,11 @@
           </div>
           <div>
             版主：
-            <BoardAdminList :admins="categoryModel.admins" />
+            <BoardAdminList
+              v-if="categoryModel.admins.length"
+              :admins="categoryModel.admins"
+            />
+            <span v-else>暂无</span>
           </div>
           <div>
             {{ categoryModel.category.description }}
@@ -89,6 +95,8 @@ import { BBSPostModel } from "../../store/interface";
 import BoardAdminList from "../../components/bbs/BoardAdminList.vue";
 import PostTable from "../../components/bbs/PostTable.vue";
 import Pagination from "../../components/common/Pagination.vue";
+import { UserApi } from "../../api";
+import { message } from "ant-design-vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -137,6 +145,15 @@ function renderData() {
         globalPosts.value = data;
       }
     });
+  }
+}
+
+async function subscribe() {
+  if (categoryModel.value) {
+    const {
+      data: { data, msg },
+    } = await UserApi.subscribe({ id: categoryModel.value.category.id });
+    data ? message.success(msg) : message.error(msg);
   }
 }
 </script>

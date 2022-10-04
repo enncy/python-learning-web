@@ -8,8 +8,8 @@ import { AntDesignVueResolver } from "unplugin-vue-components/resolvers";
 // https://vitejs.dev/config/
 export default defineConfig({
   build: {
-    emptyOutDir: false,
-    outDir: "../python-learning-server/src/main/resources/static",
+    emptyOutDir: true,
+    outDir: "../python-learning-server/src/main/resources/static/dist",
     // rollupOptions: {
     //   output: {
     //     manualChunks(id) {

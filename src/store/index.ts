@@ -4,10 +4,17 @@ import { Code, Compile, Role, User } from "./interface";
 
 export const config = reactive({
   version: 23,
-  name: "Python学习网",
-  copyright: "Copyright © 2022 Python学习网",
-  description:
-    "Python学习网 —— 拥有在线学习系统，在线代码测评系统，以及论坛系统，可以自学Python，对各种例子进行自测，与各大网友分享技术，共同建造和谐的开源社区",
+  common: {
+    icon_url: "",
+    name: "Python学习网",
+    copyright: "Copyright © 2022 Python学习网",
+    description:
+      "Python学习网 —— 拥有在线学习系统，在线代码测评系统，以及论坛系统，可以自学Python，对各种例子进行自测，与各大网友分享技术，共同建造和谐的开源社区",
+  },
+  admin: {
+    name: "Python学习网管理系统",
+  },
+
   baseURL: import.meta.env.VITE_BASE_URL,
   // 自适应宽度
   adaption: {

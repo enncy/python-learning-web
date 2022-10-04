@@ -10,6 +10,14 @@ body,
   padding: 0;
   overflow: auto;
   scroll-behavior: smooth;
+  background-color: #f8f8f8;
+}
+html ::selection,
+body ::selection,
+#app ::selection,
+.app-body ::selection {
+  color: white;
+  background-color: rgba(1, 81, 255, 0.507);
 }
 :root {
   --header-height: 48px;

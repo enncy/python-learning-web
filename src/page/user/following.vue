@@ -1,12 +1,12 @@
 <template>
   <Card>
-    <div v-if="follows?.length">
-      <template v-for="follow of follows">
+    <div v-if="followings?.length">
+      <template v-for="following of followings">
         <UserCard
           class="card"
           size="small"
-          :user="follow.user"
-          :info="follow.userInfo"
+          :user="following.following"
+          :info="following.followingInfo"
         ></UserCard>
       </template>
     </div>
@@ -27,7 +27,7 @@ const pagination = reactive({
   total: 10,
 });
 
-const follows = ref<UserFollowModel[]>();
+const followings = ref<UserFollowModel[]>();
 
 watch(
   () => [pagination.page, pagination.size],
@@ -41,9 +41,9 @@ onMounted(() => {
 });
 
 function renderData() {
-  UserApi.listFollow({ page: pagination.page, size: pagination.size }).then(
+  UserApi.listFollowing({ page: pagination.page, size: pagination.size }).then(
     ({ data: { data } }) => {
-      follows.value = data.records;
+      followings.value = data.records;
       pagination.total = data.total;
     }
   );

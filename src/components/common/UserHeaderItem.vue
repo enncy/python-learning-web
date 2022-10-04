@@ -4,7 +4,7 @@
       <a class="ant-dropdown-link" @click.prevent>
         <Avatar class="me-2" :size="32" :user="user"></Avatar>
         <span>
-          {{ store.user?.username || store.user?.nickname || "未登录" }}
+          {{ store.user?.nickname || store.user?.username || "未登录" }}
         </span>
       </a>
     </div>
@@ -20,7 +20,7 @@
       <div class="p-4 pb-0">
         <Avatar class="me-2" :size="32" :user="user"></Avatar>
         <span>{{
-          store.user?.username || store.user?.nickname || "未登录"
+          store.user?.nickname || store.user?.username || "未登录"
         }}</span>
         <a-divider></a-divider>
       </div>
@@ -34,7 +34,7 @@
         <a class="ant-dropdown-link" @click.prevent>
           <Avatar class="me-2" :size="32" :user="user"></Avatar>
           <span>
-            {{ store.user?.username || store.user?.nickname || "未登录" }}</span
+            {{ store.user?.nickname || store.user?.username || "未登录" }}</span
           >
         </a>
       </div>

@@ -339,6 +339,10 @@ export const routes: RouteRecordRaw[] = [
         component: () => import("../page/user/follow.vue"),
       },
       {
+        path: "following",
+        component: () => import("../page/user/following.vue"),
+      },
+      {
         path: "subscribe",
         component: () => import("../page/user/subscribe.vue"),
       },

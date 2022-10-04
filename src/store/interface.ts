@@ -66,9 +66,26 @@ export interface User {
   updateTime: number;
 }
 
+export interface UserInfo {
+  favoriteCount: number;
+  followCount: number;
+  followingCount: number;
+  subscribeCount: number;
+  followed: boolean;
+
+  postCount: number;
+  draftCount: number;
+  commentCount: number;
+  viewCount: number;
+}
+
 export interface UserModel {
   user: User;
-  postPage: Page<BBSPostModel>;
+  postModelPage: Page<BBSPostModel>;
+  subscribeModelPage: Page<UserSubscribeModel>;
+  followModelPage: Page<UserFollowModel>;
+  followingModelPage: Page<UserFollowModel>;
+  favoriteModelPage: Page<UserFavoriteModel>;
 }
 
 export interface BBSCategory {
@@ -167,4 +184,20 @@ export interface Page<T> {
   optimizeJoinOfCountSql: boolean;
   countId: string;
   maxLimit: number;
+}
+
+export interface UserSubscribeModel {
+  user: User;
+  categoryModel: BBSCategoryModel;
+}
+
+export interface UserFollowModel {
+  user: User;
+  userInfo: UserInfo;
+  following: User;
+  followingInfo: UserInfo;
+}
+export interface UserFavoriteModel {
+  user: User;
+  postModel: BBSPostModel;
 }

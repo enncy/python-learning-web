@@ -1,39 +1,47 @@
 <template>
-  <div>
-    <template v-for="(model, index) of comments" :key="index">
-      <div class="message">
-        <div class="row">
-          <div class="col-1">
-            <Avatar :size="42" :user="model.user"></Avatar>
-          </div>
-          <div class="col-11 row">
-            <div class="col-12">
-              <b>@{{ model.user.nickname || model.user.username }}</b>
-              <span>
-                在
-                <b
-                  class="post"
-                  @click="router.push('/bbs/post/' + model.post.id)"
-                >
-                  <MaxSpan :value="model.post.title" :length="50"></MaxSpan>
-                </b>
-                -
-                <b>{{ model.comment.level }}楼</b>
-                <span class="text-secondary ms-3"> 提及到你</span>
-              </span>
+  <Card>
+    <div v-if="comments?.length">
+      <template v-for="(model, index) of comments" :key="index">
+        <div class="message">
+          <div class="row">
+            <div class="col-1">
+              <Avatar :size="42" :user="model.user"></Avatar>
             </div>
-            <div class="col-12 text-secondary">
-              {{ model.comment.content }}
+            <div class="col-11 row">
+              <div class="col-12">
+                <b>@{{ model.user.nickname || model.user.username }}</b>
+                <span>
+                  在
+                  <b
+                    class="post"
+                    @click="router.push('/bbs/post/' + model.post.id)"
+                  >
+                    <MaxSpan :value="model.post.title" :length="50"></MaxSpan>
+                  </b>
+                  -
+                  <b>{{ model.comment.level }}楼</b>
+                  <span class="text-secondary ms-3"> 提及到你</span>
+                  <a-divider type="vertical" />
+                  <span class="text-secondary">
+                    {{ getElapsedTime(model.comment.createTime) }}前
+                  </span>
+                </span>
+              </div>
+              <div class="col-12 text-secondary">
+                {{ model.comment.content }}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </template>
-
-    <div class="mt-3 text-end">
+      </template>
+    </div>
+    <div v-else>
+      <a-empty></a-empty>
+    </div>
+    <div class="mt-3 text-center">
       <Pagination v-model:pagination="pagination"></Pagination>
     </div>
-  </div>
+  </Card>
 </template>
 <script setup lang="ts">
 import { onMounted, reactive, ref, watch } from "vue";
@@ -43,6 +51,7 @@ import Avatar from "../../components/common/Avatar.vue";
 import Pagination from "../../components/common/Pagination.vue";
 import MaxSpan from "../../components/common/MaxSpan.vue";
 import { router } from "../../router";
+import { getElapsedTime } from "../../utils";
 
 const pagination = reactive({
   page: 1,

@@ -15,6 +15,7 @@ import AdminTableVue from "../../../components/common/AdminTable.vue";
 
 import { AdminTable, createDefaultColumnFactory } from "../../../utils/admin";
 import Card from "../../../components/common/Card.vue";
+import { max } from "../../../utils";
 
 const table = ref(
   new AdminTable({
@@ -24,6 +25,10 @@ const table = ref(
     tableName: "system_config",
     hideColumns: ["version", "deleted", "id"],
     columnFactory: {
+      value: {
+        customRender: ({ value }) => max(value, 50),
+      },
+
       ...createDefaultColumnFactory(),
     },
     page: 1,

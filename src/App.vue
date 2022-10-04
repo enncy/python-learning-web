@@ -25,11 +25,8 @@ const fieldname = `store-${config.version}`;
 onBeforeMount(() => {
   const localStore = JSON.parse(localStorage.getItem(fieldname) || "{}");
   Object.assign(store, localStore);
-});
 
-onMounted(async () => {
-  console.log({ store, config });
-
+  // 初始化配置
   CommonApi.listConfig().then(({ data: { data } }) => {
     if (data) {
       for (const item of data) {
@@ -41,12 +38,15 @@ onMounted(async () => {
             : item.type === "date"
             ? new Date(item.value)
             : item.value;
-        console.log(item.key, value);
 
         set(config, item.key, value);
       }
     }
   });
+});
+
+onMounted(async () => {
+  console.log({ store, config });
 
   window.addEventListener("beforeunload", () => {
     localStorage.setItem(fieldname, JSON.stringify(store));

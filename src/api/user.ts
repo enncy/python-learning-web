@@ -1,4 +1,10 @@
-import { UserModel } from "./../store/interface";
+import {
+  UserFavoriteModel,
+  UserFollowModel,
+  UserInfo,
+  UserModel,
+  UserSubscribeModel,
+} from "./../store/interface";
 import { request } from "../request";
 import { BBSCommentModel, BBSPostModel, Page, User } from "../store/interface";
 import { ApiResponse } from "./interface";
@@ -17,8 +23,16 @@ export const UserApi = {
     username?: string;
     email?: string;
     slug?: string;
-    page: number;
-    size: number;
+    postPage: number;
+    postSize: number;
+    followPage: number;
+    followSize: number;
+    followingPage: number;
+    followingSize: number;
+    favoritePage: number;
+    favoriteSize: number;
+    subscribePage: number;
+    subscribeSize: number;
   }) {
     return request.get<ApiResponse<UserModel>>("/user/model", {
       params: wrapper,
@@ -90,6 +104,75 @@ export const UserApi = {
   listMessage(wrapper: { page: number; size: number }) {
     return request.get<ApiResponse<Page<BBSCommentModel>>>(
       "/user/list/message",
+      {
+        params: wrapper,
+      }
+    );
+  },
+  favorite(wrapper: { id: string }) {
+    return request.get<ApiResponse<boolean>>("/user/favorite", {
+      params: wrapper,
+    });
+  },
+  cancelFavorite(wrapper: { id: string }) {
+    return request.get<ApiResponse<boolean>>("/user/cancel-favorite", {
+      params: wrapper,
+    });
+  },
+  subscribe(wrapper: { id: string }) {
+    return request.get<ApiResponse<boolean>>("/user/subscribe", {
+      params: wrapper,
+    });
+  },
+  cancelSubscribe(wrapper: { id: string }) {
+    return request.get<ApiResponse<boolean>>("/user/cancel-subscribe", {
+      params: wrapper,
+    });
+  },
+  follow(wrapper: { id: string }) {
+    return request.get<ApiResponse<boolean>>("/user/follow", {
+      params: wrapper,
+    });
+  },
+  cancelFollow(wrapper: { id: string }) {
+    return request.get<ApiResponse<boolean>>("/user/cancel-follow", {
+      params: wrapper,
+    });
+  },
+  userInfo(wrapper: { id: string }) {
+    return request.get<ApiResponse<UserInfo>>("/user-info", {
+      params: wrapper,
+    });
+  },
+  /** 获取粉丝列表 */
+  listFollow(wrapper: { page: number; size: number }) {
+    return request.get<ApiResponse<Page<UserFollowModel>>>(
+      "/user/list-follow",
+      {
+        params: wrapper,
+      }
+    );
+  },
+  /** 获取关注列表 */
+  listFollowing(wrapper: { page: number; size: number }) {
+    return request.get<ApiResponse<Page<UserFollowModel>>>(
+      "/user/list-following",
+      {
+        params: wrapper,
+      }
+    );
+  },
+  listFavorite(wrapper: { page: number; size: number }) {
+    return request.get<ApiResponse<Page<UserFavoriteModel>>>(
+      "/user/list-favorite",
+      {
+        params: wrapper,
+      }
+    );
+  },
+  listSubscribe(wrapper: { page: number; size: number }) {
+    return request.get<ApiResponse<Page<UserSubscribeModel>>>(
+      "/user/list-subscribe",
       {
         params: wrapper,
       }

@@ -3,7 +3,11 @@
     <div class="page" v-if="user">
       <div class="row">
         <div class="col-lg-2 col-12 h-100">
-          <a-menu class="h-100" mode="vertical" v-model:active-key="activeKey">
+          <a-menu
+            class="user-information-menu h-100"
+            mode="vertical"
+            v-model:active-key="activeKey"
+          >
             <a-menu-item
               key="information"
               @click="router.push('/user/information')"
@@ -15,7 +19,7 @@
               @click="router.push('/user/message'), readMessage()"
             >
               <a-badge :count="user.messageCount">
-                <div class="pe-3">消息</div>
+                <div class="pe-3">我的消息</div>
               </a-badge>
             </a-menu-item>
 
@@ -23,6 +27,12 @@
               我的论坛
             </a-menu-item>
             <a-menu-item key="follow" @click="router.push('/user/follow')">
+              我的粉丝
+            </a-menu-item>
+            <a-menu-item
+              key="following"
+              @click="router.push('/user/following')"
+            >
               我的关注
             </a-menu-item>
             <a-menu-item key="favorite" @click="router.push('/user/favorite')">
@@ -82,7 +92,12 @@ function readMessage() {
   }
 }
 </script>
+
 <style scoped lang="less">
+.user-information-menu {
+  background-color: inherit;
+}
+
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.15s ease;

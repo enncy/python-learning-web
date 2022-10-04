@@ -46,7 +46,7 @@
           </td>
 
           <td>
-            <template v-if="item.commentPage.records.length">
+            <template v-if="item.commentPage.records[0]?.user">
               <div>
                 {{
                   item.commentPage.records[0].user.nickname ||
@@ -56,7 +56,7 @@
               <div class="text-secondary sm">
                 {{
                   getElapsedTime(
-                    item.commentPage.records[0]?.comment.updateTime
+                    item.commentPage.records[0].comment.updateTime
                   )
                 }}前
               </div>
@@ -85,7 +85,7 @@ import { BBSPostModel } from "../../store/interface";
 import { getElapsedTime } from "../../utils";
 import MaxSpan from "../common/MaxSpan.vue";
 
-defineProps<{
+const props = defineProps<{
   posts: BBSPostModel[];
 }>();
 

@@ -1,7 +1,7 @@
 <template>
   <div class="h-100 w-100">
     <Header
-      class="w-100 p-2 p-lg-0"
+      class="w-100 p-2 p-lg-0 bg-white"
       :class="{
         'shadow-sm': noShadow ? false : true,
       }"

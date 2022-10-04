@@ -77,7 +77,7 @@
         </div>
         <div class="d-flex mt-3 align-items-center justify-content-center">
           <a-space size="large">
-            <div class="text-center post-actions">
+            <div @click="favorite" class="text-center post-actions">
               <Icon
                 type="icon-star-fill"
                 class="fs-1 post-action-icon"
@@ -121,7 +121,7 @@
               ok-text="确定"
               cancel-text="取消"
               title="确定删除此评论吗？"
-              @ok="removeComment(commentModel?.comment.id!)"
+              @confirm="removeComment(commentModel?.comment.id!)"
             >
               <span class="footer-action">
                 <Icon type="icon-delete" /> 删除
@@ -169,7 +169,7 @@ import Icon from "../common/Icon.vue";
 import MarkdownText from "../common/MarkdownText.vue";
 import SimplifyModel from "../common/SimplifyModel.vue";
 import MarkdownEditor from "../common/MarkdownEditor.vue";
-import { BBSApi } from "../../api";
+import { BBSApi, UserApi } from "../../api";
 import MaxSpan from "../common/MaxSpan.vue";
 import { store } from "../../store";
 
@@ -221,6 +221,10 @@ function removeComment(id: string) {
   BBSApi.removeComment({ id }).then(({ data: { data, msg } }) => {
     data ? message.success(msg) : message.error(msg);
   });
+}
+async function favorite() {
+  await UserApi.favorite({ id: props.postId });
+  message.success("收藏成功");
 }
 </script>
 <style scoped lang="less">

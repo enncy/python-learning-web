@@ -2,7 +2,7 @@
   <a-select
     v-if="opts.length"
     :options="opts"
-    defaultValue="用户"
+    :defaultValue="opts[0]"
     :disabled="schema.disabled"
   ></a-select>
 </template>

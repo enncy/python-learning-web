@@ -5,7 +5,7 @@
       collapsed-width="0"
       v-model:collapsed="collapsed"
     >
-      <div class="logo" :class="{ collapsed }">Python学习网管理系统</div>
+      <div class="logo" :class="{ collapsed }">{{ config.admin.name }}</div>
       <Menus
         v-model:selectedKeys="store.admin.selectedKeys"
         v-model:open-keys="store.admin.openedKeys"
@@ -54,7 +54,7 @@ import { useRoute, useRouter } from "vue-router";
 import Menus from "../../components/common/Menus.vue";
 import { routes } from "../../router";
 import UserHeaderItem from "../../components/common/UserHeaderItem.vue";
-import { store } from "../../store";
+import { store, config } from "../../store";
 
 const router = useRouter();
 

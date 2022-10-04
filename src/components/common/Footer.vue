@@ -1,10 +1,10 @@
 <template>
   <div class="text-secondary">
     <div>
-      {{ config.copyright }}
+      {{ config.common.copyright }}
     </div>
     <div>
-      {{ config.description }}
+      {{ config.common.description }}
     </div>
   </div>
 </template>

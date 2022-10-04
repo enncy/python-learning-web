@@ -1,5 +1,5 @@
 <template>
-  <h2 class="m-0 ms-lg-5 me-lg-5">{{ config.name }}</h2>
+  <h2 class="m-0 ms-lg-5 me-lg-5">{{ config.common.name }}</h2>
 </template>
 <script setup lang="ts">
 import { config } from "../../store";
