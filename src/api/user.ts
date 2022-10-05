@@ -3,6 +3,7 @@ import {
   UserFollowModel,
   UserInfo,
   UserModel,
+  UserNotify,
   UserSubscribeModel,
 } from "./../store/interface";
 import { request } from "../request";
@@ -177,5 +178,10 @@ export const UserApi = {
         params: wrapper,
       }
     );
+  },
+  listNotify(wrapper: { page: number; size: number }) {
+    return request.get<ApiResponse<Page<UserNotify>>>("/user/list-notify", {
+      params: wrapper,
+    });
   },
 };

@@ -201,3 +201,10 @@ export interface UserFavoriteModel {
   user: User;
   postModel: BBSPostModel;
 }
+
+export interface UserNotify {
+  userId: string;
+  postId: string;
+  title: string;
+  content: string;
+}

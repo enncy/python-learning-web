@@ -23,6 +23,10 @@
               </a-badge>
             </a-menu-item>
 
+            <a-menu-item key="notify" @click="router.push('/user/notify')">
+              系统通知
+            </a-menu-item>
+
             <a-menu-item key="bbs" @click="router.push('/user/bbs')">
               我的论坛
             </a-menu-item>

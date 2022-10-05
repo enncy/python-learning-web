@@ -75,6 +75,14 @@ export const routes: RouteRecordRaw[] = [
               title: "订阅列表",
             },
           },
+          {
+            path: "notify",
+            component: () => import("../page/admin/user/notify.vue"),
+            name: "admin-notify-list",
+            meta: {
+              title: "通知列表",
+            },
+          },
         ],
       },
       {
@@ -131,7 +139,7 @@ export const routes: RouteRecordRaw[] = [
             name: "admin-bbs-tag-list",
             component: () => import("../page/admin/bbs/tag.vue"),
             meta: {
-              title: "主题管理",
+              title: "标签管理",
             },
           },
         ],
@@ -346,6 +354,10 @@ export const routes: RouteRecordRaw[] = [
         path: "subscribe",
         component: () => import("../page/user/subscribe.vue"),
       },
+      {
+        path: "notify",
+        component: () => import("../page/user/notify.vue"),
+      },
     ],
   },
   {
@@ -358,7 +370,7 @@ export const routes: RouteRecordRaw[] = [
   },
   {
     path: "/:pathMatch(.*)*",
-    component: () => import("../page/common/error.vue"),
+    component: () => import("../page/common/404.vue"),
   },
 ];
 

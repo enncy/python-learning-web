@@ -24,12 +24,6 @@ const table = ref(
     tableName: "user_follow",
     hideColumns: ["version", "deleted", "id"],
     columnFactory: {
-      profile: {
-        ellipsis: true,
-      },
-      role: {
-        customRender: ({ value }) => getRole(value).desc,
-      },
       ...createDefaultColumnFactory(),
     },
     page: 1,

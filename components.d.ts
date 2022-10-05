@@ -77,6 +77,7 @@ declare module '@vue/runtime-core' {
     Menus: typeof import('./src/components/common/Menus.vue')['default']
     MonacoEditor: typeof import('./src/components/common/compiler/MonacoEditor.vue')['default']
     NewFile: typeof import('./src/components/common/compiler/NewFile.vue')['default']
+    NotFound: typeof import('./src/components/common/NotFound.vue')['default']
     Pagination: typeof import('./src/components/common/Pagination.vue')['default']
     PostList: typeof import('./src/components/bbs/PostList.vue')['default']
     PostTable: typeof import('./src/components/bbs/PostTable.vue')['default']

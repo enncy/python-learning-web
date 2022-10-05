@@ -21,7 +21,7 @@ const table = ref(
     schemas: [],
     columns: [],
     dataSource: [],
-    tableName: "user_favorite",
+    tableName: "user_notify",
     hideColumns: ["version", "deleted", "id"],
     columnFactory: {
       ...createDefaultColumnFactory(),

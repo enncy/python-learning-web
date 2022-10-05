@@ -52,7 +52,7 @@
             <td><TagList v-model:tags="tags"></TagList></td>
           </tr>
           <tr>
-            <td>草稿:</td>
+            <td>公开:</td>
             <td><a-switch v-model:checked="post.published"></a-switch></td>
           </tr>
           <tr>
@@ -73,7 +73,7 @@
 import { onMounted, reactive, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { BBSApi } from "../../api";
-import { BBSCategoryModel, BBSPostModel } from "../../store/interface";
+import { BBSPostModel } from "../../store/interface";
 import Card from "../../components/common/Card.vue";
 import Icon from "../../components/common/Icon.vue";
 import MarkdownEditor from "../../components/common/MarkdownEditor.vue";
@@ -126,9 +126,8 @@ onMounted(() => {
   ) {
     // 获取修改文章
     BBSApi.getPostModel({ id: route.params.postId, page: 1, size: 1 }).then(
-      ({ data: { data: d } }) => {
-        if (d) {
-          const data: BBSPostModel = d;
+      ({ data: { data } }) => {
+        if (data) {
           Object.assign(post, data.post);
           post.pinned = !!post.pinned;
           post.published = !!post.published;
