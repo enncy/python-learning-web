@@ -52,6 +52,13 @@
             v-model:checked="search.banned"
           ></a-switch>
         </div>
+        <div class="col-12 col-md-4 col-lg-3 search-item">
+          <a-switch
+            checked-children="已删除"
+            un-checked-children="已删除"
+            v-model:checked="search.removed"
+          ></a-switch>
+        </div>
 
         <div class="col-12 col-md-4 col-lg-3">
           <a-space>
@@ -91,6 +98,7 @@ const search = reactive({
   content: "",
   recommend: false,
   banned: false,
+  removed: false,
 });
 
 const searchResult = ref<BBSPost[]>([]);

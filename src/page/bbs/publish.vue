@@ -114,6 +114,7 @@ onMounted(() => {
     }).then(({ data: { data } }) => {
       if (data) {
         categoryName.value = data.category.name;
+        boardName.value = data.board.name;
         post.boardId = data.board.id;
         post.categoryId = data.category.id;
       } else {

@@ -28,7 +28,13 @@
         </template>
         <template #tail="{ post }">
           <td>
-            {{ post.post.published ? "公开" : "草稿" }}
+            {{
+              post.post.removed
+                ? "已删除"
+                : post.post.published
+                ? "公开"
+                : "草稿"
+            }}
           </td>
           <td>
             <a-button

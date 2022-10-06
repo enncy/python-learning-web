@@ -20,8 +20,8 @@ onMounted(() => {
     // https://github.com/josdejong/jsoneditor/blob/master/docs/api.md#configuration-options
 
     const options = {
-      onChangeJSON(json: any) {
-        emits("change", JSON.stringify(json, null, 4));
+      onChangeText(json: any) {
+        emits("change", json);
       },
     };
 

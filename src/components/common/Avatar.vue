@@ -5,6 +5,7 @@
     @click="go('/@' + (user?.slug || user?.username))"
     :src="`${config.baseURL}/avatar?id=${user.id}`"
   ></a-avatar>
+  <a-avatar v-else></a-avatar>
 </template>
 <script setup lang="ts">
 import { useRouter } from "vue-router";

@@ -112,6 +112,7 @@ export interface BBSPost {
   pinned: boolean;
   banned: boolean;
   globalPinned: boolean;
+  removed: boolean;
   createTime: number;
   updateTime: number;
 }

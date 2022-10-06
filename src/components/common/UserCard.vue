@@ -6,17 +6,18 @@
       </span>
     </div>
     <div class="text-center text-lg-start">
-      <div>
-        <span :style="{ fontSize: theme[size].fontSize }">
+      <div :style="{ fontSize: theme[size].fontSize }">
+        <span v-if="user">
           {{ user.nickname || user.username }}
         </span>
+        <span v-else> 该用户不存在 </span>
       </div>
       <div>
-        <span :style="{ fontSize: theme[size].profileSize }">
+        <span v-if="user" :style="{ fontSize: theme[size].profileSize }">
           {{ user.profile || "此用户暂无任何简介~" }}
         </span>
       </div>
-      <div class="text-secondary">
+      <div class="text-secondary" v-if="user">
         <span> 帖子: {{ info.postCount }} </span>
         <a-divider type="vertical" />
         <span> 积分: {{ user.credit }} </span>

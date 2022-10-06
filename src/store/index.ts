@@ -3,7 +3,7 @@ import { CommonApi } from "../api/common";
 import { Code, Compile, Role, User } from "./interface";
 
 export const config = reactive({
-  version: 23,
+  version: 24,
   common: {
     icon_url: "",
     name: "Python学习网",
@@ -123,8 +123,13 @@ export const config = reactive({
         icon: "icon-star",
       },
       {
-        path: "/user/follow",
+        path: "/user/following",
         name: "我的关注",
+        icon: "icon-heart",
+      },
+      {
+        path: "/user/follow",
+        name: "我的粉丝",
         icon: "icon-heart",
       },
       {
@@ -154,7 +159,7 @@ export const config = reactive({
     admin: [],
     root: [
       {
-        path: "/admin",
+        href: "/admin",
         name: "后台管理",
         icon: "icon-piechart",
       },

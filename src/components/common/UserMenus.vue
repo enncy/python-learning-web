@@ -3,7 +3,7 @@
     <template v-for="item of menus" :key="item.path">
       <a-menu-item>
         <component v-if="item.component" :is="item.component"></component>
-        <div v-if="item.path" class="item" @click="router.push(item.path!)">
+        <div v-if="item.path || item.href" class="item" @click="link(item)">
           <Icon v-if="item.icon" class="ms-2 me-2" :type="item.icon" />
           <span> {{ item.name }} </span>
         </div>
@@ -35,6 +35,16 @@ defineProps<{
   menus: any;
   adaption: boolean;
 }>();
+
+function link(item: any) {
+  console.log(item);
+
+  if (item.href) {
+    window.open(item.href, "_blank");
+  } else if (item.path) {
+    router.push(item.path);
+  }
+}
 </script>
 <style scoped lang="less">
 .item {

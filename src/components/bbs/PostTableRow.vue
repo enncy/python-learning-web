@@ -1,7 +1,7 @@
 <template>
   <tr v-if="model" class="meta-row">
     <td class="text-nowrap fw-bold sm text-center">
-      {{ model.user.nickname || model.user.username }}
+      {{ model.user ? model.user.nickname || model.user.username : "已注销" }}
     </td>
     <td>
       <div class="text-secondary sm ms-3">
@@ -24,20 +24,22 @@
         :size="124"
         :user="model.user"
       ></Avatar>
-      <div class="mt-2">
+      <div class="mt-2" v-if="model.user">
         身份 : {{ getRole(model.user.role || "visitor").desc }}
       </div>
-      <div>
+      <div v-if="model.user">
         注册 :
-        {{ dayjs(commentModel?.user.createTime).format("YYYY-MM-DD") }}
+        {{ dayjs(model.user.createTime).format("YYYY-MM-DD") }}
       </div>
     </td>
     <td>
       <template v-if="commentModel?.parent">
         <div class="m-3 border rounded p-2 parent-comment">
           回复 {{ commentModel.parent.comment.level }}楼 @{{
-            commentModel.parent.user.nickname ||
-            commentModel.parent.user.username
+            commentModel.parent.user
+              ? commentModel.parent.user.nickname ||
+                commentModel.parent.user.username
+              : "已注销"
           }}
           :
           <MaxSpan
@@ -116,7 +118,9 @@
             评论
           </span>
 
-          <template v-if="commentModel.user.id === store.user?.id">
+          <template
+            v-if="commentModel.user && commentModel.user.id === store.user?.id"
+          >
             <a-popconfirm
               ok-text="确定"
               cancel-text="取消"
@@ -132,7 +136,9 @@
 
         <SimplifyModel
           :title="`回复 @${
-            commentModel.user.nickname || commentModel.user.username
+            commentModel.user
+              ? commentModel.user.nickname || commentModel.user.username
+              : '已注销'
           }`"
           :width="1000"
           v-model:visible="replyModelVisible"
@@ -199,6 +205,8 @@ const reply = reactive({
 
 const model = props.postModel || props.commentModel;
 
+console.log("model", model);
+
 function copyLink() {
   navigator.clipboard.writeText(document.location.href);
   message.success("复制成功！");
@@ -207,7 +215,7 @@ function copyLink() {
 function onReply(model: BBSCommentModel) {
   replyingComment.value = model.comment;
   reply.parentId = model.comment.id;
-  reply.parentUserId = model.user.id;
+  reply.parentUserId = model.user?.id;
   replyModelVisible.value = true;
 }
 

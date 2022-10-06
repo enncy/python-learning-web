@@ -27,8 +27,7 @@
 import { onMounted, reactive, ref, watch } from "vue";
 import { UserApi } from "../../api";
 import { UserNotify } from "../../store/interface";
-import Card from "../../components/common/Card.vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 
 const router = useRouter();
 
