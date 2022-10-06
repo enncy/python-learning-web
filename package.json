@@ -11,8 +11,11 @@
   },
   "dependencies": {
     "@ant-design/icons-vue": "^6.1.0",
+    "@kurkle/color": "^0.2.1",
     "ant-design-vue": "^3.2.12",
     "axios": "^0.27.2",
+    "chart.js": "^3.9.1",
+    "chartjs-plugin-datalabels": "^2.1.0",
     "dayjs": "^1.11.5",
     "highlight.js": "^11.6.0",
     "less": "^4.1.3",

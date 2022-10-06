@@ -1,5 +1,5 @@
 import { request } from "../request";
-import { Page, Schema } from "../store/interface";
+import { Page, Schema, Statistic } from "../store/interface";
 import { ApiResponse } from "./interface";
 import { parseEntity } from "./utils";
 
@@ -44,5 +44,8 @@ export const AdminApi = {
     return request.get<ApiResponse<any>>("/admin/get-by-id", {
       params: wrapper,
     });
+  },
+  statistic() {
+    return request.get<ApiResponse<Statistic>>("/admin/statistic");
   },
 };

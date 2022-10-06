@@ -35,6 +35,33 @@ export const routes: RouteRecordRaw[] = [
         },
       },
       {
+        path: "statistic",
+        name: "admin-statistic",
+        component: () => import("../page/admin/statistic/index.vue"),
+        meta: {
+          icon: "icon-barchart",
+          title: "统计管理",
+        },
+        children: [
+          {
+            path: "system",
+            name: "admin-statistic-system",
+            component: () => import("../page/admin/statistic/system.vue"),
+            meta: {
+              title: "系统统计",
+            },
+          },
+          {
+            path: "category",
+            name: "admin-statistic-category",
+            component: () => import("../page/admin/statistic/category.vue"),
+            meta: {
+              title: "分区统计",
+            },
+          },
+        ],
+      },
+      {
         path: "user",
         name: "admin-user",
         component: () => import("../page/admin/user/index.vue"),

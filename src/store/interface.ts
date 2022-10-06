@@ -209,3 +209,34 @@ export interface UserNotify {
   title: string;
   content: string;
 }
+
+export interface StatisticSystem {
+  registerCount: number;
+  loginCount: number;
+  articleViewCount: number;
+  postViewCount: number;
+  newPostCount: number;
+  newCommentCount: number;
+  compileCount: number;
+  date: string;
+}
+
+export interface StatisticCategory {
+  categoryId: number;
+  categoryName: string;
+  viewCount: number;
+  postViewCount: number;
+  newPostCount: number;
+  newCommentCount: number;
+  subscribeCount: number;
+  date: string;
+}
+
+export interface Statistic {
+  totalUserCount: number;
+  totalArticleCount: number;
+  totalPostCount: number;
+  totalCommentCount: number;
+  statisticCategories: StatisticCategory[];
+  statisticSystems: StatisticSystem[];
+}

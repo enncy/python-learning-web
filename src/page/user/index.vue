@@ -78,14 +78,14 @@ const user = ref(store.user);
 
 if (store.user) {
   // 更新用户信息
-  UserApi.login({
-    type: "password",
-    username: store.user.username,
-    password: store.user.password,
-  }).then(({ data: { data } }) => {
-    store.user = data;
-    user.value = data;
-  });
+  // UserApi.login({
+  //   type: "password",
+  //   username: store.user.username,
+  //   password: store.user.password,
+  // }).then(({ data: { data } }) => {
+  //   store.user = data;
+  //   user.value = data;
+  // });
 }
 
 function readMessage() {
