@@ -10,7 +10,7 @@
               componentMapping.find((c) => c.type === schema.type)?.component ||
               null
             "
-            :entity="entity"
+            v-model:entity="entity"
             :schema="schema"
             v-model:value="(entity as any)[schema.name]"
           ></component>
@@ -33,6 +33,8 @@ import Textarea from "./admin/Textarea.vue";
 import ExternalSelect from "./admin/ExternalSelect.vue";
 import AdminMarkdown from "./admin/AdminMarkdown.vue";
 import SystemConfigInput from "./admin/SystemConfigInput.vue";
+import AdminUploadImage from "./admin/AdminUploadImage.vue";
+import Resource from "./admin/Resource.vue";
 import SimplifyModel from "./SimplifyModel.vue";
 
 defineProps<{
@@ -72,6 +74,11 @@ const componentMapping = [
   {
     type: "system-config-input",
     component: SystemConfigInput,
+  },
+
+  {
+    type: "resource",
+    component: Resource,
   },
 ];
 </script>

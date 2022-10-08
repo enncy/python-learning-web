@@ -2,8 +2,12 @@
   <div>
     <template v-for="(categoryModel, index) of categoryModels" :key="index">
       <div class="category row">
-        <div class="col-3 col-lg-1">
-          <a-avatar shape="square" :size="42"></a-avatar>
+        <div class="col-3 col-lg-2 text-center">
+          <a-avatar
+            shape="square"
+            :size="64"
+            :src="ResourceApi.of({ id: categoryModel.category.id })"
+          ></a-avatar>
         </div>
         <div class="col-9 col-lg-3">
           <div
@@ -26,7 +30,7 @@
         </div>
         <div
           v-if="categoryModel.postPage.records[0]"
-          class="col-lg-8 d-none d-lg-block category-post"
+          class="col-lg-7 d-none d-lg-block category-post"
           @click="
             router.push(
               '/bbs/post/' + categoryModel.postPage.records[0].post.id
@@ -49,7 +53,7 @@
             }}
           </div>
         </div>
-        <div v-else class="col-lg-8 d-none d-lg-block category-post">
+        <div v-else class="col-lg-7 d-none d-lg-block category-post">
           <div>暂无帖子</div>
           <div></div>
         </div>
@@ -59,6 +63,8 @@
 </template>
 <script setup lang="ts">
 import { useRouter } from "vue-router";
+import { ResourceApi } from "../../api";
+import { config } from "../../store";
 import { BBSCategoryModel } from "../../store/interface";
 import { getElapsedTime } from "../../utils";
 

@@ -218,7 +218,7 @@ export interface StatisticSystem {
   newPostCount: number;
   newCommentCount: number;
   compileCount: number;
-  date: string;
+  recordDate: number;
 }
 
 export interface StatisticCategory {
@@ -229,7 +229,7 @@ export interface StatisticCategory {
   newPostCount: number;
   newCommentCount: number;
   subscribeCount: number;
-  date: string;
+  recordDate: number;
 }
 
 export interface Statistic {
@@ -239,4 +239,16 @@ export interface Statistic {
   totalCommentCount: number;
   statisticCategories: StatisticCategory[];
   statisticSystems: StatisticSystem[];
+}
+
+export interface SystemResource {
+  id: string;
+  resource: File;
+  absolutePath: string;
+  type: string;
+  size: number;
+  originalName: string;
+  folder: "avatar" | "image" | "video" | "other";
+  invalid: boolean;
+  filename: string;
 }

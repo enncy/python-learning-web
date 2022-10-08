@@ -7,4 +7,9 @@ export const UploadApi = {
       headers: { "Content-Type": "multipart/form-data" },
     });
   },
+  image(form: FormData) {
+    return request.post<ApiResponse<boolean>>("/upload-image", form, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+  },
 };

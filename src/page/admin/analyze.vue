@@ -2,16 +2,16 @@
   <div>
     <div class="statistic-items" v-if="statistic">
       <div class="statistic-item">
-        <a-statistic title="用户数量" :value="statistic.totalUserCount" />
+        <a-statistic title="用户总数" :value="statistic.totalUserCount" />
       </div>
       <div class="statistic-item">
-        <a-statistic title="教程数量" :value="statistic.totalArticleCount" />
+        <a-statistic title="教程总数" :value="statistic.totalArticleCount" />
       </div>
       <div class="statistic-item">
-        <a-statistic title="帖子数量" :value="statistic.totalPostCount" />
+        <a-statistic title="帖子总数" :value="statistic.totalPostCount" />
       </div>
       <div class="statistic-item">
-        <a-statistic title="评论数量" :value="statistic.totalCommentCount" />
+        <a-statistic title="评论总数" :value="statistic.totalCommentCount" />
       </div>
     </div>
     <div class="statistic-todays">
@@ -24,12 +24,12 @@
             <h3 class="mb-1 col-6">今日分区统计</h3>
             <div class="mb-1 col-6 d-flex justify-content-end">
               <a-select
-                v-if="categoryStatistics.length"
+                v-if="todayCategoryStatistics?.length"
                 style="width: 100px"
                 size="small"
                 v-model:value="currentCategoryStatisticName"
                 :options="
-                  categoryStatistics?.map((s) => ({
+                  todayCategoryStatistics?.map((s) => ({
                     label: s.name,
                     value: s.name,
                   }))
@@ -39,20 +39,33 @@
           </div>
         </template>
 
-        <canvas height="200" width="400" ref="categoryChartContainer"> </canvas>
+        <div v-show="currentCategoryStatistics?.statistics.length">
+          <canvas height="200" width="400" ref="categoryChartContainer">
+          </canvas>
+        </div>
+
+        <div
+          v-if="
+            currentCategoryStatistics === undefined ||
+            currentCategoryStatistics.statistics.length === 0
+          "
+        >
+          <a-empty></a-empty>
+        </div>
       </Card>
     </div>
   </div>
 </template>
 <script setup lang="ts">
-import { nextTick, onBeforeMount, onMounted, ref, watch } from "vue";
+import { computed, nextTick, onBeforeMount, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { AdminApi } from "../../api";
 import { Statistic, StatisticCategory } from "../../store/interface";
 import { Chart, ChartConfiguration, registerables } from "chart.js";
 import Card from "../../components/common/Card.vue";
 import dayjs from "dayjs";
-import colorLib from "@kurkle/color";
+import { getBackgroundColors } from "../../utils/chart";
+
 import ChartDataLabels from "chartjs-plugin-datalabels";
 
 interface CategoryStatistic {
@@ -67,80 +80,83 @@ const route = useRoute();
 const systemChartContainer = ref();
 const categoryChartContainer = ref();
 const statistic = ref<Statistic>();
-const currentCategoryStatisticName = ref<string>();
+const currentCategoryStatisticName = ref<string>("");
+const currentCategoryStatistics = computed(() =>
+  categoryStatistics.value.find(
+    (s) => s.name === currentCategoryStatisticName.value
+  )
+);
 const categoryStatistics = ref<CategoryStatistic[]>([]);
+const todayCategoryStatistics = ref<CategoryStatistic[]>([]);
 
-const CHART_COLORS = {
-  red: "rgb(255, 99, 132)",
-  orange: "rgb(255, 159, 64)",
-  yellow: "rgb(255, 205, 86)",
-  green: "rgb(75, 192, 192)",
-  blue: "rgb(54, 162, 235)",
-  purple: "rgb(153, 102, 255)",
-  grey: "rgb(201, 203, 207)",
-};
+function getChartConfig(chartData: any[]): Partial<ChartConfiguration> {
+  return {
+    options: {
+      plugins: {
+        legend: {
+          display: false,
+        },
+        datalabels: {
+          anchor: "end",
+        },
+      },
+      scales: {
+        yAxis: {
+          display: true,
+          max: Math.max(...chartData) + 2,
+        },
+      },
+    },
+    plugins: [ChartDataLabels],
+  };
+}
 
-function transparentize(value: string, opacity: number) {
-  var alpha = opacity === undefined ? 0.6 : 1 - opacity;
-  return colorLib(value).alpha(alpha).rgbString();
+function sameDate(date: number) {
+  const d = new Date(date);
+  return (
+    d.getDate() === new Date().getDate() &&
+    d.getMonth() === new Date().getMonth() &&
+    d.getFullYear() === new Date().getFullYear()
+  );
 }
 
 onMounted(() => {
   nextTick(() => {
     AdminApi.statistic().then(({ data: { data } }) => {
       statistic.value = data;
-      const todaySystem = statistic.value.statisticSystems[0];
-      const chartData = [
-        todaySystem.registerCount,
-        todaySystem.loginCount,
-        todaySystem.postViewCount,
-        todaySystem.newPostCount,
-        todaySystem.newCommentCount,
-        todaySystem.articleViewCount,
-      ];
-      const systemChart = new Chart(systemChartContainer.value, {
-        type: "bar",
-        data: {
-          labels: [
-            "注册数",
-            "登录数",
-            "帖子浏览",
-            "新帖",
-            "新评论",
-            "文章浏览",
-          ],
-          datasets: [
-            {
-              backgroundColor: [
-                transparentize(CHART_COLORS.red, 0.6),
-                transparentize(CHART_COLORS.orange, 0.6),
-                transparentize(CHART_COLORS.yellow, 0.6),
-                transparentize(CHART_COLORS.green, 0.6),
-                transparentize(CHART_COLORS.blue, 0.6),
-                transparentize(CHART_COLORS.purple, 0.6),
-              ],
-              data: chartData,
-            },
-          ],
-        },
-        options: {
-          plugins: {
-            legend: {
-              display: false,
-            },
-            datalabels: {
-              anchor: "end",
-            },
+      const todaySystem = statistic.value.statisticSystems.find((s) =>
+        sameDate(s.recordDate)
+      );
+      if (todaySystem) {
+        const chartData = [
+          todaySystem.registerCount,
+          todaySystem.loginCount,
+          todaySystem.postViewCount,
+          todaySystem.newPostCount,
+          todaySystem.newCommentCount,
+          todaySystem.articleViewCount,
+        ];
+        const systemChart = new Chart(systemChartContainer.value, {
+          type: "bar",
+          data: {
+            labels: [
+              "注册数",
+              "登录数",
+              "帖子浏览",
+              "新帖",
+              "新评论",
+              "文章浏览",
+            ],
+            datasets: [
+              {
+                backgroundColor: getBackgroundColors(6),
+                data: chartData,
+              },
+            ],
           },
-          scales: {
-            yAxis: {
-              display: true,
-              max: Math.max(...chartData) + 2,
-            },
-          },
-        },
-        plugins: [ChartDataLabels],
-      });
+          ...getChartConfig(chartData),
+        });
+      }
 
       // 根据版块的分区名去生成列表，根据选择的分区显示今天的统计数据
 
@@ -161,57 +177,29 @@ onMounted(() => {
             type: "bar",
             data: {
               labels: ["浏览数", "帖子浏览", "新帖", "新评论", "订阅数"],
-
               datasets: [
                 {
-                  backgroundColor: [
-                    transparentize(CHART_COLORS.red, 0.6),
-                    transparentize(CHART_COLORS.orange, 0.6),
-                    transparentize(CHART_COLORS.yellow, 0.6),
-                    transparentize(CHART_COLORS.green, 0.6),
-                    transparentize(CHART_COLORS.blue, 0.6),
-                  ],
+                  backgroundColor: getBackgroundColors(5),
                   data: data,
                 },
               ],
             },
-            options: {
-              plugins: {
-                legend: {
-                  display: false,
-                },
-                datalabels: {
-                  anchor: "end",
-                },
-              },
-              scales: {
-                yAxis: {
-                  display: true,
-                  max: Math.max(...data) + 2,
-                },
-              },
-            },
-            plugins: [ChartDataLabels],
+            ...getChartConfig(data),
           };
         }
       };
 
       let categoryChart: Chart;
       // 监听选择，动态生成图表
-      watch(currentCategoryStatisticName, () => {
-        if (currentCategoryStatisticName.value) {
-          const selectedValue = categoryStatistics.value.find(
-            (s) => s.name === currentCategoryStatisticName.value
-          );
-          if (selectedValue) {
-            const chartData = createData(selectedValue);
-            if (chartData) {
-              categoryChart?.destroy();
-              categoryChart = new Chart(
-                categoryChartContainer.value,
-                chartData as any
-              );
-            }
+      watch(currentCategoryStatistics, () => {
+        if (currentCategoryStatistics.value?.statistics.length) {
+          const chartData = createData(currentCategoryStatistics.value);
+          if (chartData) {
+            categoryChart?.destroy();
+            categoryChart = new Chart(
+              categoryChartContainer.value,
+              chartData as any
+            );
           }
         }
       });
@@ -230,9 +218,15 @@ onMounted(() => {
         }
       }
 
+      todayCategoryStatistics.value = categoryStatistics.value.map((cs) => {
+        cs.statistics = cs.statistics.filter((s) => sameDate(s.recordDate));
+        return cs;
+      });
+
       // 默认第一个分区
-      if (categoryStatistics.value[0]) {
-        currentCategoryStatisticName.value = categoryStatistics.value[0].name;
+      if (todayCategoryStatistics.value[0]?.statistics.length) {
+        currentCategoryStatisticName.value =
+          todayCategoryStatistics.value[0].name;
       }
     });
   });

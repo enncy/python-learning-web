@@ -29,7 +29,11 @@ onMounted(() => {
     // @ts-ignore
     const editor = new JSONEditor(jsonEditor.value, options);
 
-    editor.set(JSON.parse(props.value));
+    if (props.value) {
+      editor.set(JSON.parse(props.value));
+    } else {
+      editor.set({});
+    }
     editor.setMode(props.mode);
 
     watch(

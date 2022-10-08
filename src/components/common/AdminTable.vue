@@ -12,20 +12,45 @@
           "
         >
           <template v-for="schema of table.schemas.filter((s) => s.searchable)">
-            <a-input-search
-              class="schema-search"
-              style="width: 200px"
-              :placeholder="`${schema.label}`"
-              enter-button
-              @search="(v:any)=>onSearch(v,schema)"
-            />
+            <template v-if="schema.options?.length">
+              <a-select
+                value="选择文件类型"
+                class="schema-search"
+                @change="(v:any)=>onSearch(v,schema)"
+              >
+                <a-select-option
+                  v-for="(option,index) of schema.options.reduce((pre, cur, i) => {
+                    const num = Math.floor(i / 2)
+                    // @ts-ignore
+                    pre[num] =  i % 2 === 0 ? [cur] : [pre[num][0], cur];
+                    return pre;
+                  }, [] as any[])"
+                  :key="option[0]"
+                  :value="option[0]"
+                ></a-select-option>
+              </a-select>
+            </template>
+            <template v-else>
+              <a-input-search
+                class="schema-search"
+                :placeholder="`${schema.label}`"
+                enter-button
+                @search="(v:any)=>onSearch(v,schema)"
+              />
+            </template>
           </template>
-          <a-button type="link" @click="searchedDataSource = []">
+          <a-button
+            type="link"
+            @click="(searchedDataSource = []), (searching = false)"
+          >
             重置
           </a-button>
         </div>
         <div v-if="selectMode === false">
-          <a-button type="primary" @click="state.model.create = true">
+          <a-button
+            type="primary"
+            @click="(state.model.create = true), (formData.id = uuid())"
+          >
             <Icon type="icon-plus" />
             添加{{ entityName }}
           </a-button>
@@ -53,14 +78,16 @@
         :row-selection="selectMode === true ? rowSelection : {}"
         size="small"
         :dataSource="
-          (searchedDataSource.length
-            ? searchedDataSource
-            : table.dataSource
-          ).map((d, index) => ({ key: index, ...d }))
+          (searching ? searchedDataSource : table.dataSource).map(
+            (entity, index) => ({
+              key: entity.id,
+              ...entity,
+            })
+          )
         "
         :columns="cols"
       >
-        <template #bodyCell="{ text, column, record, index }">
+        <template #bodyCell="{ text, value, column, record, index }">
           <template v-if="column.dataIndex === 'actions'">
             <a-space>
               <a-button
@@ -88,7 +115,18 @@
               </a-popconfirm>
             </a-space>
           </template>
-          <template v-else-if="text === undefined"> --- </template>
+          <template v-else-if="column.customRender">
+            <component
+              :is="
+                resolveCustomRender(
+                  column.customRender({ text, value, column, record, index })
+                )
+              "
+            ></component>
+          </template>
+          <template v-else-if="text === undefined || text === ''">
+            ---
+          </template>
         </template>
       </a-table>
 
@@ -179,6 +217,8 @@ import SimplifyModel from "./SimplifyModel.vue";
 import { AdminApi } from "../../api";
 import { Schema } from "../../store/interface";
 import AdminEntityModel from "./AdminEntityModel.vue";
+import { uuid } from "../../utils";
+import { AxiosRequestConfig } from "axios";
 
 const emits = defineEmits<{
   (e: "update:table", table: AdminTable<any>): void;
@@ -195,6 +235,11 @@ const props = withDefaults(
     selectMode?: boolean;
     entityName?: string;
     table: AdminTableOptions<any>;
+    beforeRequest?: (
+      entity: any,
+      mode: "create" | "remove" | "update"
+    ) => boolean | Promise<boolean>;
+    entityFilter?: (entity: any) => any;
   }>(),
   {
     entityName: "数据",
@@ -206,8 +251,17 @@ const { selectMode, entityName, table } = toRefs(props);
 
 // 搜索到的临时数据
 const searchedDataSource = ref<any[]>([]);
+// 是否正在搜索
+const searching = ref(false);
+
 // 添加实体的表单数据
-const formData = reactive({} as any);
+/**
+ * 如果是新建数据，则初始化随机ID.
+ * 这里不使用后端自动生成的ID是因为可能有其他资源需要绑定ID，例如图片上传
+ */
+const formData = reactive({
+  id: uuid(),
+});
 // 当前的实体
 const currentEntity = ref();
 // 选中的实体
@@ -285,59 +339,74 @@ onBeforeMount(async () => {
 function onSearch(value: string, schema: Schema) {
   const wrapper: any = {
     tableName: table.value.tableName,
-    externalSchema: schema.externalSchema,
-    externalValue: value,
+
     page: 1,
     size: 10,
   };
   wrapper[schema.name] = value;
   AdminApi.search(wrapper).then(({ data: { data } }) => {
     searchedDataSource.value = data;
+    searching.value = true;
   });
 }
 
-function removeEntity(index: number) {
-  AdminApi.remove({
-    tableName: table.value.tableName,
-    ...(table.value.dataSource[index] as any),
-  }).then(({ data: { data, msg } }) => {
-    if (data) {
-      message.success(msg);
-      table.value.dataSource.splice(index, 1);
-    } else {
-      message.error(msg);
-    }
-  });
+async function removeEntity(index: number) {
+  const entity = props.entityFilter
+    ? props.entityFilter(table.value.dataSource[index])
+    : table.value.dataSource[index];
+  const pass = await props.beforeRequest?.(entity, "remove");
+  if (pass === undefined || pass) {
+    AdminApi.remove(table.value.tableName, entity).then(
+      ({ data: { data, msg } }) => {
+        if (data) {
+          message.success(msg);
+          table.value.dataSource.splice(index, 1);
+        } else {
+          message.error(msg);
+        }
+      }
+    );
+  }
 }
 
-function modifyEntity() {
-  AdminApi.update({
-    tableName: table.value.tableName,
-    ...(currentEntity.value as any),
-  }).then(async ({ data: { data, msg } }) => {
-    if (data) {
-      emits("modify", currentEntity.value);
-      message.success(msg);
-      state.model.modify = false;
-    } else {
-      message.error(msg);
-    }
-  });
+async function modifyEntity() {
+  const entity = props.entityFilter
+    ? props.entityFilter(currentEntity.value)
+    : currentEntity.value;
+  const pass = await props.beforeRequest?.(entity, "update");
+  if (pass === undefined || pass) {
+    AdminApi.update(table.value.tableName, entity).then(
+      async ({ data: { data, msg } }) => {
+        if (data) {
+          emits("modify", entity);
+          message.success(msg);
+        } else {
+          message.error(msg);
+        }
+      }
+    );
+  }
+
+  state.model.modify = false;
 }
 
-function createEntity() {
-  AdminApi.create({
-    tableName: table.value.tableName,
-    ...formData,
-  }).then(async ({ data: { data, msg } }) => {
-    if (data) {
-      emits("create", formData);
-      message.success(msg);
-      state.model.create = false;
-    } else {
-      message.error(msg);
-    }
-  });
+async function createEntity() {
+  const entity = props.entityFilter ? props.entityFilter(formData) : formData;
+  const pass = await props.beforeRequest?.(entity, "create");
+  if (pass === undefined || pass) {
+    AdminApi.create(table.value.tableName, entity).then(
+      async ({ data: { data, msg } }) => {
+        if (data) {
+          emits("create", entity);
+
+          message.success(msg);
+        } else {
+          message.error(msg);
+        }
+      }
+    );
+  }
+  state.model.create = false;
 }
 
 function resolveCustomRender(node: any) {
@@ -355,5 +424,9 @@ function onChange(pag: any) {
 <style scoped lang="less">
 .schema-search + .schema-search {
   margin-left: 12px;
+}
+
+.schema-search {
+  width: 200px;
 }
 </style>

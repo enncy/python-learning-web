@@ -22,7 +22,7 @@ const table = ref(
     columns: [],
     dataSource: [],
     tableName: "bbs_category",
-    hideColumns: ["boardId", "version", "deleted", "id"],
+    hideColumns: ["boardId", "version", "deleted", "id", "image"],
     extraColumns: [],
     columnFactory: {
       description: {

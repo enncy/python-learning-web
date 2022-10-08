@@ -11,13 +11,13 @@
       </div>
       <div class="text-center" style="width: 100%">
         <div class="ms-5 me-5 h-100">
-          <UploadImage
+          <UploadResource
             name="file"
             :multiple="false"
             accept="image/*"
             @upload="handleUpload"
           >
-          </UploadImage>
+          </UploadResource>
         </div>
       </div>
     </Card>
@@ -94,8 +94,8 @@
 import { store } from "../../store";
 import Card from "../../components/common/Card.vue";
 import { message } from "ant-design-vue";
-import { UploadApi, UserApi } from "../../api";
-import UploadImage from "../../components/common/UploadImage.vue";
+import { ResourceApi, UploadApi, UserApi } from "../../api";
+import UploadResource from "../../components/common/UploadResource.vue";
 import Avatar from "../../components/common/Avatar.vue";
 import { getRole } from "../../utils";
 import { ref, watch } from "vue";
@@ -104,21 +104,23 @@ const dom = document;
 
 const user = ref(store.user);
 
-async function handleUpload(files: File[]) {
-  const formData = new FormData();
-  files.forEach((file) => {
-    // 注意这里append的名字“file”，需要跟后端接受的名字是一样的
-    formData.append("file", file);
-  });
-  // 这里的axios换成大家熟悉的写法就可以，主要是formData是放到body里面的
-  UploadApi.avatar(formData).then(({ data: { data, msg } }) => {
-    if (data) {
-      message.success(msg);
-      window.location.reload();
-    } else {
-      message.error(msg);
-    }
-  });
+async function handleUpload(file: File) {
+  if (user.value) {
+    ResourceApi.upload({
+      resource: file,
+      folder: "avatar",
+      id: user.value?.id,
+      invalid: false,
+      filename: user.value.id,
+    }).then(({ data: { data, msg } }) => {
+      if (data) {
+        message.success(msg);
+        window.location.reload();
+      } else {
+        message.error(msg);
+      }
+    });
+  }
 }
 
 function update() {

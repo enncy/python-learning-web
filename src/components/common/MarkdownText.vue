@@ -11,7 +11,7 @@ const props = defineProps<{
 
 // @ts-ignore full options list (defaults)
 const markdownIt: MarkdownIt = markdownit({
-  html: false,
+  html: true,
   xhtmlOut: false,
   breaks: true,
   langPrefix: "language-",

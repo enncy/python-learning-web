@@ -93,8 +93,10 @@ export class AdminTable<T> implements AdminTableOptions<T> {
   async init() {
     this.loading = true;
 
+    // 获取数据映射表
     this.schemas = await this.getSchema();
 
+    // 从 schema 获取数据列
     this.columns = this.schemas
       .map((schema) => {
         if (this.hideColumns.find((c) => c === schema.name)) {
@@ -105,14 +107,31 @@ export class AdminTable<T> implements AdminTableOptions<T> {
             title: schema.label,
           };
 
+          // 合并数据列
           return merge(obj, this.columnFactory[schema.name]);
         }
       })
       .filter((c) => !!c) as any[];
+
+    // 过滤额外列
     this.columns = this.columns.filter((c) =>
       this.columnsFilter ? this.columnsFilter(c, this.schemas) : true
     );
-    this.columns.push(...this.extraColumns);
+    // 增加额外列
+    this.columns = this.columns.concat(
+      ...this.extraColumns.map((extra) =>
+        extra.dataIndex || extra.key
+          ? merge(
+              extra,
+              this.columnFactory[(extra.dataIndex || extra.key) as any]
+            )
+          : extra
+      )
+    );
+
+    // 降序排序数据列
+    // @ts-ignore
+    this.columns = this.columns.sort((a, b) => (b.level || 0) - (a.level || 0));
 
     if (this.dataSource.length === 0) {
       await this.update();

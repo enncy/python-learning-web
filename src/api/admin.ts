@@ -1,3 +1,4 @@
+import { AxiosRequestConfig } from "axios";
 import { request } from "../request";
 import { Page, Schema, Statistic } from "../store/interface";
 import { ApiResponse } from "./interface";
@@ -22,23 +23,32 @@ export const AdminApi = {
   }) {
     return request.post<ApiResponse<any[]>>("/admin/search", wrapper);
   },
-  create(wrapper: { tableName: string; [x: string]: any }) {
-    const { tableName, ...entity } = parseEntity(wrapper);
-    return request.post<ApiResponse<boolean>>("/admin/create", entity, {
-      params: { tableName },
-    });
+  create(tableName: string, entity: any) {
+    return request.post<ApiResponse<boolean>>(
+      "/admin/create",
+      parseEntity(entity),
+      {
+        params: { tableName },
+      }
+    );
   },
-  update(wrapper: { tableName: string; id: string; [x: string]: any }) {
-    const { tableName, ...entity } = parseEntity(wrapper);
-    return request.post<ApiResponse<boolean>>("/admin/update", entity, {
-      params: { tableName },
-    });
+  update(tableName: string, entity: any) {
+    return request.post<ApiResponse<boolean>>(
+      "/admin/update",
+      parseEntity(entity),
+      {
+        params: { tableName },
+      }
+    );
   },
-  remove(wrapper: { tableName: string; id: string; [x: string]: any }) {
-    const { tableName, ...entity } = parseEntity(wrapper);
-    return request.post<ApiResponse<boolean>>("/admin/remove", entity, {
-      params: { tableName },
-    });
+  remove(tableName: string, entity: any) {
+    return request.post<ApiResponse<boolean>>(
+      "/admin/remove",
+      parseEntity(entity),
+      {
+        params: { tableName },
+      }
+    );
   },
   getById(wrapper: { tableName: string; id: string }) {
     return request.get<ApiResponse<any>>("/admin/get-by-id", {

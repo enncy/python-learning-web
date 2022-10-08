@@ -14,6 +14,14 @@ export const config = reactive({
   admin: {
     name: "Python学习网管理系统",
   },
+  bbs: {
+    cover_images: [
+      "https://th.bing.com/th/id/OIP.uxliFnoB2YSP4pgxn5x4lwHaDn?w=316&h=170&c=7&r=0&o=5&pid=1.7",
+      "https://th.bing.com/th/id/OIP.kcmQrCp7We0AIktaA9sXzQHaEH?w=316&h=180&c=7&r=0&o=5&pid=1.7",
+      "https://th.bing.com/th/id/OIP.Q7WBbWA2IG4a-gZ-U8igDwHaC9?w=314&h=140&c=7&r=0&o=5&pid=1.7",
+      "https://th.bing.com/th/id/OIP.3y4k0uziw1hEGGGP8kyQsAHaEo?w=282&h=180&c=7&r=0&o=5&pid=1.7",
+    ],
+  },
 
   baseURL: import.meta.env.VITE_BASE_URL,
   // 自适应宽度

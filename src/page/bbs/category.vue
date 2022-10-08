@@ -23,7 +23,13 @@
     <Card class="mb-3">
       <div class="row">
         <div class="col-12 col-lg-2">
-          <a-avatar shape="square" style="width: 124px" :size="124"></a-avatar>
+          <a-avatar
+            v-if="categoryModel?.category.id"
+            shape="square"
+            style="width: 124px"
+            :size="124"
+            :src="ResourceApi.of({ id: categoryModel.category.id })"
+          ></a-avatar>
         </div>
         <div class="col-12 col-lg-10">
           <div class="row border-bottom mb-3">
@@ -95,8 +101,9 @@ import { BBSPostModel } from "../../store/interface";
 import BoardAdminList from "../../components/bbs/BoardAdminList.vue";
 import PostTable from "../../components/bbs/PostTable.vue";
 import Pagination from "../../components/common/Pagination.vue";
-import { UserApi } from "../../api";
+import { ResourceApi, UserApi } from "../../api";
 import { message } from "ant-design-vue";
+import { config } from "../../store";
 
 const route = useRoute();
 const router = useRouter();

@@ -14,22 +14,9 @@
         <div class="row">
           <div class="col-12 col-lg-8">
             <a-carousel class="bbs-carousel" autoplay>
-              <a-image
-                class="cover"
-                src="https://th.bing.com/th/id/OIP.uxliFnoB2YSP4pgxn5x4lwHaDn?w=316&h=170&c=7&r=0&o=5&pid=1.7"
-              />
-              <a-image
-                class="cover"
-                src="https://th.bing.com/th/id/OIP.kcmQrCp7We0AIktaA9sXzQHaEH?w=316&h=180&c=7&r=0&o=5&pid=1.7"
-              />
-              <a-image
-                class="cover"
-                src="https://th.bing.com/th/id/OIP.Q7WBbWA2IG4a-gZ-U8igDwHaC9?w=314&h=140&c=7&r=0&o=5&pid=1.7"
-              />
-              <a-image
-                class="cover"
-                src="https://th.bing.com/th/id/OIP.3y4k0uziw1hEGGGP8kyQsAHaEo?w=282&h=180&c=7&r=0&o=5&pid=1.7"
-              />
+              <template v-for="image of config.bbs.cover_images">
+                <a-image class="cover" :src="image" />
+              </template>
             </a-carousel>
           </div>
           <div class="col-12 col-lg-4">
@@ -87,11 +74,9 @@ import { useRouter } from "vue-router";
 import { BBSApi } from "../../api/bbs";
 import { BBSBoardModel, BBSPostModel } from "../../store/interface";
 import Icon from "../../components/common/Icon.vue";
-import MaxSpan from "../../components/common/MaxSpan.vue";
-import BoardAdminList from "../../components/bbs/BoardAdminList.vue";
-import { getElapsedTime } from "../../utils";
 import PostList from "../../components/bbs/PostList.vue";
 import CategoryList from "../../components/bbs/CategoryList.vue";
+import { config } from "../../store";
 
 const router = useRouter();
 const activeKey = ref("1");

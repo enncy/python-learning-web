@@ -244,6 +244,14 @@ export const routes: RouteRecordRaw[] = [
               title: "配置列表",
             },
           },
+          {
+            path: "resource",
+            name: "admin-system-resource",
+            component: () => import("../page/admin/system/resource.vue"),
+            meta: {
+              title: "资源列表",
+            },
+          },
         ],
       },
     ],

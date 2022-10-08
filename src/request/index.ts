@@ -14,7 +14,9 @@ request.defaults.withCredentials = true;
 
 // 添加请求拦截器
 request.interceptors.request.use(
-  (config) => config,
+  (config) => {
+    return config;
+  },
   (error) => Promise.reject(error)
 );
 

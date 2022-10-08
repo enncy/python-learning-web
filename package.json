@@ -29,9 +29,11 @@
   "devDependencies": {
     "@types/lodash": "^4.14.184",
     "@types/markdown-it": "^12.2.3",
+    "@types/video.js": "^7.3.48",
     "@vitejs/plugin-vue": "^3.0.3",
     "typescript": "^4.6.4",
     "unplugin-vue-components": "^0.22.7",
+    "video.js": "^7.20.3",
     "vite": "^3.0.7",
     "vue-tsc": "^0.39.5"
   }
