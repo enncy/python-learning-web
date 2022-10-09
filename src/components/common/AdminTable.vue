@@ -235,9 +235,11 @@ const props = withDefaults(
     selectMode?: boolean;
     entityName?: string;
     table: AdminTableOptions<any>;
-    beforeRequest?: (
+    /** 自定义请求方式 */
+    customRequest?: (
       entity: any,
-      mode: "create" | "remove" | "update"
+      mode: "create" | "remove" | "update",
+      callback?: (entity: any) => void
     ) => boolean | Promise<boolean>;
     entityFilter?: (entity: any) => any;
   }>(),
@@ -354,8 +356,13 @@ async function removeEntity(index: number) {
   const entity = props.entityFilter
     ? props.entityFilter(table.value.dataSource[index])
     : table.value.dataSource[index];
-  const pass = await props.beforeRequest?.(entity, "remove");
-  if (pass === undefined || pass) {
+  if (props.customRequest) {
+    await props.customRequest(
+      entity,
+      "remove",
+      (ent) => (table.value.dataSource[index] = ent)
+    );
+  } else {
     AdminApi.remove(table.value.tableName, entity).then(
       ({ data: { data, msg } }) => {
         if (data) {
@@ -373,12 +380,20 @@ async function modifyEntity() {
   const entity = props.entityFilter
     ? props.entityFilter(currentEntity.value)
     : currentEntity.value;
-  const pass = await props.beforeRequest?.(entity, "update");
-  if (pass === undefined || pass) {
+
+  if (props.customRequest) {
+    const pass = await props.customRequest(
+      entity,
+      "update",
+      (ent) => (currentEntity.value = ent)
+    );
+    state.model.modify = !pass;
+  } else {
     AdminApi.update(table.value.tableName, entity).then(
       async ({ data: { data, msg } }) => {
         if (data) {
           emits("modify", entity);
+          state.model.modify = false;
           message.success(msg);
         } else {
           message.error(msg);
@@ -386,19 +401,21 @@ async function modifyEntity() {
       }
     );
   }
-
-  state.model.modify = false;
 }
 
 async function createEntity() {
   const entity = props.entityFilter ? props.entityFilter(formData) : formData;
-  const pass = await props.beforeRequest?.(entity, "create");
-  if (pass === undefined || pass) {
+  if (props.customRequest) {
+    const pass = await props.customRequest(entity, "create", (ent) =>
+      Object.assign(formData, ent)
+    );
+    state.model.create = !pass;
+  } else {
     AdminApi.create(table.value.tableName, entity).then(
       async ({ data: { data, msg } }) => {
         if (data) {
           emits("create", entity);
-
+          state.model.create = false;
           message.success(msg);
         } else {
           message.error(msg);
@@ -406,7 +423,6 @@ async function createEntity() {
       }
     );
   }
-  state.model.create = false;
 }
 
 function resolveCustomRender(node: any) {

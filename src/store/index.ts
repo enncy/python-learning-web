@@ -298,4 +298,10 @@ export const store = reactive({
     openedKeys: [],
     selectedKeys: [],
   },
+  upload: {
+    // 控制是否上传，为0时暂停上传
+    status: {} as Record<string, number>,
+    percents: {} as Record<string, number>,
+    rates: {} as Record<string, number>,
+  },
 });

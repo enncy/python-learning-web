@@ -17,15 +17,16 @@ import { onBeforeMount, onMounted, Transition } from "vue";
 import { CommonApi } from "./api/common";
 import { store, config } from "./store";
 import set from "lodash/set";
+import merge from "lodash/merge";
 
 dayjs.locale("zh-cn");
 
-const fieldname = `store-${config.version}`;
+const fieldname = () => `store-${config.version}`;
+// 合并
+const localStore = JSON.parse(localStorage.getItem(fieldname()) || "{}");
+merge(store, localStore);
 
-onBeforeMount(() => {
-  const localStore = JSON.parse(localStorage.getItem(fieldname) || "{}");
-  Object.assign(store, localStore);
-
+onBeforeMount(async () => {
   // 初始化配置
   CommonApi.listConfig().then(({ data: { data } }) => {
     if (data) {
@@ -42,6 +43,10 @@ onBeforeMount(() => {
         set(config, item.key, value);
       }
     }
+
+    // 解析配置后再次合并，防止版本号更改
+    const localStore = JSON.parse(localStorage.getItem(fieldname()) || "{}");
+    merge(store, localStore);
   });
 });
 
@@ -49,7 +54,7 @@ onMounted(async () => {
   console.log({ store, config });
 
   window.addEventListener("beforeunload", () => {
-    localStorage.setItem(fieldname, JSON.stringify(store));
+    localStorage.setItem(fieldname(), JSON.stringify(store));
   });
 });
 </script>

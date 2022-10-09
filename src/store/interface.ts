@@ -252,3 +252,9 @@ export interface SystemResource {
   invalid: boolean;
   filename: string;
 }
+
+export interface SliceResource {
+  chunkNumber: number;
+  currentChunkSize: number;
+  totalChunks: number;
+}

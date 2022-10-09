@@ -120,3 +120,20 @@ export function uuid() {
 
   return id.replace(/-/g, "");
 }
+
+export function size(num: number) {
+  return (
+    (
+      [
+        ["GB", Math.pow(1024, 3)],
+        ["MB", Math.pow(1024, 2)],
+        ["KB", Math.pow(1024, 1)],
+        ["B", 1],
+      ] as [string, number][]
+    )
+      .map((i) => [i[0], Math.floor(num / i[1])])
+      .find((i) => i[1] > 0)
+      // @ts-ignore
+      ?.reduce((pre, cur) => cur + pre)
+  );
+}

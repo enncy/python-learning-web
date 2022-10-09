@@ -2,7 +2,7 @@
   <Card>
     <AdminTableVue
       v-model:table="table"
-      :before-request="onBeforeRequest"
+      :custom-request="customRequest"
       @create="onCreate"
       @modify="onModify"
       @pagination-change="onPaginationChange"
@@ -11,17 +11,14 @@
 </template>
 <script setup lang="ts">
 import { ref, onBeforeMount, h } from "vue";
-
 import AdminTableVue from "../../../components/common/AdminTable.vue";
-
 import { AdminTable, createDefaultColumnFactory } from "../../../utils/admin";
 import Card from "../../../components/common/Card.vue";
-
 import { SystemResource } from "../../../store/interface";
 import { ResourceApi } from "../../../api";
 import { message } from "ant-design-vue";
-import { config } from "../../../store";
 import ResourcePreviewVue from "../../../components/common/ResourcePreview.vue";
+import { size } from "../../../utils";
 
 const table = ref(
   new AdminTable({
@@ -53,7 +50,7 @@ const table = ref(
             {
               class: "d-flex",
               style: {
-                width: "300px",
+                width: "360px",
               },
             },
             [
@@ -135,7 +132,7 @@ function onModify() {
   table.value.update();
 }
 
-async function onBeforeRequest(
+async function customRequest(
   entity: SystemResource,
   mode: "create" | "update" | "remove"
 ) {
@@ -143,38 +140,37 @@ async function onBeforeRequest(
     const {
       data: { data, msg },
     } = await ResourceApi.remove(entity.id);
-    data ? message.success(msg) : message.error(msg);
+    if (data) {
+      message.success(msg);
+      table.value.update();
+      return true;
+    } else {
+      message.error(msg);
+      return false;
+    }
   } else {
-    const {
-      data: { data, msg },
-    } = await ResourceApi.upload(entity);
-    data ? message.success(msg) : message.error(msg);
+    // 初始化资源
+    await ResourceApi.init(entity);
+    // 上传资源
+    const finished = await ResourceApi.upload(entity.id, entity.resource);
+    if (finished) {
+      message.success("上传成功");
+      table.value.update();
+      return true;
+    } else {
+      // 删除被中断的资源文件
+      await ResourceApi.remove(entity.id);
+      message.warn("已暂停上传");
+
+      return false;
+    }
   }
-  table.value.update();
-  return false;
 }
 
 function onPaginationChange(pagination: any) {
   table.value.page = pagination.current;
   table.value.size = pagination.pageSize;
   table.value.update();
-}
-
-function size(num: number) {
-  return (
-    (
-      [
-        ["GB", Math.pow(1024, 3)],
-        ["MB", Math.pow(1024, 2)],
-        ["KB", Math.pow(1024, 1)],
-        ["B", 1],
-      ] as [string, number][]
-    )
-      .map((i) => [i[0], Math.floor(num / i[1])])
-      .find((i) => i[1] > 0)
-      // @ts-ignore
-      ?.reduce((pre, cur) => cur + pre)
-  );
 }
 </script>
 <style scoped lang="less"></style>

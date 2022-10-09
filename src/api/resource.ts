@@ -1,30 +1,13 @@
 import { request } from "../request";
-import { config } from "../store";
+import { config, store } from "../store";
 import { SystemResource } from "../store/interface";
 import { ApiResponse } from "./interface";
 
-export const ResourceApi = {
-  async upload(
-    entity: Pick<SystemResource, "filename" | "folder" | "invalid" | "id"> & {
-      absolutePath?: string;
-      resource?: File;
-    }
-  ) {
-    const formData = new FormData();
-    if (entity.absolutePath) {
-      //
-    } else if (entity.resource) {
-      formData.append("file", entity.resource);
-    }
-    formData.append("folder", entity.folder);
-    formData.append("invalid", (entity.invalid ? 1 : 0).toString());
-    formData.append("filename", entity.filename);
-    formData.append("id", entity.id);
+const DEFAULT_CHUNK_SIZE = 10 * 1024 * 1024;
 
-    return request.post<ApiResponse<boolean>>("/resource-upload", formData);
-  },
+export const ResourceApi = {
   remove(id: string) {
-    return request.get<ApiResponse<boolean>>("/resource-remove", {
+    return request.get<ApiResponse<boolean>>("/remove-resource", {
       params: { id },
     });
   },
@@ -36,13 +19,59 @@ export const ResourceApi = {
       ? `${config.baseURL}/resource?id=${filename}`
       : ``;
   },
+  init(
+    entity: Pick<SystemResource, "filename" | "folder" | "invalid" | "id"> & {
+      resource: File;
+    }
+  ) {
+    const formData = new FormData();
+    formData.append("originalName", entity.resource.name);
+    formData.append("size", entity.resource.size.toString());
+    formData.append("type", entity.resource.type);
+    formData.append("folder", entity.folder);
+    formData.append("invalid", (entity.invalid ? 1 : 0).toString());
+    formData.append("filename", entity.filename);
+    formData.append("id", entity.id);
+    return request.post<ApiResponse<boolean>>("/init-resource", formData);
+  },
+  async upload(id: string, file: File) {
+    const fileChunks = createFileChunk(file);
+
+    for (let i = 0; i < fileChunks.length; i++) {
+      // 1 为继续上传
+      if (store.upload.status[id] === 1) {
+        const chunk = fileChunks[i];
+
+        const formData = new FormData();
+        formData.append("file", chunk.file);
+        formData.append("chunkNumber", i.toString());
+        formData.append("currentChunkSize", chunk.file.size.toString());
+        formData.append("totalChunks", fileChunks.length.toString());
+        formData.append("id", id);
+
+        const start = Date.now();
+        await request.post<ApiResponse<boolean>>("/upload-resource", formData);
+        const consume = Date.now() - start;
+        const networkRate = DEFAULT_CHUNK_SIZE / (consume / 1000);
+
+        store.upload.percents[id] = Math.floor((i / fileChunks.length) * 100);
+        store.upload.rates[id] = Math.floor(networkRate);
+      } else {
+        return false;
+      }
+    }
+    return true;
+  },
 };
 
-async function createFile(url: string, filename: string, type: string) {
-  let response = await fetch(url);
-  let data = await response.blob();
-  let metadata = {
-    type,
-  };
-  return new File([data], filename, metadata);
+function createFileChunk(file: File, size = DEFAULT_CHUNK_SIZE) {
+  const fileChunkList = [];
+  var count = 0;
+  while (count < file.size) {
+    fileChunkList.push({
+      file: file.slice(count, count + size),
+    });
+    count += size;
+  }
+  return fileChunkList;
 }

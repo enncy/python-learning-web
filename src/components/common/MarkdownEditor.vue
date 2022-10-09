@@ -94,6 +94,7 @@ watch(
   height: 100%;
   width: 100%;
   min-height: 100px;
+  min-width: 100px;
   overflow: auto;
 }
 

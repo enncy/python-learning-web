@@ -41,6 +41,7 @@ declare module '@vue/runtime-core' {
     AModal: typeof import('ant-design-vue/es')['Modal']
     APagination: typeof import('ant-design-vue/es')['Pagination']
     APopconfirm: typeof import('ant-design-vue/es')['Popconfirm']
+    AProgress: typeof import('ant-design-vue/es')['Progress']
     ARadioButton: typeof import('ant-design-vue/es')['RadioButton']
     ARadioGroup: typeof import('ant-design-vue/es')['RadioGroup']
     AResult: typeof import('ant-design-vue/es')['Result']
@@ -101,5 +102,6 @@ declare module '@vue/runtime-core' {
     UserCard: typeof import('./src/components/common/UserCard.vue')['default']
     UserHeaderItem: typeof import('./src/components/common/UserHeaderItem.vue')['default']
     UserMenus: typeof import('./src/components/common/UserMenus.vue')['default']
+    VideoJS: typeof import('./src/components/common/VideoJS.vue')['default']
   }
 }

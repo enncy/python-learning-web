@@ -22,6 +22,9 @@
     "less-loader": "^11.0.0",
     "lodash": "^4.17.21",
     "markdown-it": "^13.0.1",
+    "markdown-it-anchor": "^8.6.5",
+    "markdown-it-container": "^3.0.0",
+    "markdown-it-emoji": "^2.0.2",
     "monaco-editor": "^0.34.0",
     "vue": "^3.2.37",
     "vue-router": "^4.0.13"
@@ -29,6 +32,7 @@
   "devDependencies": {
     "@types/lodash": "^4.14.184",
     "@types/markdown-it": "^12.2.3",
+    "@types/markdown-it-emoji": "^2.0.2",
     "@types/video.js": "^7.3.48",
     "@vitejs/plugin-vue": "^3.0.3",
     "typescript": "^4.6.4",

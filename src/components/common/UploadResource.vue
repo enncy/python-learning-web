@@ -4,17 +4,18 @@
     :before-upload="beforeUpload"
     :show-upload-list="false"
     class="rounded"
+    :disabled="file !== undefined"
   >
     <div class="upload-info">
-      <div class="col-6 mb-3 m-auto">
-        <span @click.stop style="cursor: default">
+      <div class="col-12 d-flex justify-content-center">
+        <div class="col-12">
           <template v-if="slots.file">
             <component :is="slots.file"></component>
           </template>
           <template v-else>
             <Icon style="font-size: 64px" type="icon-file" />
           </template>
-        </span>
+        </div>
       </div>
 
       <div class="col-12">

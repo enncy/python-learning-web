@@ -428,6 +428,8 @@ router.beforeEach((to, from) => {
       }
     } else {
       // 需要登录
+      console.log("需要登录");
+
       createSimplifyLoginWindow();
       return false;
     }
