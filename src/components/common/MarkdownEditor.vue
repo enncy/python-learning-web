@@ -24,6 +24,7 @@
         class="h-100 w-100"
       >
         <a-textarea
+          :style="{ minHeight: height + 'px' }"
           class="markdown-editor"
           v-model:value="editor.content"
         ></a-textarea>
@@ -34,6 +35,7 @@
         class="h-100 w-100"
       >
         <MarkdownText
+          :style="{ minHeight: height + 'px' }"
           class="markdown-body border rounded p-2"
           :content="editor.content"
         ></MarkdownText>
@@ -46,9 +48,16 @@ import { onMounted, reactive, ref, watch, nextTick, computed } from "vue";
 import MarkdownText from "./MarkdownText.vue";
 import Icon from "./Icon.vue";
 
-const props = defineProps<{
-  content: string;
-}>();
+const props = withDefaults(
+  defineProps<{
+    content: string;
+    height: number;
+  }>(),
+  {
+    content: "",
+    height: 600,
+  }
+);
 
 const emits = defineEmits<{
   (e: "update:content", content: string): void;
@@ -93,7 +102,6 @@ watch(
 .markdown-body {
   height: 100%;
   width: 100%;
-  min-height: 100px;
   min-width: 100px;
   overflow: auto;
 }

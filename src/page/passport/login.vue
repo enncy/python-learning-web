@@ -1,7 +1,7 @@
 <template>
   <PassportLayout class="text-center">
     <h1 class="text-start">
-      登录 <span class="fs-6 text-secondary"> - {{ config.name }}</span>
+      登录 <span class="fs-6 text-secondary"> - {{ config.common.name }}</span>
     </h1>
     <a-divider></a-divider>
 

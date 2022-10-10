@@ -2,7 +2,7 @@
   <a-avatar
     class="user-avatar"
     v-if="user"
-    @click="go('/@' + (user?.slug || user?.username))"
+    @click="stop === false && go('/@' + (user?.slug || user?.username))"
     :src="ResourceApi.of({ id: user.id })"
   ></a-avatar>
   <a-avatar v-else></a-avatar>
@@ -15,8 +15,9 @@ import { User } from "../../store/interface";
 
 const router = useRouter();
 
-defineProps<{
+const props = defineProps<{
   user?: User;
+  stop?: boolean;
 }>();
 
 function go(href: string) {

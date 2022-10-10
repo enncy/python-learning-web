@@ -1,3 +1,5 @@
+import { message } from "ant-design-vue";
+import { AxiosResponse } from "axios";
 import { request } from "../request";
 import { config, store } from "../store";
 import { SystemResource } from "../store/interface";
@@ -25,9 +27,13 @@ export const ResourceApi = {
     }
   ) {
     const formData = new FormData();
-    formData.append("originalName", entity.resource.name);
-    formData.append("size", entity.resource.size.toString());
-    formData.append("type", entity.resource.type);
+    // 秒传
+    if (entity.resource) {
+      formData.append("originalName", entity.resource.name);
+      formData.append("size", entity.resource.size.toString());
+      formData.append("type", entity.resource.type);
+    }
+
     formData.append("folder", entity.folder);
     formData.append("invalid", (entity.invalid ? 1 : 0).toString());
     formData.append("filename", entity.filename);
@@ -36,9 +42,11 @@ export const ResourceApi = {
   },
   async upload(id: string, file: File) {
     const fileChunks = createFileChunk(file);
+    // 标记开始上传
+    store.upload.status[id] = 1;
 
     for (let i = 0; i < fileChunks.length; i++) {
-      // 1 为继续上传
+      // 1 为继续上传， 0 为暂停上传
       if (store.upload.status[id] === 1) {
         const chunk = fileChunks[i];
 
@@ -50,10 +58,12 @@ export const ResourceApi = {
         formData.append("id", id);
 
         const start = Date.now();
+        // 上传
         await request.post<ApiResponse<boolean>>("/upload-resource", formData);
         const consume = Date.now() - start;
+        // 计算网速
         const networkRate = DEFAULT_CHUNK_SIZE / (consume / 1000);
-
+        // 计算上传进度
         store.upload.percents[id] = Math.floor((i / fileChunks.length) * 100);
         store.upload.rates[id] = Math.floor(networkRate);
       } else {
@@ -74,4 +84,28 @@ function createFileChunk(file: File, size = DEFAULT_CHUNK_SIZE) {
     count += size;
   }
   return fileChunkList;
+}
+
+export async function uploadResource(
+  entity: Pick<SystemResource, "filename" | "folder" | "invalid" | "id"> & {
+    resource: File;
+  }
+) {
+  // 初始化资源
+  await ResourceApi.init(entity);
+  if (entity.resource) {
+    // 上传资源
+    const finished = await ResourceApi.upload(entity.id, entity.resource);
+    if (finished) {
+      message.success("上传成功");
+      return true;
+    } else {
+      // 删除被中断的资源文件
+      await ResourceApi.remove(entity.id);
+      message.warn("已暂停上传");
+      return false;
+    }
+  } else {
+    return true;
+  }
 }

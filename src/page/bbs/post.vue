@@ -28,7 +28,7 @@
       <Card>
         <table class="w-100">
           <tr>
-            <td class="p-1 text-center fw-bold" style="width: 150px">
+            <td class="p-1 text-center fw-bold post-count">
               评论 : {{ postModel.post.commentCount }} / 查看:
               {{ postModel.post.viewCount }}
             </td>
@@ -65,7 +65,11 @@
       </Card>
 
       <Card>
-        <MarkdownEditor title="评论区" v-model:content="comment.content">
+        <MarkdownEditor
+          :height="100"
+          title="评论区"
+          v-model:content="comment.content"
+        >
           <template #actions> </template>
         </MarkdownEditor>
         <div ref="commentCard" class="mt-3 w-100 d-flex justify-content-end">
@@ -203,5 +207,15 @@ tr > td:first-child {
 
 table {
   table-layout: fixed;
+}
+
+.post-count {
+  width: 150px;
+}
+
+.in-mobile {
+  .post-count {
+    width: 64px;
+  }
 }
 </style>

@@ -1,5 +1,4 @@
 import { defineAsyncComponent, reactive, shallowRef } from "vue";
-import { CommonApi } from "../api/common";
 import { Code, Compile, Role, User } from "./interface";
 
 export const config = reactive({
@@ -21,6 +20,16 @@ export const config = reactive({
       "https://th.bing.com/th/id/OIP.Q7WBbWA2IG4a-gZ-U8igDwHaC9?w=314&h=140&c=7&r=0&o=5&pid=1.7",
       "https://th.bing.com/th/id/OIP.3y4k0uziw1hEGGGP8kyQsAHaEo?w=282&h=180&c=7&r=0&o=5&pid=1.7",
     ],
+    post: {
+      /** 热门点，超过即为热门帖子 */
+      hot_view_point: 1000,
+      hot_comment_point: 100,
+    },
+    tag: {
+      hot: { name: "🔥热门", color: "#f50000" },
+      global: { name: "📢公告", color: "#1890ff" },
+      recommend: { name: "✨精华", color: "#ff7728" },
+    },
   },
 
   baseURL: import.meta.env.VITE_BASE_URL,
@@ -304,4 +313,14 @@ export const store = reactive({
     percents: {} as Record<string, number>,
     rates: {} as Record<string, number>,
   },
+  state: {
+    /** 是否处于移动端 */
+    inMobile:
+      document.documentElement.clientWidth < config.adaption.breaking_point,
+  },
 });
+
+window.onresize = () => {
+  store.state.inMobile =
+    document.documentElement.clientWidth < config.adaption.breaking_point;
+};

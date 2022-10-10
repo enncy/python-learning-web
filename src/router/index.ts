@@ -8,6 +8,9 @@ import {
 import { config, store } from "../store";
 import { Role } from "../store/interface";
 import { createSimplifyLoginWindow, getRole } from "../utils";
+import merge from "lodash/merge";
+import { CommonApi } from "../api/common";
+import set from "lodash/set";
 
 export const routes: RouteRecordRaw[] = [
   {
@@ -414,7 +417,37 @@ export const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, from) => {
+let init = false;
+
+router.beforeEach(async (to, from) => {
+  if (init === false) {
+    const fieldname = () => `store-${config.version}`;
+
+    // 初始化配置
+    const {
+      data: { data },
+    } = await CommonApi.listConfig();
+    if (data) {
+      for (const item of data) {
+        const value =
+          item.type === "number"
+            ? parseFloat(item.value)
+            : item.type === "object"
+            ? JSON.parse(item.value)
+            : item.type === "date"
+            ? new Date(item.value)
+            : item.value;
+
+        set(config, item.key, value);
+      }
+      init = true;
+    }
+
+    // 合并本地存储
+    const localStore = JSON.parse(localStorage.getItem(fieldname()) || "{}");
+    merge(store, localStore);
+    console.log({ localStore, store, config });
+  }
   const role = getMatchedRole(to);
   // 权限判断
   if (role) {
@@ -428,8 +461,6 @@ router.beforeEach((to, from) => {
       }
     } else {
       // 需要登录
-      console.log("需要登录");
-
       createSimplifyLoginWindow();
       return false;
     }

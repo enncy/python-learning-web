@@ -1,8 +1,8 @@
 <template>
-  <template v-if="adaption">
+  <template v-if="store.state.inMobile">
     <div class="ms-lg-4 me-lg-5 user-menus" @click="visible = true">
       <a class="ant-dropdown-link" @click.prevent>
-        <Avatar class="me-2" :size="32" :user="user"></Avatar>
+        <Avatar class="me-2" :size="32" :user="user" :stop="true"></Avatar>
         <span>
           {{ store.user?.nickname || store.user?.username || "未登录" }}
         </span>
@@ -63,20 +63,19 @@ interface MyMenus {
 }
 const visible = ref(false);
 
-// 是否开启自适应
-const adaption = ref(
-  document.documentElement.clientWidth < config.adaption.breaking_point
-);
 // 监听变化
-watch(adaption, () => {
-  menus.value = getMenus();
-});
+watch(
+  () => store.state.inMobile,
+  () => {
+    menus.value = getMenus();
+  }
+);
 
 // 获取自适应菜单
 function getMenus() {
   const newMenus = [];
 
-  if (adaption.value) {
+  if (store.state.inMobile) {
     newMenus.push(...config.headers.filter((h) => h.adaption === true));
   }
 
@@ -99,11 +98,6 @@ function getMenus() {
 }
 
 const menus = ref<MyMenus[]>(getMenus());
-
-window.onresize = () => {
-  adaption.value =
-    document.documentElement.clientWidth < config.adaption.breaking_point;
-};
 </script>
 <style scoped lang="less">
 :deep(.ant-menu-item) {

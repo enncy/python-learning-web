@@ -140,6 +140,13 @@ onMounted(() => {
   box-shadow: 0px 0px 4px #000000;
 }
 
+.ant-carousel :deep(img) {
+  object-fit: cover !important;
+  width: 100% !important;
+  height: 260px !important;
+  border-radius: 4px !important;
+}
+
 :deep(.ant-badge-status-dot) {
   width: 6px;
   height: 16px;
@@ -152,11 +159,5 @@ onMounted(() => {
 
 :deep(.ant-image) {
   width: 100% !important;
-}
-:deep(img) {
-  object-fit: cover !important;
-  width: 100% !important;
-  height: 260px !important;
-  border-radius: 4px !important;
 }
 </style>

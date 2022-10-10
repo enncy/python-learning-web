@@ -241,7 +241,7 @@ const props = withDefaults(
       mode: "create" | "remove" | "update",
       callback?: (entity: any) => void
     ) => boolean | Promise<boolean>;
-    entityFilter?: (entity: any) => any;
+    entityFilter?: (entity: any) => Promise<any> | any;
   }>(),
   {
     entityName: "数据",
@@ -354,7 +354,7 @@ function onSearch(value: string, schema: Schema) {
 
 async function removeEntity(index: number) {
   const entity = props.entityFilter
-    ? props.entityFilter(table.value.dataSource[index])
+    ? await props.entityFilter(table.value.dataSource[index])
     : table.value.dataSource[index];
   if (props.customRequest) {
     await props.customRequest(
@@ -378,7 +378,7 @@ async function removeEntity(index: number) {
 
 async function modifyEntity() {
   const entity = props.entityFilter
-    ? props.entityFilter(currentEntity.value)
+    ? await props.entityFilter(currentEntity.value)
     : currentEntity.value;
 
   if (props.customRequest) {
@@ -404,7 +404,9 @@ async function modifyEntity() {
 }
 
 async function createEntity() {
-  const entity = props.entityFilter ? props.entityFilter(formData) : formData;
+  const entity = props.entityFilter
+    ? await props.entityFilter(formData)
+    : formData;
   if (props.customRequest) {
     const pass = await props.customRequest(entity, "create", (ent) =>
       Object.assign(formData, ent)

@@ -1,11 +1,11 @@
 <template>
   <div v-if="user">
     <Card class="d-flex">
-      <div class="text-center d-inline-block" style="width: 124px">
+      <div class="text-center d-inline-block">
         <Avatar
           class="rounded"
           shape="square"
-          :size="124"
+          :size="160"
           :user="user"
         ></Avatar>
       </div>
@@ -106,18 +106,19 @@ const user = ref(store.user);
 
 async function handleUpload(file: File) {
   if (user.value) {
-    ResourceApi.upload({
+    await ResourceApi.init({
       resource: file,
       folder: "avatar",
-      id: user.value?.id,
+      id: user.value.id,
       invalid: false,
       filename: user.value.id,
-    }).then(({ data: { data, msg } }) => {
-      if (data) {
-        message.success(msg);
+    });
+    ResourceApi.upload(user.value.id, file).then((finished) => {
+      if (finished) {
+        message.success("上传成功");
         window.location.reload();
       } else {
-        message.error(msg);
+        message.error("上传失败");
       }
     });
   }

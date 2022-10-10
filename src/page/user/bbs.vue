@@ -27,31 +27,29 @@
           <th class="fw-normal">操作</th>
         </template>
         <template #tail="{ post }">
-          <td>
+          <td class="text-nowrap">
             {{
-              post.post.removed
-                ? "已删除"
-                : post.post.published
-                ? "公开"
-                : "草稿"
+              post.post.banned ? "封禁" : post.post.published ? "公开" : "草稿"
             }}
           </td>
           <td>
-            <a-button
-              type="link"
-              size="small"
-              @click="router.push('/bbs/modify/' + post.post.id)"
-            >
-              修改
-            </a-button>
-            <a-popconfirm
-              title="确定删除此帖子吗？"
-              okText="确实"
-              cancelText="取消"
-              @confirm="remove(post.post.id)"
-            >
-              <a-button size="small" type="link" danger> 删除 </a-button>
-            </a-popconfirm>
+            <a-space>
+              <a-button
+                type="primary"
+                size="small"
+                @click="router.push('/bbs/modify/' + post.post.id)"
+              >
+                修改
+              </a-button>
+              <a-popconfirm
+                title="确定删除此帖子吗？"
+                okText="确实"
+                cancelText="取消"
+                @confirm="remove(post.post.id)"
+              >
+                <a-button size="small" type="primary" danger> 删除 </a-button>
+              </a-popconfirm>
+            </a-space>
           </td>
         </template>
       </PostTable>
@@ -121,7 +119,7 @@ function remove(postId: string) {
 </script>
 <style scoped lang="less">
 tr td {
-  padding: 6px 0px;
+  padding: 6px;
   border-bottom: 1px dashed #cecece;
 }
 </style>

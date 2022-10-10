@@ -90,6 +90,7 @@ export interface UserModel {
 
 export interface BBSCategory {
   id: string;
+  image: File;
   boardId: string;
   name: string;
   description: string;
@@ -112,6 +113,7 @@ export interface BBSPost {
   pinned: boolean;
   banned: boolean;
   globalPinned: boolean;
+  recommend: boolean;
   removed: boolean;
   createTime: number;
   updateTime: number;

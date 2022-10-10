@@ -2,7 +2,7 @@
   <PassportLayout>
     <h1 class="text-start">
       邮箱找回密码
-      <span class="fs-6 text-secondary"> - {{ config.name }}</span>
+      <span class="fs-6 text-secondary"> - {{ config.common.name }}</span>
     </h1>
     <a-divider></a-divider>
     <form ref="forgetForm" class="input-list">

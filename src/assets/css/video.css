@@ -313,11 +313,11 @@
 .video-js:hover .vjs-big-play-button,
 .video-js .vjs-big-play-button:focus,
 .video-js .vjs-big-play-button:active {
-  background-color: #cc181e;
+  background-color: #1890ff;
 }
 
 .video-js .vjs-loading-spinner {
-  border-color: #cc181e;
+  border-color: #1890ff;
 }
 
 .video-js .vjs-control-bar2 {
@@ -332,7 +332,7 @@
 
 .video-js .vjs-play-progress,
 .video-js .vjs-volume-level {
-  background-color: #cc181e;
+  background-color: #1890ff;
 }
 
 .video-js .vjs-load-progress {

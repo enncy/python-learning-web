@@ -2,7 +2,10 @@
   <a-config-provider :locale="zhCN">
     <router-view v-slot="{ Component }">
       <Transition name="fade" mode="out-in">
-        <component :is="Component" />
+        <component
+          :class="{ 'in-mobile': store.state.inMobile }"
+          :is="Component"
+        />
       </Transition>
     </router-view>
   </a-config-provider>
@@ -13,46 +16,14 @@ import zhCN from "ant-design-vue/es/locale/zh_CN";
 import dayjs from "dayjs";
 import "dayjs/locale/zh-cn";
 
-import { onBeforeMount, onMounted, Transition } from "vue";
-import { CommonApi } from "./api/common";
+import { onMounted, Transition } from "vue";
 import { store, config } from "./store";
-import set from "lodash/set";
-import merge from "lodash/merge";
 
 dayjs.locale("zh-cn");
 
 const fieldname = () => `store-${config.version}`;
-// 合并
-const localStore = JSON.parse(localStorage.getItem(fieldname()) || "{}");
-merge(store, localStore);
-
-onBeforeMount(async () => {
-  // 初始化配置
-  CommonApi.listConfig().then(({ data: { data } }) => {
-    if (data) {
-      for (const item of data) {
-        const value =
-          item.type === "number"
-            ? parseFloat(item.value)
-            : item.type === "object"
-            ? JSON.parse(item.value)
-            : item.type === "date"
-            ? new Date(item.value)
-            : item.value;
-
-        set(config, item.key, value);
-      }
-    }
-
-    // 解析配置后再次合并，防止版本号更改
-    const localStore = JSON.parse(localStorage.getItem(fieldname()) || "{}");
-    merge(store, localStore);
-  });
-});
 
 onMounted(async () => {
-  console.log({ store, config });
-
   window.addEventListener("beforeunload", () => {
     localStorage.setItem(fieldname(), JSON.stringify(store));
   });

@@ -1,7 +1,7 @@
 <template>
   <PassportLayout>
     <h1 class="text-start">
-      注册 <span class="fs-6 text-secondary"> - {{ config.name }}</span>
+      注册 <span class="fs-6 text-secondary"> - {{ config.common.name }}</span>
     </h1>
     <form class="input-list" ref="registerForm">
       <a-input

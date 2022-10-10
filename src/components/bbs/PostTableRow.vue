@@ -1,6 +1,6 @@
 <template>
   <tr v-if="model" class="meta-row">
-    <td class="text-nowrap fw-bold sm text-center">
+    <td class="fw-bold sm text-center">
       {{ model.user ? model.user.nickname || model.user.username : "已注销" }}
     </td>
     <td>
@@ -21,7 +21,7 @@
       <Avatar
         class="rounded"
         shape="square"
-        :size="124"
+        :size="store.state.inMobile ? 42 : 124"
         :user="model.user"
       ></Avatar>
       <div class="mt-2" v-if="model.user">
@@ -251,6 +251,13 @@ tr td {
 .meta-row td:first-child,
 .content-row td:first-child {
   width: 150px;
+}
+
+.in-mobile {
+  .meta-row td:first-child,
+  .content-row td:first-child {
+    width: 64px;
+  }
 }
 
 .footer-row td {

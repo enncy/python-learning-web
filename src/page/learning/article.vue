@@ -1,5 +1,13 @@
 <template>
   <div class="page-learning-article pb-5">
+    <!-- 移动端适配 -->
+    <MobilePanel v-if="store.state.inMobile">
+      <ArticleList
+        :articles="articles"
+        v-model:currentArticleId="currentArticleId"
+      ></ArticleList>
+      <TOC class="mt-5" :anchors="anchors" />
+    </MobilePanel>
     <div class="bg-white pt-3 mb-1 shadow-sm">
       <div class="col-lg-6 col-12 m-auto">
         <a-menu mode="horizontal" :selectedKeys="[currentCategoryId]">
@@ -20,27 +28,13 @@
         style="gap: 12px"
         v-if="articles.length"
       >
-        <div class="col-2 article-list rounded">
-          <div class="mb-2 border-bottom">
-            <b>文章</b>
-            <span> - {{ articles.length }}</span>
-          </div>
-          <template v-for="article of articles">
-            <div
-              class="article-list-item"
-              :class="{
-                active: article.id === currentArticleId,
-              }"
-              @click="
-                (currentArticleId = article.id),
-                  router.replace('/learning/article/' + article.id)
-              "
-            >
-              <span>{{ article.title }}</span>
-            </div>
-          </template>
+        <div class="col-2 article-list rounded" v-if="!store.state.inMobile">
+          <ArticleList
+            :articles="articles"
+            v-model:currentArticleId="currentArticleId"
+          ></ArticleList>
         </div>
-        <div class="col-8">
+        <div :class="store.state.inMobile ? 'col-12' : 'col-8'">
           <Card v-if="currentArticle" class="p-0">
             <div class="fs-3 fw-bold mb-3 pb-1 border-bottom">
               <span>{{ currentArticle.title || "" }}</span>
@@ -71,24 +65,16 @@
             </div>
 
             <div ref="content">
-              <MarkdownText class="p-3" :content="currentArticle.content || ''">
+              <MarkdownText
+                :class="store.state.inMobile ? 'p-1' : 'p-3'"
+                :content="currentArticle.content || ''"
+              >
               </MarkdownText>
             </div>
           </Card>
         </div>
         <div class="col-2 article-list" v-if="anchors.length">
-          <div class="toc">
-            <div class="mb-2 border-bottom">
-              <b>目录</b>
-            </div>
-            <template v-for="anchor of anchors">
-              <div :style="{ marginLeft: (anchor.level - 1) * 20 + 'px' }">
-                <a :href="`#${anchor.id}`" class="text-secondary anchor">
-                  {{ anchor.title }}
-                </a>
-              </div>
-            </template>
-          </div>
+          <TOC :anchors="anchors" />
         </div>
       </div>
       <div v-else>
@@ -106,6 +92,10 @@ import { useRoute, useRouter } from "vue-router";
 import Card from "../../components/common/Card.vue";
 import { getElapsedTime } from "../../utils";
 import dayjs from "dayjs";
+import MobilePanel from "../../components/common/MobilePanel.vue";
+import { store } from "../../store";
+import ArticleList from "../../components/learning/ArticleList.vue";
+import TOC from "../../components/learning/TOC.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -218,37 +208,6 @@ document.addEventListener("fullscreenchange", function () {
   background-color: #f8f8f8;
   overflow-y: auto;
   padding: 24px 0px;
-}
-.article-list-item {
-  cursor: pointer;
-  padding: 6px;
-  background-color: white;
-  border-radius: 2px;
-  box-shadow: 0px 0px 4px #d3d3d3;
-}
-
-.article-list-item + .article-list-item {
-  margin-top: 8px;
-}
-
-.article-list {
-  border-radius: 4px;
-}
-
-.article-list-item:hover {
-  color: #1890ff;
-}
-
-.article-list-item.active {
-  color: #1890ff;
-}
-.anchor {
-  text-decoration: underline;
-}
-
-.toc {
-  position: sticky;
-  top: 20px;
 }
 
 .text-underline {
