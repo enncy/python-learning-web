@@ -49,6 +49,8 @@ export interface Code {
   id: string;
   filename: string;
   content: string;
+  createTime: number;
+  updateTime: number;
 }
 
 export interface User {

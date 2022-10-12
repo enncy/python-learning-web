@@ -54,6 +54,20 @@
             <Icon type="icon-plus" />
             添加{{ entityName }}
           </a-button>
+          <a-divider type="vertical" />
+          <span v-if="selectedEntities.length">
+            <span class="me-3">
+              共选中 {{ selectedEntities.length }} 个数据
+            </span>
+            <a-select v-model:value="operation">
+              <a-select-option key="1" value="removeAll">
+                删除选中数据
+              </a-select-option>
+              <a-select-option key="2" value="print">
+                导出选中数据
+              </a-select-option>
+            </a-select>
+          </span>
         </div>
         <div style="clear: both"></div>
       </div>
@@ -75,7 +89,13 @@
         :locale="{
           emptyText: '暂无数据',
         }"
-        :row-selection="selectMode === true ? rowSelection : {}"
+        :row-selection="
+          selectMode === true
+            ? rowSelection
+            : {
+                onChange: onSelectChange,
+              }
+        "
         size="small"
         :dataSource="
           (searching ? searchedDataSource : table.dataSource).map(
@@ -124,9 +144,7 @@
               "
             ></component>
           </template>
-          <template v-else-if="text === undefined || text === ''">
-            ---
-          </template>
+          <template v-else-if="text === undefined"> --- </template>
         </template>
       </a-table>
 
@@ -268,6 +286,10 @@ const formData = reactive({
 const currentEntity = ref();
 // 选中的实体
 const selectedEntity = ref();
+// 选中的数据
+const selectedEntities = ref<any[]>([]);
+// 选中操作
+const operation = ref("选择执行操作");
 
 // 额外列表
 const extraColumns: TableColumnProps[] = [
@@ -437,6 +459,11 @@ function resolveCustomRender(node: any) {
 
 function onChange(pag: any) {
   Object.assign(pagination, pag);
+}
+
+function onSelectChange(keys: string[], entities: any[]) {
+  selectedEntities.value = entities;
+  console.log(entities);
 }
 </script>
 <style scoped lang="less">

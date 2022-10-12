@@ -109,10 +109,12 @@ const currentArticleId = ref<string>(
 const currentArticle = computed(() =>
   articles.value.find((a) => a.id === currentArticleId.value)
 );
+// 是否处于全屏
 const isInFullScreen = ref(false);
 const learningArticle = ref<HTMLDivElement>();
 const content = ref<HTMLDivElement>();
 const currentTextContent = ref("");
+
 watch(currentArticle, () => {
   nextTick(() => {
     currentTextContent.value = content.value?.textContent || "";

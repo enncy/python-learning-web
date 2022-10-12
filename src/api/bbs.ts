@@ -3,6 +3,7 @@ import {
   BBSCategoryModel,
   BBSPost,
   BBSPostModel,
+  Page,
 } from "./../store/interface";
 import { request } from "../request";
 import { ApiResponse } from "./interface";
@@ -11,10 +12,19 @@ export const BBSApi = {
   listBoard() {
     return request.get<ApiResponse<BBSBoardModel[]>>("/bbs/board/list");
   },
-  getCategoryModel(wrapper: { id: string; page: number; size: number }) {
-    return request.get<ApiResponse<BBSCategoryModel>>("/bbs/category/model", {
-      params: wrapper,
-    });
+  getCategoryModel(wrapper: {
+    orderBy?: string;
+    title?: string;
+    recommendOnly?: number;
+    timeRanges?: number;
+    categoryId?: string;
+    page: number;
+    size: number;
+  }) {
+    return request.post<ApiResponse<BBSCategoryModel>>(
+      "/bbs/category/model",
+      wrapper
+    );
   },
   listGlobalPosts(wrapper: { page: number; size: number }) {
     return request.get<ApiResponse<BBSPostModel[]>>("/bbs/post/list-global", {
@@ -38,6 +48,7 @@ export const BBSApi = {
       wrapper
     );
   },
+
   /** 发布帖子 */
   publishPost(wrapper: { tags: string[]; post: Partial<BBSPost> }) {
     return request.post<ApiResponse<boolean>>("/bbs/post/publish", wrapper);

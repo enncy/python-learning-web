@@ -47,17 +47,18 @@
             </div>
             <div class="d-flex col-6 justify-content-end">
               <a-space>
-                <a-button type="primary" ghost size="small" @click="subscribe">
-                  + 订阅
-                </a-button>
                 <a-button
                   type="primary"
                   ghost
                   size="small"
                   @click="updateModelVisible = true"
                 >
-                  + 修改简介
+                  <Icon type="icon-edit" /> 修改简介
                 </a-button>
+                <a-button type="primary" ghost size="small" @click="subscribe">
+                  + 订阅
+                </a-button>
+
                 <a-button
                   type="primary"
                   size="small"
@@ -83,7 +84,17 @@
           </div>
         </div>
       </div>
-      <a-divider />
+    </Card>
+
+    <!-- 显示全局公告 -->
+
+    <Card title="📢全局公告">
+      <PostTable :posts="globalPosts"> </PostTable>
+    </Card>
+
+    <!-- 分区内文章 -->
+
+    <Card title="📰区内文章">
       <div class="mb-3">
         <a-input-search
           size="small"
@@ -107,6 +118,7 @@
           :options="
             [
               [0, '全部时间'],
+              [1, '今天内'],
               [3, '三天内'],
               [7, '一周内'],
               [30, '一月内'],
@@ -118,23 +130,21 @@
         </a-select>
         <a-divider type="vertical" />
 
-        <a-select size="small" v-model:value="search.timeDescOrder">
-          <a-select-option key="1" :value="1">最新帖子</a-select-option>
-          <a-select-option key="2" :value="0">发布最久</a-select-option>
-        </a-select>
-        <a-divider type="vertical" />
-        <a-select size="small" v-model:value="search.mostComment">
-          <a-select-option key="1" :value="1">最多评论</a-select-option>
-          <a-select-option key="2" :value="0">默认评论</a-select-option>
-        </a-select>
-        <a-divider type="vertical" />
-        <a-select size="small" v-model:value="search.mostView">
-          <a-select-option key="1" :value="1">最多浏览</a-select-option>
-          <a-select-option key="" :value="0">默认浏览</a-select-option>
+        <a-select size="small" v-model:value="search.orderBy">
+          <a-select-option key="1" value="timeDescOrder"
+            >最新帖子</a-select-option
+          >
+          <a-select-option key="2" value="timeAscOrder"
+            >发布最久</a-select-option
+          >
+          <a-select-option key="3" value="mostView">最多浏览</a-select-option>
+          <a-select-option key="4" value="mostComment"
+            >最多回复</a-select-option
+          >
         </a-select>
       </div>
 
-      <PostTable :posts="globalPosts.concat(posts)">
+      <PostTable :posts="posts">
         <template #head>
           <th
             v-if="
@@ -173,7 +183,7 @@
         </template>
       </PostTable>
 
-      <Pagination class="mt-5 text-end" v-model:pagination="pagination" />
+      <Pagination class="mt-5 text-end" v-model:pagination="search" />
     </Card>
 
     <SimplifyModel
@@ -219,22 +229,18 @@ import MarkdownText from "../../components/common/MarkdownText.vue";
 const route = useRoute();
 const router = useRouter();
 
-const pagination = reactive({
-  page: 1,
-  size: 10,
-  total: 10,
-});
-
 const posts = ref<BBSPostModel[]>([]);
 const globalPosts = ref<BBSPostModel[]>([]);
 const categoryModel = ref<BBSCategoryModel>();
+/** 帖子搜索 */
 const search = reactive({
-  /** 观看数量排序 */
-  mostView: 0,
-  /** 评论数量排序 */
-  mostComment: 0,
-  /** 时间降序排序 */
-  timeDescOrder: 1,
+  /**
+   * mostView: 观看数量排序
+   * mostComment: 评论数量排序
+   * timeDescOrder: 最新发布排序
+   * timeAscOrder: 发布最久排序
+   */
+  orderBy: "timeDescOrder",
 
   /** 标题筛选 */
   title: "",
@@ -242,39 +248,43 @@ const search = reactive({
   recommendOnly: 0,
   /** 时间筛选， 0为全部时间段 */
   timeRanges: 0,
+  /** 以下为必要参数 */
+  categoryId: "",
+  page: 1,
+  size: 10,
+  total: 10,
 });
 
 const updateModelVisible = ref(false);
 const description = ref("");
 
-watch(pagination, () => {
-  renderData();
+onMounted(async () => {
+  await renderData();
+  // 监听变化
+  watch(search, () => {
+    renderData();
+  });
 });
 
-onMounted(() => {
-  renderData();
-});
-
-function renderData() {
+async function renderData() {
   if (
     route.params.categoryId === undefined ||
     Array.isArray(route.params.categoryId)
   ) {
     useRouter().push("/404");
   } else {
+    search.categoryId = route.params.categoryId;
+
     // 获取文章列表
-    BBSApi.getCategoryModel({
-      id: route.params.categoryId,
-      page: pagination.page,
-      size: pagination.size,
-    }).then(({ data: { data } }) => {
-      if (data) {
-        categoryModel.value = data;
-        posts.value = data.postPage.records;
-        pagination.total = data.postPage.total;
-        description.value = data.category.description;
-      }
-    });
+    const {
+      data: { data },
+    } = await BBSApi.getCategoryModel(search);
+    if (data) {
+      categoryModel.value = data;
+      posts.value = data.postPage.records;
+      search.total = data.postPage.total;
+      description.value = data.category.description;
+    }
 
     // 获取全局公告
     BBSApi.listGlobalPosts({ page: 1, size: 5 }).then(({ data: { data } }) => {
@@ -344,6 +354,9 @@ tr th {
 
 tr td {
   padding: 4px;
-  border-bottom: 1px dashed #cecece;
+}
+
+tr td {
+  border-top: 1px dashed #cecece;
 }
 </style>

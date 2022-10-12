@@ -15,6 +15,7 @@ import AdminTableVue from "../../../components/common/AdminTable.vue";
 import { AdminTable, createDefaultColumnFactory } from "../../../utils/admin";
 import Card from "../../../components/common/Card.vue";
 import { max } from "../../../utils";
+import { booleanRender, maxRender } from "../../../utils/table";
 
 const table = ref(
   new AdminTable({
@@ -25,14 +26,15 @@ const table = ref(
     hideColumns: ["version", "deleted", "id"],
     columnFactory: {
       postTitle: {
-        customRender: ({ value }) => max(value, 20),
+        customRender: maxRender,
       },
       content: {
-        customRender: ({ value }) => max(value, 20),
+        customRender: maxRender,
       },
       parentContent: {
-        customRender: ({ value }) => max(value, 20),
+        customRender: maxRender,
       },
+      removed: { customRender: booleanRender },
       ...createDefaultColumnFactory(),
     },
     page: 1,

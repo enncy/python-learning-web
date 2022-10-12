@@ -59,7 +59,7 @@ export function centeredPopup(
 }
 
 export function max(str: string, len: number) {
-  return str.length > len ? `${str.slice(0, len)}...` : str;
+  return str?.length > len ? `${str.slice(0, len)}...` : str;
 }
 
 /** 获取权限等级 */
@@ -136,4 +136,12 @@ export function size(num: number) {
       // @ts-ignore
       ?.reduce((pre, cur) => cur + pre)
   );
+}
+
+export function sleep(t: number) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve();
+    }, t);
+  });
 }

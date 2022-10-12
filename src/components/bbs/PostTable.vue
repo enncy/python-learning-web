@@ -138,6 +138,9 @@ tr th {
 
 tr td {
   padding: 4px;
-  border-bottom: 1px dashed #cecece;
+}
+
+tr td {
+  border-top: 1px dashed #cecece;
 }
 </style>

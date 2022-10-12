@@ -18,6 +18,7 @@ import Card from "../../../components/common/Card.vue";
 import { max } from "../../../utils";
 import { BBSCategory } from "../../../store/interface";
 import { uploadResource } from "../../../api/resource";
+import { maxRender } from "../../../utils/table";
 
 const table = ref(
   new AdminTable({
@@ -29,7 +30,7 @@ const table = ref(
     extraColumns: [],
     columnFactory: {
       description: {
-        customRender: ({ value }) => max(value, 20),
+        customRender: maxRender,
       },
       ...createDefaultColumnFactory(),
     },

@@ -331,6 +331,11 @@ export const routes: RouteRecordRaw[] = [
     },
   },
   {
+    path: "/search",
+    props: (route) => ({ value: route.query.value }),
+    component: () => import("../page/search/index.vue"),
+  },
+  {
     path: "/login",
     component: () => import("../page/passport/login.vue"),
   },

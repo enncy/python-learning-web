@@ -11,10 +11,14 @@
 </template>
 <script setup lang="ts">
 import { ref } from "vue";
+import { useRouter } from "vue-router";
 
 const value = ref("");
+const router = useRouter();
 
-function onSearch() {}
+function onSearch() {
+  router.replace(`/search?value=${value.value}`);
+}
 </script>
 <style scoped lang="less">
 .search-input {

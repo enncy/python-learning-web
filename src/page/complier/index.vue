@@ -2,117 +2,134 @@
   <CommonLayout>
     <div class="page">
       <!-- 标签页 -->
-      <div>
-        <template v-for="code in codes" :key="code.filename">
-          <a-tag
-            class="code-tag"
-            :color="
-              codes[currentCodeIndex].filename === code.filename
-                ? 'processing'
-                : 'default'
-            "
-            @click="open(code.filename)"
-          >
-            <span class="ms-1 me-2">{{
-              code.filename.length > 20
-                ? `${code.filename.slice(0, 20)}...`
-                : code.filename
-            }}</span>
+      <Card>
+        <div>
+          <template v-for="code in codes" :key="code.filename">
+            <a-tag
+              class="code-tag"
+              :color="
+                codes[currentCodeIndex].filename === code.filename
+                  ? 'processing'
+                  : 'default'
+              "
+              @click="open(code.filename)"
+            >
+              <span class="ms-1 me-2">{{
+                code.filename.length > 20
+                  ? `${code.filename.slice(0, 20)}...`
+                  : code.filename
+              }}</span>
 
-            <a-popconfirm
-              v-if="codes.length > 1"
-              title="确定删除此文件吗？"
-              ok-text="确定"
-              cancel-text="取消"
-              @confirm="handleClose(code.filename)"
-            >
-              <Icon class="ms-3 tag-closer" type="icon-close" @click.stop="" />
-            </a-popconfirm>
-          </a-tag>
-        </template>
-
-        <a-tag
-          class="code-tag ps-3 pe-3"
-          style="background: #fff; border-style: dashed"
-          @click="newFileModelVisible = true"
-        >
-          <Icon type="icon-plus" />
-        </a-tag>
-      </div>
-
-      <div class="compiler">
-        <!-- 编辑器 -->
-        <MonacoEditor
-          :model-value="content"
-          @update:model-value="
-            (c) => {
-              codes[currentCodeIndex].content = c;
-            }
-          "
-        >
-          <template #actions>
-            <a-button
-              ghost
-              type="primary"
-              class="me-3"
-              @click="showCompiles"
-              shape="round"
-              size="small"
-            >
-              <Icon type="icon-unorderedlist" /> 编译列表
-            </a-button>
-            <a-button
-              ghost
-              type="primary"
-              class="me-3"
-              @click="save"
-              shape="round"
-              size="small"
-            >
-              <Icon type="icon-save" /> 保存
-            </a-button>
-            <a-button
-              ghost
-              type="primary"
-              class="me-3"
-              @click="lint"
-              shape="round"
-              size="small"
-            >
-              <Icon type="icon-CodeSandbox" /> 编译
-            </a-button>
-            <a-button
-              type="primary"
-              @click="compile"
-              shape="round"
-              size="small"
-            >
-              <Icon type="icon-caret-right" /> 运行
-            </a-button>
+              <a-popconfirm
+                v-if="codes.length > 1"
+                title="确定删除此文件吗？"
+                ok-text="确定"
+                cancel-text="取消"
+                @confirm="handleClose(code.filename)"
+              >
+                <Icon
+                  class="ms-3 tag-closer"
+                  type="icon-close"
+                  @click.stop=""
+                />
+              </a-popconfirm>
+            </a-tag>
           </template>
-        </MonacoEditor>
-      </div>
 
-      <div>
-        <span class="text-secondary">输入 :</span>
-        <a-textarea
-          class="compile-input"
-          v-model:value="input"
-          placeholder=""
-        />
-      </div>
+          <a-tag
+            class="code-tag ps-3 pe-3"
+            style="background: #fff; border-style: dashed"
+            @click="newFileModelVisible = true"
+          >
+            <Icon type="icon-plus" />
+          </a-tag>
+        </div>
 
-      <div>
-        <span class="text-secondary">输出 :</span>
-        <pre class="code compile-output">{{
-          currentCompile?.errorMessage || currentCompile?.output || ""
-        }}</pre>
-      </div>
+        <div class="compiler">
+          <!-- 编辑器 -->
+          <MonacoEditor
+            :model-value="content"
+            @update:model-value="
+              (c) => {
+                codes[currentCodeIndex].content = c;
+              }
+            "
+          >
+            <template #actions>
+              <a-button
+                type="default"
+                class="me-3"
+                @click="fileDetailModelVisible = true"
+                shape="round"
+                size="small"
+              >
+                <Icon type="icon-unorderedlist" /> 文件详情
+              </a-button>
+              <a-button
+                ghost
+                type="primary"
+                class="me-3"
+                @click="showCompiles"
+                shape="round"
+                size="small"
+              >
+                <Icon type="icon-unorderedlist" /> 编译列表
+              </a-button>
+              <a-button
+                ghost
+                type="primary"
+                class="me-3"
+                @click="save"
+                shape="round"
+                size="small"
+              >
+                <Icon type="icon-save" /> 保存
+              </a-button>
+              <a-button
+                ghost
+                type="primary"
+                class="me-3"
+                @click="lint"
+                shape="round"
+                size="small"
+              >
+                <Icon type="icon-CodeSandbox" /> 编译
+              </a-button>
+              <a-button
+                type="primary"
+                @click="compile"
+                shape="round"
+                size="small"
+              >
+                <Icon type="icon-caret-right" /> 运行
+              </a-button>
+            </template>
+          </MonacoEditor>
+        </div>
+
+        <div class="mt-3">
+          <span class="text-secondary">输入</span>
+          <a-textarea
+            class="compile-input"
+            v-model:value="input"
+            placeholder="程序输入内容，可为空"
+          />
+        </div>
+        <div class="mt-3">
+          <span class="text-secondary">输出</span>
+          <pre class="code compile-output">{{
+            currentCompile?.errorMessage || currentCompile?.output || ""
+          }}</pre>
+        </div>
+      </Card>
     </div>
+
+    <SimplifyModel title="文件详情" v-model:visible="fileDetailModelVisible">
+      <FileDetail :code="codes[currentCodeIndex]"></FileDetail>
+    </SimplifyModel>
 
     <SimplifyModel
       :width="800"
-      :top="20"
       :title="`${codes[currentCodeIndex].filename}-编译列表`"
       v-model:visible="compilesModelVisible"
     >
@@ -135,6 +152,8 @@ import MonacoEditor from "../../components/common/compiler/MonacoEditor.vue";
 import SimplifyModel from "../../components/common/SimplifyModel.vue";
 import CompilesList from "../../components/common/compiler/CompilesList.vue";
 import NewFile from "../../components/common/compiler/NewFile.vue";
+import Card from "../../components/common/Card.vue";
+import FileDetail from "../../components/common/compiler/FileDetail.vue";
 
 // 代码列表
 const codes = ref(
@@ -168,6 +187,7 @@ const input = ref("");
 
 const compilesModelVisible = ref(false);
 const newFileModelVisible = ref(false);
+const fileDetailModelVisible = ref(false);
 
 // 删除文件
 function handleClose(removedTag: string) {
@@ -188,6 +208,8 @@ function createNewFile(filename: string, content: string) {
       id: Date.now().toString(),
       filename: filename,
       content: content,
+      createTime: Date.now(),
+      updateTime: Date.now(),
     };
 
     codes.value.push(newCode);

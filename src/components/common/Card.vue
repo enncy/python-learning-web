@@ -1,13 +1,13 @@
 <template>
   <div class="p-3 shadow rounded my-card bg-white">
     <template v-if="title">
-      <h3>{{ title }}</h3>
-      <a-divider class="mb-3 mt-1" />
+      <h3 :class="divider ? '' : 'mb-3 '">{{ title }}</h3>
+      <a-divider v-if="divider" class="mb-3" />
     </template>
 
     <template v-else-if="slot.title">
       <component :is="slot.title"></component>
-      <a-divider class="mb-3 mt-1" />
+      <a-divider v-if="divider" class="mb-3" />
     </template>
 
     <slot></slot>
@@ -18,6 +18,7 @@ import { useSlots } from "vue";
 
 defineProps<{
   title?: string;
+  divider?: boolean;
 }>();
 
 const slot = useSlots();

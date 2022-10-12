@@ -31,7 +31,7 @@ export const config = reactive({
       recommend: { name: "✨精华", color: "#ff7728" },
     },
   },
-
+  // 请求基本路径
   baseURL: import.meta.env.VITE_BASE_URL,
   // 自适应宽度
   adaption: {
@@ -261,6 +261,8 @@ for i in range(len(arr)):
       filename: "未命名1",
       content:
         "# 编辑你的 python 代码，并点击右上角运行按钮即可运行。\nprint('hello world')",
+      createTime: Date.now(),
+      updateTime: Date.now(),
     },
     defaultCompile: {
       id: Date.now().toString(),

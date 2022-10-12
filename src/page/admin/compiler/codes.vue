@@ -15,6 +15,7 @@ import AdminTableVue from "../../../components/common/AdminTable.vue";
 import { onBeforeMount, ref } from "vue";
 import Card from "../../../components/common/Card.vue";
 import { max } from "../../../utils";
+import { maxRender } from "../../../utils/table";
 
 const table = ref(
   new AdminTable({
@@ -25,7 +26,7 @@ const table = ref(
     hideColumns: ["version", "deleted", "id"],
     columnFactory: {
       content: {
-        customRender: ({ value }) => max(value, 20),
+        customRender: maxRender,
       },
       ...createDefaultColumnFactory(),
     },

@@ -20,6 +20,7 @@ import { message } from "ant-design-vue";
 import { size } from "../../../utils";
 import ResourcePreviewVue from "../../../components/common/ResourcePreview.vue";
 import { uploadResource } from "../../../api/resource";
+import { booleanRender } from "../../../utils/table";
 
 const table = ref(
   new AdminTable({
@@ -71,7 +72,9 @@ const table = ref(
               <span> /resource?filename={record.filename} </span>
               <a
                 class="ms-3"
-                onClick={() => copy(ResourceApi.of({ id: record.filename }))}
+                onClick={() =>
+                  copy(ResourceApi.of({ filename: record.filename }))
+                }
               >
                 复制
               </a>
@@ -81,6 +84,9 @@ const table = ref(
       },
       size: {
         customRender: ({ value }) => size(value),
+      },
+      invalid: {
+        customRender: booleanRender,
       },
       ...createDefaultColumnFactory(),
     },

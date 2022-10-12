@@ -18,7 +18,7 @@ export const ResourceApi = {
     return id
       ? `${config.baseURL}/resource?id=${id}`
       : filename
-      ? `${config.baseURL}/resource?id=${filename}`
+      ? `${config.baseURL}/resource?filename=${filename}`
       : ``;
   },
   init(

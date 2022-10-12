@@ -108,7 +108,7 @@ onMounted(() => {
   ) {
     // 获取版块模型
     BBSApi.getCategoryModel({
-      id: route.params.categoryId,
+      categoryId: route.params.categoryId,
       page: 0,
       size: 0,
     }).then(({ data: { data } }) => {

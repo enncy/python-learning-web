@@ -133,17 +133,22 @@ const table = ref(
       title: {
         customRender: ({ value }) => max(value, 20),
       },
-      recommend: { customRender: ({ value }) => (value ? "是" : "否") },
-      globalPinned: { customRender: ({ value }) => (value ? "是" : "否") },
-      published: { customRender: ({ value }) => (value ? "是" : "否") },
-      pinned: { customRender: ({ value }) => (value ? "是" : "否") },
-      banned: { customRender: ({ value }) => (value ? "是" : "否") },
+      recommend: { customRender: booleanRender },
+      globalPinned: { customRender: booleanRender },
+      published: { customRender: booleanRender },
+      pinned: { customRender: booleanRender },
+      banned: { customRender: booleanRender },
+      removed: { customRender: booleanRender },
       ...createDefaultColumnFactory(),
     },
     page: 1,
     size: 10,
   })
 );
+
+function booleanRender({ value }: any) {
+  return !!value ? "是" : "-";
+}
 
 onBeforeMount(() => {
   table.value.init();
