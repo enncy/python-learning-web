@@ -10,7 +10,7 @@
   background-color: rgba(222, 222, 222, 0.115);
 }
 .markdown-text img {
-  width: 100%;
+  max-width: 100%;
 }
 .markdown-text h3,
 .markdown-text h4,
@@ -108,7 +108,7 @@
   display: flex;
 }
 .markdown-text .block-code pre code {
-  width: 100%;
+  max-width: 100%;
   padding: 20px;
   padding-bottom: 10px;
   overflow: auto;

@@ -7,7 +7,7 @@ import "video.js/dist/video-js.css";
 import "../../assets/css/video.css";
 import "../../assets/css/container.css";
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from "vue";
-import videojs, { VideoJsPlayer } from "video.js";
+import videojs, { VideoJsPlayer, VideoJsPlayerOptions } from "video.js";
 // @ts-ignore
 import Emoji from "markdown-it-emoji";
 import Anchor from "markdown-it-anchor";
@@ -68,20 +68,22 @@ const md = computed(() => markdownIt.render(props.content));
 const players = ref<VideoJsPlayer[]>([]);
 
 onMounted(() => {
+  console.log("mounted");
+
   nextTick(() => {
     const videos = Array.from(
       document.querySelectorAll(".video-js")
     ) as HTMLElement[];
     for (const video of videos) {
-      const options = {
+      const options: VideoJsPlayerOptions = {
         bigPlayButton: true,
         controls: true,
-        defaultVolume: 0.5,
         playbackRates: [1, 1.5, 2],
         fluid: true,
       };
       const player = videojs(video, options);
       player.addClass("w-100");
+      player.volume(0.3);
       players.value.push(player);
     }
   });

@@ -1,9 +1,9 @@
 <template>
   <Card>
     <AdminTableVue
+      entity-name="教程文章"
       v-model:table="table"
-      @create="onCreate"
-      @modify="onModify"
+      :update="onUpdate"
       @pagination-change="onPaginationChange"
     ></AdminTableVue>
   </Card>
@@ -52,10 +52,7 @@ onBeforeMount(() => {
   table.value.init();
 });
 
-function onCreate() {
-  table.value.update();
-}
-function onModify() {
+function onUpdate() {
   table.value.update();
 }
 

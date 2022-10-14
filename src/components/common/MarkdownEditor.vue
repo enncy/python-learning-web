@@ -102,8 +102,11 @@ watch(
 .markdown-body {
   height: 100%;
   width: 100%;
-  min-width: 100px;
   overflow: auto;
+}
+
+.markdown-editor {
+  resize: both;
 }
 
 .markdown {

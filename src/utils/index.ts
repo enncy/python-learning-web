@@ -139,7 +139,7 @@ export function size(num: number) {
 }
 
 export function sleep(t: number) {
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     setTimeout(() => {
       resolve();
     }, t);

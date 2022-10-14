@@ -1,9 +1,9 @@
 <template>
   <Card>
     <AdminTableVue
+      entity-name="用户订阅"
       v-model:table="table"
-      @create="onCreate"
-      @modify="onModify"
+      :update="onUpdate"
       @pagination-change="onPaginationChange"
     ></AdminTableVue>
   </Card>
@@ -35,13 +35,9 @@ onBeforeMount(() => {
   table.value.init();
 });
 
-function onCreate() {
+function onUpdate() {
   table.value.update();
 }
-function onModify() {
-  table.value.update();
-}
-
 function onPaginationChange(pagination: any) {
   table.value.page = pagination.current;
   table.value.size = pagination.pageSize;

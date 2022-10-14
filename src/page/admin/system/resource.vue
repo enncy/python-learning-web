@@ -1,10 +1,10 @@
 <template>
   <Card>
     <AdminTableVue
+      entity-name="系统资源"
       v-model:table="table"
       :custom-request="customRequest"
-      @create="onCreate"
-      @modify="onModify"
+      :update="onUpdate"
       @pagination-change="onPaginationChange"
     ></AdminTableVue>
   </Card>
@@ -99,10 +99,7 @@ onBeforeMount(() => {
   table.value.init();
 });
 
-function onCreate(entity: any) {
-  table.value.update();
-}
-function onModify() {
+function onUpdate() {
   table.value.update();
 }
 

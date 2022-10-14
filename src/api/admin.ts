@@ -58,4 +58,9 @@ export const AdminApi = {
   statistic() {
     return request.get<ApiResponse<Statistic>>("/admin/statistic");
   },
+  removeAll(tableName: string, ids: string[]) {
+    return request.post<ApiResponse<boolean>>("/admin/remove-all", ids, {
+      params: { tableName },
+    });
+  },
 };

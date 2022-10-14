@@ -29,5 +29,6 @@ defineProps<{
 .toc {
   position: sticky;
   top: 20px;
+  height: min-content;
 }
 </style>

@@ -4,7 +4,7 @@
     <MobilePanel v-if="store.state.inMobile">
       <ArticleList
         :articles="articles"
-        v-model:currentArticleId="currentArticleId"
+        :currentArticleId="currentArticleId"
       ></ArticleList>
       <TOC class="mt-5" :anchors="anchors" />
     </MobilePanel>
@@ -22,9 +22,9 @@
       </div>
     </div>
 
-    <div ref="learningArticle" class="learning-container">
+    <div ref="learningArticle">
       <div
-        class="d-flex col-lg-8 col-12 m-auto"
+        class="d-flex col-lg-8 col-12 m-auto learning-container"
         style="gap: 12px"
         v-if="articles.length"
       >
@@ -73,9 +73,11 @@
             </div>
           </Card>
         </div>
-        <div class="col-2 article-list" v-if="anchors.length">
-          <TOC :anchors="anchors" />
-        </div>
+        <TOC
+          class="col-2 article-list"
+          v-if="anchors.length"
+          :anchors="anchors"
+        />
       </div>
       <div v-else>
         <a-empty></a-empty>
@@ -85,7 +87,7 @@
 </template>
 <script setup lang="ts">
 import { LearningApi } from "../../api";
-import { computed, nextTick, ref, watch } from "vue";
+import { computed, nextTick, onMounted, ref, watch } from "vue";
 import { LearningArticle, LearningCategory } from "../../store/interface";
 import MarkdownText from "../../components/common/MarkdownText.vue";
 import { useRoute, useRouter } from "vue-router";
@@ -106,20 +108,12 @@ const currentCategoryId = ref<string>("");
 const currentArticleId = ref<string>(
   route.params.articleId ? route.params.articleId.toString() : ""
 );
-const currentArticle = computed(() =>
-  articles.value.find((a) => a.id === currentArticleId.value)
-);
+const currentArticle = ref();
 // 是否处于全屏
 const isInFullScreen = ref(false);
 const learningArticle = ref<HTMLDivElement>();
 const content = ref<HTMLDivElement>();
 const currentTextContent = ref("");
-
-watch(currentArticle, () => {
-  nextTick(() => {
-    currentTextContent.value = content.value?.textContent || "";
-  });
-});
 
 const anchors = ref<
   {
@@ -129,41 +123,11 @@ const anchors = ref<
   }[]
 >([]);
 
-LearningApi.listCategory().then(({ data: { data } }) => {
-  categories.value = data;
-  if (currentArticleId.value) {
-    LearningApi.getArticle(currentArticleId.value).then(
-      ({ data: { data } }) => {
-        currentCategoryId.value = data.categoryId;
-        LearningApi.listArticle(currentCategoryId.value).then(
-          ({ data: { data } }) => {
-            articles.value = data;
-            nextTick(() => {
-              renderTOC();
-            });
-          }
-        );
-      }
-    );
-  } else {
-    listArticle(data[0].id);
-  }
-});
-
-watch(currentArticleId, () => {
-  nextTick(() => {
-    renderTOC();
-  });
-});
-
 function listArticle(cid: string) {
   currentCategoryId.value = cid;
   LearningApi.listArticle(cid).then(({ data: { data } }) => {
-    articles.value = data;
-
     if (data.length) {
-      router.replace("/learning/article/" + data[0].id);
-      currentArticleId.value = data[0].id;
+      window.location.replace("/learning/article/" + data[0].id);
     }
   });
 }
@@ -204,11 +168,38 @@ function fullscreen() {
 document.addEventListener("fullscreenchange", function () {
   isInFullScreen.value = document.fullscreenElement !== null;
 });
+
+onMounted(() => {
+  nextTick(() => {
+    LearningApi.listCategory().then(({ data: { data } }) => {
+      categories.value = data;
+      if (currentArticleId.value) {
+        LearningApi.getArticle(currentArticleId.value).then(
+          ({ data: { data } }) => {
+            currentCategoryId.value = data.categoryId;
+            LearningApi.listArticle(currentCategoryId.value).then(
+              ({ data: { data } }) => {
+                articles.value = data;
+                currentArticle.value = articles.value.find(
+                  (a) => a.id === currentArticleId.value
+                );
+                nextTick(() => {
+                  renderTOC();
+                });
+              }
+            );
+          }
+        );
+      } else {
+        listArticle(data[0].id);
+      }
+    });
+  });
+});
 </script>
 <style scoped lang="less">
 .learning-container {
   background-color: #f8f8f8;
-  overflow-y: auto;
   padding: 24px 0px;
 }
 

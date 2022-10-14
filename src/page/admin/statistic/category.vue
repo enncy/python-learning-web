@@ -1,9 +1,9 @@
 <template>
   <Card>
     <AdminTableVue
+      entity-name="分区统计"
       v-model:table="table"
-      @create="onCreate"
-      @modify="onModify"
+      :update="onUpdate"
       @pagination-change="onPaginationChange"
     ></AdminTableVue>
   </Card>
@@ -23,10 +23,12 @@ const table = ref(
     columns: [],
     dataSource: [],
     tableName: "statistic_category",
-    hideColumns: ["version", "deleted", "id"],
+    hideColumns: ["version", "deleted", "id", "categoryId"],
     columnFactory: {
-      date: {
+      recordDate: {
         customRender: ({ value }) => dayjs(value).format("YYYY-MM-DD"),
+        defaultSortOrder: "descend",
+        sorter: (a: any, b: any) => a.recordDate - b.recordDate,
       },
       ...createDefaultColumnFactory(),
     },
@@ -39,10 +41,7 @@ onBeforeMount(() => {
   table.value.init();
 });
 
-function onCreate() {
-  table.value.update();
-}
-function onModify() {
+function onUpdate() {
   table.value.update();
 }
 

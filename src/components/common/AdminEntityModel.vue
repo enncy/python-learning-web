@@ -33,7 +33,7 @@ import Textarea from "./admin/Textarea.vue";
 import ExternalSelect from "./admin/ExternalSelect.vue";
 import AdminMarkdown from "./admin/AdminMarkdown.vue";
 import SystemConfigInput from "./admin/SystemConfigInput.vue";
-import AdminUploadImage from "./admin/AdminUploadImage.vue";
+import DateSelector from "./admin/DateSelector.vue";
 import Resource from "./admin/Resource.vue";
 import SimplifyModel from "./SimplifyModel.vue";
 
@@ -62,6 +62,10 @@ const componentMapping = [
   {
     type: "select",
     component: Select,
+  },
+  {
+    type: "date",
+    component: DateSelector,
   },
   {
     type: "external-select",

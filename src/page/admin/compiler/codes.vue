@@ -1,9 +1,9 @@
 <template>
   <Card>
     <AdminTableVue
+      entity-name="代码"
       v-model:table="table"
-      @create="onCreate"
-      @modify="onModify"
+      :update="onUpdate"
       @pagination-change="onPaginationChange"
     ></AdminTableVue>
   </Card>
@@ -23,7 +23,7 @@ const table = ref(
     columns: [],
     dataSource: [],
     tableName: "code",
-    hideColumns: ["version", "deleted", "id"],
+    hideColumns: ["version", "deleted", "id", "userId"],
     columnFactory: {
       content: {
         customRender: maxRender,
@@ -39,10 +39,7 @@ onBeforeMount(() => {
   table.value.init();
 });
 
-function onCreate() {
-  table.value.update();
-}
-function onModify() {
+function onUpdate() {
   table.value.update();
 }
 

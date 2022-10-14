@@ -71,10 +71,10 @@
 
     <Card>
       <AdminTableVue
+        entity-name="帖子"
         :hide-search="true"
         v-model:table="table"
-        @create="onCreate"
-        @modify="onModify"
+        :update="onUpdate"
         @pagination-change="onPaginationChange"
       ></AdminTableVue>
     </Card>
@@ -155,13 +155,8 @@ onBeforeMount(() => {
   originDataSource.value = table.value.dataSource;
 });
 
-function onCreate() {
+function onUpdate() {
   table.value.update();
-  originDataSource.value = table.value.dataSource;
-}
-function onModify() {
-  table.value.update();
-  originDataSource.value = table.value.dataSource;
 }
 
 function onPaginationChange(pagination: any) {

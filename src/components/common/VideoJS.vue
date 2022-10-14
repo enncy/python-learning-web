@@ -27,6 +27,7 @@ onMounted(() => {
       };
       player.value = videojs(video.value, options);
       player.value.addClass("w-100");
+      player.value.volume(0.3);
       watch(
         () => props.src,
         () => {

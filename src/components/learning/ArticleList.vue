@@ -9,10 +9,7 @@
       :class="{
         active: article.id === currentArticleId,
       }"
-      @click="
-        emits('update:currentArticleId', article.id),
-          router.replace('/learning/article/' + article.id)
-      "
+      @click="switchArticle(article.id)"
     >
       <span>{{ article.title }}</span>
     </div>
@@ -27,11 +24,11 @@ defineProps<{
   currentArticleId: string;
 }>();
 
-const emits = defineEmits<{
-  (e: "update:currentArticleId", currentArticleId: string): void;
-}>();
-
 const router = useRouter();
+
+function switchArticle(id: string) {
+  window.location.replace("/learning/article/" + id);
+}
 </script>
 <style scoped lang="less">
 .article-list-item {

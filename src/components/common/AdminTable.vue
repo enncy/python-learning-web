@@ -5,7 +5,7 @@
     <div v-else>
       <div class="mb-3 d-flex">
         <div
-          class="d-flex"
+          class="d-flex me-3"
           v-if="
             hideSearch !== true &&
             table.schemas.filter((s) => s.searchable).length
@@ -43,31 +43,41 @@
             type="link"
             @click="(searchedDataSource = []), (searching = false)"
           >
-            重置
+            重置搜索
           </a-button>
         </div>
         <div v-if="selectMode === false">
-          <a-button
-            type="primary"
-            @click="(state.model.create = true), (formData.id = uuid())"
-          >
-            <Icon type="icon-plus" />
-            添加{{ entityName }}
-          </a-button>
-          <a-divider type="vertical" />
-          <span v-if="selectedEntities.length">
-            <span class="me-3">
-              共选中 {{ selectedEntities.length }} 个数据
+          <a-space size="large">
+            <!-- 刷新数据按钮 -->
+            <a-button type="default" @click="update">
+              <Icon type="icon-sync" />
+              刷新数据
+            </a-button>
+
+            <!-- 添加数据按钮 -->
+            <a-button
+              type="primary"
+              @click="(state.model.create = true), (formData.id = uuid())"
+            >
+              <Icon type="icon-plus" />
+              添加{{ entityName }}
+            </a-button>
+
+            <!-- 选中的实体操作按钮 -->
+            <span v-if="selectedEntities.length">
+              <span class="me-3">
+                共选中 {{ selectedEntities.length }} 个数据
+              </span>
+              <a-select value="选择操作" style="width: 200px">
+                <a-select-option key="1" value="removeAll" @click="removeAll">
+                  删除选中数据
+                </a-select-option>
+                <a-select-option key="2" value="printAll" @click="printAll">
+                  导出选中数据
+                </a-select-option>
+              </a-select>
             </span>
-            <a-select v-model:value="operation">
-              <a-select-option key="1" value="removeAll">
-                删除选中数据
-              </a-select-option>
-              <a-select-option key="2" value="print">
-                导出选中数据
-              </a-select-option>
-            </a-select>
-          </span>
+          </a-space>
         </div>
         <div style="clear: both"></div>
       </div>
@@ -236,13 +246,15 @@ import { AdminApi } from "../../api";
 import { Schema } from "../../store/interface";
 import AdminEntityModel from "./AdminEntityModel.vue";
 import { uuid } from "../../utils";
-import { AxiosRequestConfig } from "axios";
+import { utils, writeXLSX, writeFileXLSX } from "xlsx";
+import dayjs from "dayjs";
 
 const emits = defineEmits<{
   (e: "update:table", table: AdminTable<any>): void;
   (e: "create", entity: any): void;
   (e: "modify", entity: any): void;
   (e: "remove", entity: any): void;
+  (e: "remove-all", entity: any[]): void;
   (e: "selectedEntity", entity: any): void;
   (e: "paginationChange", pagination: any): void;
 }>();
@@ -260,6 +272,7 @@ const props = withDefaults(
       callback?: (entity: any) => void
     ) => boolean | Promise<boolean>;
     entityFilter?: (entity: any) => Promise<any> | any;
+    update: () => void;
   }>(),
   {
     entityName: "数据",
@@ -288,8 +301,6 @@ const currentEntity = ref();
 const selectedEntity = ref();
 // 选中的数据
 const selectedEntities = ref<any[]>([]);
-// 选中操作
-const operation = ref("选择执行操作");
 
 // 额外列表
 const extraColumns: TableColumnProps[] = [
@@ -389,6 +400,7 @@ async function removeEntity(index: number) {
       ({ data: { data, msg } }) => {
         if (data) {
           message.success(msg);
+          props.update();
           table.value.dataSource.splice(index, 1);
         } else {
           message.error(msg);
@@ -416,6 +428,7 @@ async function modifyEntity() {
         if (data) {
           emits("modify", entity);
           state.model.modify = false;
+          props.update();
           message.success(msg);
         } else {
           message.error(msg);
@@ -439,6 +452,7 @@ async function createEntity() {
       async ({ data: { data, msg } }) => {
         if (data) {
           emits("create", entity);
+          props.update();
           state.model.create = false;
           message.success(msg);
         } else {
@@ -465,7 +479,62 @@ function onSelectChange(keys: string[], entities: any[]) {
   selectedEntities.value = entities;
   console.log(entities);
 }
+
+function removeAll() {
+  AdminApi.removeAll(
+    table.value.tableName,
+    selectedEntities.value.map((i) => i.id)
+  ).then(({ data: { data, msg } }) => {
+    data ? message.success(msg) : message.error(msg);
+    selectedEntities.value = [];
+    props.update();
+  });
+}
+
+function printAll() {
+  console.log(table.value.dataSource);
+  console.log(table.value.columns);
+  const objects = table.value.dataSource.map((data, index) => {
+    const object: Record<string, any> = {};
+    table.value.columns.forEach((col, renderIndex) => {
+      const k = col.dataIndex || col.key;
+      if (col.title && k) {
+        const value = Reflect.get(data, k.toString());
+
+        object[col.title.toString()] =
+          col.customRender?.({
+            value,
+            text: value,
+            column: col,
+            index,
+            record: data,
+            renderIndex,
+          }) || value;
+      }
+    });
+    return object;
+  });
+
+  // 新建工作簿
+  const workBook = utils.book_new();
+  // 添加表格
+  utils.book_append_sheet(workBook, utils.json_to_sheet(objects), "Sheet1");
+  // 导出
+  writeFileXLSX(
+    workBook,
+    `${props.entityName || "数据"}导出_${dayjs().format(
+      "YYYY-MM-DD_hhmmss"
+    )}.xlsx`,
+    {
+      bookSST: true,
+      type: "array",
+      sheet: "Sheet1",
+      bookType: "xlsx",
+    }
+  );
+}
 </script>
+
 <style scoped lang="less">
 .schema-search + .schema-search {
   margin-left: 12px;

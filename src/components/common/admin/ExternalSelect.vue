@@ -23,8 +23,7 @@
         @selected-entity="onSelect"
         :select-mode="true"
         :table="table"
-        @create="onCreate"
-        @modify="onModify"
+        :update="onUpdate"
       ></AdminTableVue>
     </SimplifyModel>
   </div>
@@ -32,11 +31,7 @@
 <script setup lang="ts">
 import { computed, onBeforeMount, ref } from "vue";
 import { Schema } from "../../../store/interface";
-import {
-  AdminTable,
-  AdminTableOptions,
-  createDefaultColumnFactory,
-} from "../../../utils/admin";
+import { AdminTable, createDefaultColumnFactory } from "../../../utils/admin";
 import AdminTableVue from "../AdminTable.vue";
 import SimplifyModel from "../SimplifyModel.vue";
 
@@ -98,11 +93,8 @@ function onSelect(_entity: any) {
   entity.value = _entity;
 }
 
-async function onCreate() {
-  await table.value?.update();
-}
-async function onModify() {
-  await table.value?.update();
+function onUpdate() {
+  table.value?.update();
 }
 </script>
 <style scoped lang="less"></style>

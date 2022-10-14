@@ -2,12 +2,12 @@
   <div class="p-3 shadow rounded my-card bg-white">
     <template v-if="title">
       <h3 :class="divider ? '' : 'mb-3 '">{{ title }}</h3>
-      <a-divider v-if="divider" class="mb-3" />
+      <a-divider v-if="divider" class="mb-3 mt-1" />
     </template>
 
     <template v-else-if="slot.title">
       <component :is="slot.title"></component>
-      <a-divider v-if="divider" class="mb-3" />
+      <a-divider v-if="divider" class="mb-3 mt-1" />
     </template>
 
     <slot></slot>

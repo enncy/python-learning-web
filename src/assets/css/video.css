@@ -1,9 +1,9 @@
 .video-js {
-  border-radius: 8px;
+  border-radius: 6px;
   box-shadow: 0px 0px 12px #646464;
 }
 .video-js video {
-  border-radius: 12px;
+  border-radius: 6px;
 }
 
 .video-js .vjs-menu-button-inline.vjs-slider-active,

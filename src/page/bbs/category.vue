@@ -23,12 +23,11 @@
     <Card class="mb-3">
       <div class="d-flex">
         <div style="width: 124px; margin-right: 16px">
-          <a-avatar
+          <img
             v-if="categoryModel?.category.id"
-            shape="square"
-            :size="124"
+            style="width: 124px"
             :src="ResourceApi.of({ id: categoryModel.category.id })"
-          ></a-avatar>
+          />
         </div>
         <div style="width: calc(100% - 150px)">
           <div class="d-flex mb-3 border-bottom">

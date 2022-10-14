@@ -3,11 +3,10 @@
     <template v-for="(categoryModel, index) of categoryModels" :key="index">
       <div class="category row">
         <div class="col-3 col-lg-2 text-center">
-          <a-avatar
-            shape="square"
-            :size="64"
+          <img
+            style="width: 48px"
             :src="ResourceApi.of({ id: categoryModel.category.id })"
-          ></a-avatar>
+          />
         </div>
         <div class="col-9 col-lg-3">
           <div

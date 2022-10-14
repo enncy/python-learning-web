@@ -64,6 +64,7 @@ declare module '@vue/runtime-core' {
     Card: typeof import('./src/components/common/Card.vue')['default']
     CategoryList: typeof import('./src/components/bbs/CategoryList.vue')['default']
     CompilesList: typeof import('./src/components/common/compiler/CompilesList.vue')['default']
+    DateSelector: typeof import('./src/components/common/admin/DateSelector.vue')['default']
     ExternalSelect: typeof import('./src/components/common/admin/ExternalSelect.vue')['default']
     FileDetail: typeof import('./src/components/common/compiler/FileDetail.vue')['default']
     Footer: typeof import('./src/components/common/Footer.vue')['default']

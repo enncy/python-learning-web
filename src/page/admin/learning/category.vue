@@ -1,9 +1,9 @@
 <template>
   <Card>
     <AdminTableVue
+      entity-name="教程目录"
       v-model:table="table"
-      @create="onCreate"
-      @modify="onModify"
+      :update="onUpdate"
       @pagination-change="onPaginationChange"
     ></AdminTableVue>
   </Card>
@@ -14,6 +14,7 @@ import AdminTableVue from "../../../components/common/AdminTable.vue";
 
 import { onBeforeMount, ref } from "vue";
 import Card from "../../../components/common/Card.vue";
+import { booleanRender } from "../../../utils/table";
 
 const table = ref(
   new AdminTable({
@@ -23,6 +24,7 @@ const table = ref(
     tableName: "learning_category",
     hideColumns: ["version", "deleted", "id"],
     columnFactory: {
+      hide: { customRender: booleanRender },
       ...createDefaultColumnFactory(),
     },
     page: 1,
@@ -34,10 +36,7 @@ onBeforeMount(() => {
   table.value.init();
 });
 
-function onCreate() {
-  table.value.update();
-}
-function onModify() {
+function onUpdate() {
   table.value.update();
 }
 

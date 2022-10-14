@@ -70,6 +70,8 @@ export const ResourceApi = {
         return false;
       }
     }
+    // 标记为上传完成
+    store.upload.status[id] = 2;
     return true;
   },
 };
